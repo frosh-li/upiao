@@ -16,7 +16,7 @@ colors.setTheme({
 });
 global.conn = mysql.createConnection({
 	// host     : '10.1.219.81',
-	host     : '192.168.1.144',
+	host     : '127.0.0.1',
 	user     : 'root',
 	password : '',
 	database : 'db_bms_english4',
@@ -27,9 +27,12 @@ var station = require('./libs/station');
 var group = require('./libs/group');
 var battery = require('./libs/battery');
 
+var errCode = require('./libs/errorConfig');
+
 var dealData = function(str){
 	var record_time = new Date();
 	str = JSON.parse(str);
+	// console.log(str);
 	if(str&&str.StationData){
 		station.deal(str.StationData, record_time);
 	}
@@ -39,6 +42,93 @@ var dealData = function(str){
 	if(str && str.BatteryData){
 		console.log(2222);
 		battery.deal(str.BatteryData,record_time,str.StationData.sid);
+	}
+
+	if(str && (str.StationErr || str.GroupErr || str.BatteryErr)){
+		console.log('has error'.green);
+		let StationErr = str.StationErr;
+		let errorInsert = [];
+		if(StationErr){
+			let type="station";
+
+			for(let key in errCode[type]){
+				console.log(key, StationErr[key]);
+				if(StationErr[key] !== undefined){
+					let current = StationErr[errCode[type][key][0]];
+					let code = errCode[type][key][StationErr[key]];
+					errorInsert.push({
+						type:type,
+						sn_key:StationErr.sn_key,
+						code:code,
+						current:current
+					})
+				}
+			}
+
+		}
+
+		let GroupErr = str.GroupErr;
+		str.GroupErr.forEach(function(GroupErr){
+			let type="group";
+
+			for(let key in errCode[type]){
+				console.log(key, GroupErr[key]);
+				if(GroupErr[key] !== undefined){
+					let current = GroupErr[errCode[type][key][0]];
+					let code = errCode[type][key][GroupErr[key]];
+					errorInsert.push({
+						type:type,
+						sn_key:GroupErr.sn_key,
+						code:code,
+						current:current
+					})
+				}
+			}
+
+		})
+
+
+		let BatteryErr = str.BatteryErr;
+
+		str.BatteryErr.forEach(function(BatteryErr){
+
+
+			let type="battery";
+
+			for(let key in errCode[type]){
+				console.log(key, BatteryErr[key]);
+				if(BatteryErr[key] !== undefined){
+					let current = BatteryErr[errCode[type][key][0]];
+					let code = errCode[type][key][BatteryErr[key]];
+					errorInsert.push({
+						type:type,
+						sn_key:BatteryErr.sn_key,
+						code:code,
+						current:current
+					})
+				}
+			}
+
+		})
+		console.log(errorInsert);
+		if(errorInsert.length > 0){
+			insertErrorBulk(errorInsert);
+		}
+		// 如果有报警信息，进行报警
+	}
+}
+
+function insertErrorBulk(data){
+	var item = data.shift();
+	if(item){
+		conn.query('insert into my_alerts set ?', item, function(err, results){
+			if(err){
+				console.log('insert error error', err);
+			}else{
+				console.log('insert error done'.green);
+			}
+			insertErrorBulk(data);
+		})
 	}
 }
 
@@ -65,7 +155,7 @@ var server = net.createServer(function(socket){
 		var record_time = new Date();
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
 		// console.log('数据头信息和指令编号'.magenta, inputData);
-		//console.log(inputData)
+		// console.log(inputData)
 		if(/>/m.test(inputData)){
 			//表示已经结束，可以进行处理数据了
 			//dealData(socket.odata+inputData);
