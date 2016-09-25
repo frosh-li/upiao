@@ -20,7 +20,8 @@ global.conn = mysql.createConnection({
 	user     : 'root',
 	password : '',
 	database : 'db_bms_english4',
-	multipleStatements: true
+	multipleStatements: true,
+	dateStrings:true
 });
 
 var station = require('./libs/station');
@@ -40,7 +41,6 @@ var dealData = function(str){
 		group.deal(str.GroupData,record_time,str.StationData.sid);
 	}
 	if(str && str.BatteryData){
-		console.log(2222);
 		battery.deal(str.BatteryData,record_time,str.StationData.sid);
 	}
 
@@ -68,7 +68,7 @@ var dealData = function(str){
 		}
 
 		let GroupErr = str.GroupErr;
-		str.GroupErr.forEach(function(GroupErr){
+		str.GroupErr && str.GroupErr.forEach(function(GroupErr){
 			let type="group";
 
 			for(let key in errCode[type]){
@@ -90,7 +90,7 @@ var dealData = function(str){
 
 		let BatteryErr = str.BatteryErr;
 
-		str.BatteryErr.forEach(function(BatteryErr){
+		str.BatteryErr && str.BatteryErr.forEach(function(BatteryErr){
 
 
 			let type="battery";
@@ -121,11 +121,75 @@ var dealData = function(str){
 function insertErrorBulk(data){
 	var item = data.shift();
 	if(item){
-		conn.query('insert into my_alerts set ?', item, function(err, results){
-			if(err){
-				console.log('insert error error', err);
+		new Promise(function(resolve, reject){
+			// 如果是忽略狀態不加入數據
+			var sql = `select * from my_alerts where
+			 status=2 and 
+			 sn_key='${item.sn_key}' and 
+			 code='${item.code}'`;
+			conn.query(sql, function(err, ret){
+				if(err){
+					return reject(err);
+				}
+				if(ret && ret.length > 0){
+					return reject(new Error('ignored'));
+				}else{
+					return resolve('ok');
+				}
+			});
+		}).then(function(){
+			// 查看是否已經存在相同記錄並且沒有處理過
+			return new Promise(function(resolve, reject){
+				var sql = `
+					select * from my_alerts where
+					status != 2 and
+					sn_key = '${item.sn_key}' and
+					code = '${item.code}'
+				`;
+				conn.query(sql, function(err, ret){
+					if(err){
+						return reject(err);
+					}
+					if(ret && ret.length > 0 ){
+						return resolve('update');
+					}else{
+						return resolve('insert');
+					}
+				})
+			})
+			
+		}).then(function(_){
+			console.log('update or insert', _);
+			var sql;
+			if(_ == 'update'){
+				sql = `update my_alerts 
+					set
+					current=?,
+					time=?
+					where sn_key=?
+					and
+					code=?
+				`;
 			}else{
-				console.log('insert error done'.green);
+				sql = "insert into my_alerts set ?";
+			}
+			var obj = [
+				item.current,
+				new Date(),
+				item.sn_key,
+				item.code
+			];
+			conn.query(sql, _=='insert'?item:obj, function(err, results){
+				if(err){
+					console.log('insert error error', err);
+				}else{
+					console.log('insert error done'.green);
+				}
+				insertErrorBulk(data);
+			})
+		}).catch(function(err){
+			if(err){
+				console.log(err);
 			}
 			insertErrorBulk(data);
 		})
@@ -134,6 +198,21 @@ function insertErrorBulk(data){
 
 
 global.clients = {};
+
+function parseData(client){
+	console.log('start parse data');
+	if(/^<[^>]*>/.test(client.odata)){
+	   //如果有數據直接處理
+	   var omatch = client.odata.match(/^<[^>]*>/)[0];
+	   //console.log('omatch',omatch);
+	   let fullString = omatch;
+	   dealData(fullString.replace(/[<>]/g,""));
+	   client.odata = client.odata.replace(fullString,"");
+	   parseData(client);
+	}else{
+		console.log('no match');
+	}
+}
 
 var server = net.createServer(function(socket){
 
@@ -154,21 +233,10 @@ var server = net.createServer(function(socket){
 	socket.on('data', (data)=>{
 		var record_time = new Date();
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
-		// console.log('数据头信息和指令编号'.magenta, inputData);
-		// console.log(inputData)
-		if(/>/m.test(inputData)){
-			//表示已经结束，可以进行处理数据了
-			//dealData(socket.odata+inputData);
-			var fullString = clients[remoteAddress].odata+inputData;
-			var so = fullString.split(">");
-			fullString = so[0].replace("<","");
-			// console.log(fullString)
-			dealData(fullString);
-			clients[remoteAddress].odata = so[1] || "";
-		}else{
-			clients[remoteAddress].odata += inputData;
-
-		}
+		clients[remoteAddress].odata += inputData;
+		parseData(clients[remoteAddress]);
+		
+		
 
 		// if(cmdOrder == 2){
 		// 	//解析成对应的站号信息

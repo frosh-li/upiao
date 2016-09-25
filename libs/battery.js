@@ -9,7 +9,6 @@
 //     Capacity: 90 }
 module.exports = {
 	deal: function(str,record_time,sid){
-		console.log(1111);
 		var sn_keys = (function(str){
 			var ret = [];
 			str.forEach(function(item){
@@ -17,7 +16,6 @@ module.exports = {
 			})
 			return ret;
 		})(str);
-		console.log(sn_keys);
 
 		var data = [];
 		str.forEach(function(item){
@@ -36,12 +34,10 @@ module.exports = {
 				// charge_state: item.ChaState
 			})
 		});
-		console.log(data);
 		conn.query(`select * from tb_battery_module where sn_key in (${sn_keys.join(",")})`,function(err, res){
 			if(err){
 				return console.log(err);
 			}
-			console.log(res.length);
 			if(res&&res.length > 0){
 				insertBulkHistory(res, function(){
 					conn.query(`delete from tb_battery_module where sn_key in (${sn_keys.join(",")})`,function(err, res3){

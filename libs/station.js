@@ -10,7 +10,6 @@
 //   ChaState: 2 }
 module.exports = {
 	deal: function(str,record_time){
-		console.log(str);
 		var data = {
 			record_time:record_time,
 			sn_key:str.sn_key,
