@@ -53,6 +53,62 @@ var StationPar = [
 	"FloChaVol",
 ];
 
+var GroupPar = [
+	"sn_key",
+	"GroBatNum",
+	"CurRange",
+	"KI",
+	"ZeroCurADC",
+	"DisChaLim_R",
+	"DisChaLim_O",
+	"DisChaLim_Y",
+	"ChaLim_R",
+	"ChaLim_O",
+	"ChaLim_Y",
+	"MaxTem_R",
+	"MaxTem_O",
+	"MaxTem_Y",
+	"MinTem_R",
+	"MinTem_O",
+	"MinTem_Y",
+	"ChaCriterion",
+];
+
+var BatteryPar = [
+	"sn_key",
+	"KV",
+	"KT",
+	"KI",
+	"T0",
+	"ADC_T0",
+	"T1",
+	"ADC_T1",
+	"MaxU_R",
+	"MaxU_O",
+	"MaxU_Y",
+	"MinU_R",
+	"MinU_O",
+	"MinU_Y",
+	"MaxT_R",
+	"MaxT_O",
+	"MaxT_Y",
+	"MinT_R",
+	"MinT_O",
+	"MinT_Y",
+	"MaxR_R",
+	"MaxR_O",
+	"MaxR_Y",
+	"MaxDevU_R",
+	"MaxDevU_O",
+	"MaxDevU_Y",
+	"MaxDevT_R",
+	"MaxDevT_O",
+	"MaxDevT_Y",
+	"MaxDevR_R",
+	"MaxDevR_O",
+	"MacDevR_Y",
+];
+
 function getParam(ctype, body){
 	
 }
