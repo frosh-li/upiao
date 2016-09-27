@@ -28,7 +28,7 @@ module.exports = {
 		var data = [];
 		str.forEach(function(item){
 			data.push({
-				record_time:record_time,
+				record_time:formatData(record_time),
 				sn_key:item.sn_key,
 				gid:item.gid,
 				sid:sid,
@@ -65,32 +65,50 @@ module.exports = {
 	}
 }
 
+function buildMultiSql(data){
+
+    var bsql = [];
+    var ret = [];
+    data.forEach(function(item){
+        var tmp = [];
+        bsql = [];
+        for(var key in item){
+            if(item.hasOwnProperty(key)){
+            bsql.push(key);
+            tmp.push("'"+item[key]+"'");
+            }
+        }
+        ret.push("("+tmp.join(",")+")");
+    });
+    return {
+        values: bsql.join(","),
+        vals: ret.join(",")
+    };
+}
+
 function insertBulkHistory(data,cb){
-	var item = data.shift();
-	if(item){
-		conn.query('insert into tb_group_module_history set ?', item, function(err, results){
+    var sql = buildMultiSql(data);
+    var isql = `insert into tb_group_module_history(${sql.values}) values ${sql.vals} `;
+		conn.query(isql, function(err, results){
 			if(err){
 				console.log('insert group history error', err);
 			}else{
 				console.log('insert group history done');
 			}
-			insertBulkHistory(data, cb);
+			cb();
 		})
-	}else{
-		cb()
-	}
 }
 
 function insertBulk(data, table){
-	var item = data.shift();
-	if(item){
-		conn.query('insert into tb_group_module set ?', item, function(err, results){
+    var sql = buildMultiSql(data);
+    var isql = `insert into tb_group_module(${sql.values}) values ${sql.vals}`;
+    console.log(isql.green);
+		conn.query(isql, function(err, results){
 			if(err){
 				console.log('insert group error', err);
 			}else{
 				console.log('insert group done');
 			}
-			insertBulk(data);
+			//insertBulkHistory(data, cb);
 		})
-	}
 }

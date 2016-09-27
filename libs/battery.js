@@ -7,6 +7,9 @@
 //     DrvCurrent: 1.672,
 //     Eff_N: 300,
 //     Capacity: 90 }
+
+
+
 module.exports = {
 	deal: function(str,record_time,sid){
 		var sn_keys = (function(str){
@@ -20,7 +23,7 @@ module.exports = {
 		var data = [];
 		str.forEach(function(item){
 			data.push({
-				record_time:record_time,
+				record_time:formatData(record_time),
 				sn_key:item.sn_key,
 				bid:item.bid,
 				gid:item.gid,
@@ -44,7 +47,6 @@ module.exports = {
 						if(err){
 							return console.log(err);
 						}
-						console.log(res3,'res3');
 						insertBulk(data);
 					})
 				})
@@ -58,23 +60,52 @@ module.exports = {
 	}
 }
 
+function buildMultiSql(data){
+
+    var bsql = [];
+    var ret = [];
+    data.forEach(function(item){
+        var tmp = [];
+        bsql = [];
+        for(var key in item){
+            if(item.hasOwnProperty(key)){
+            bsql.push(key);
+            tmp.push("'"+item[key]+"'");
+            }
+        }
+        ret.push("("+tmp.join(",")+")");
+    });
+    return {
+        values: bsql.join(","),
+        vals: ret.join(",")
+    };
+}
+
 function insertBulkHistory(data,cb){
-	var item = data.shift();
-	if(item){
-		conn.query('insert into tb_battery_module_history set ?', item, function(err, results){
+    var sql = buildMultiSql(data);
+		conn.query(`insert into tb_battery_module_history(${sql.values}) values ${sql.vals}`, function(err, results){
 			if(err){
 				console.log('insert battery history error', err);
 			}else{
 				console.log('insert battery history done');
 			}
-			insertBulkHistory(data, cb);
+            cb();
+			//insertBulkHistory(data, cb);
 		})
-	}else{
-		cb()
-	}
 }
 
 function insertBulk(data, table){
+    var sql = buildMultiSql(data);
+    var isql = `insert into tb_battery_module(${sql.values}) values ${sql.vals}`;
+		conn.query(isql, function(err, results){
+			if(err){
+				console.log('insert battery error', err);
+			}else{
+				console.log('insert battery done');
+			}
+			//insertBulkHistory(data, cb);
+		})
+        /*
 	var item = data.shift();
 	if(item){
 		conn.query('insert into tb_battery_module set ?', item, function(err, results){
@@ -86,4 +117,5 @@ function insertBulk(data, table){
 			insertBulk(data);
 		})
 	}
+    */
 }

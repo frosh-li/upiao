@@ -16,7 +16,7 @@ colors.setTheme({
 // 加载配置文件
 const CONFIG = require("./config");
 global.conn = mysql.createConnection(CONFIG.db);
-
+global.formatData = require("./common/formatDate.js");
 global.clients = {};
 global.sockets = {};
 
