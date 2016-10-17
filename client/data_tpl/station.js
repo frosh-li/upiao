@@ -13,7 +13,9 @@ var data = `{
     "Voltage": {float|127.38|100},
     "Temperature": {float|34.2|30},
     "Humidity": {int|78|20},
-    "ChaState": {array|[0,1,2]}
+    "ChaState": {array|[0,1,2]},
+    "Lifetime":{int|50|50},
+    "Capacity":{int|50|50}
 }`;
 
 module.exports = data;

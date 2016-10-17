@@ -29,12 +29,24 @@ module.exports = {
 				gid:item.gid,
 				mid:item.bid,
 				sid:sid,
-				// Humi:str.Humidity,
-				PredictCapacity:item.DrvCurrent,
-				U:item.Voltage,
-				R:item.Resistor,
-				T:item.Temperature
-				// charge_state: item.ChaState
+				Humidity:item.Humidity,
+				HumCol:item.HumCol,
+				DrvCurrent:item.DrvCurrent,
+				DrvCol:item.DrvCol,
+				Voltage:item.Voltage,
+				VolCol:item.VolCol,
+				Resistor:item.Resistor,
+				ResCol:item.ResCol,
+				Temperature:item.Temperature,
+				TemCol:item.TemCol,
+				Capacity:item.Capacity,
+				LifeTime:item.LifeTime,
+				Dev_R:item.Dev_R,
+				Dev_U:item.Dev_U,
+				Dev_T:item.Dev_T,
+				DevRCol:item.DevRCol,
+				DevUCol:item.DevUCol,
+				DevTCol:item.DevTCol,
 			})
 		});
 		conn.query(`select * from tb_battery_module where sn_key in (${sn_keys.join(",")})`,function(err, res){

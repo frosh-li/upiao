@@ -64,7 +64,7 @@ function replaceData(input,index,gid){
             if(ctype === "array"){
                 let cindex = Math.floor(Math.random()*3);
                 stationTpl = stationTpl.replace(item, range[cindex]);
-                
+
             }
         }
 
@@ -75,9 +75,9 @@ function replaceData(input,index,gid){
             if(ctype === "float"){
                 odata = parseFloat(odata);
                 let newData = Math.random()*range+1;
-            
+
                 if(Math.ceil(Math.random()*2) === 1){
-                    odata += newData;            
+                    odata += newData;
                 }else{
                     odata -= newData;
                 }
@@ -88,9 +88,9 @@ function replaceData(input,index,gid){
 
             if(ctype === "int"){
                 let newData = Math.floor(Math.random()*range+1);
-                odata = parseInt(odata); 
+                odata = parseInt(odata);
                 if(Math.ceil(Math.random()*2) === 1){
-                    odata += newData;            
+                    odata += newData;
                 }else{
                     odata -= newData;
                 }
@@ -104,4 +104,4 @@ if(process.argv[4] === "test"){
     let out = genMock();
     console.log(out.replace(/<>/mg,""));
 }
-module.exports = genMock; 
+module.exports = genMock;

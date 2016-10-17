@@ -32,11 +32,18 @@ module.exports = {
 				sn_key:item.sn_key,
 				gid:item.gid,
 				sid:sid,
-				// Humi:str.Humidity,
-				GroupU:item.Voltage,
-				I:item.Current,
-				T:item.Temperature
-				// charge_state: item.ChaState
+				Humidity:item.Humidity,
+				HumCol:item.HumCol,
+				Voltage:item.Voltage,
+				VolCol:item.VolCol,
+				Current:item.Current,
+				CurCol:item.CurCol,
+				Temperature:item.Temperature,
+				TemCol:item.TemCol,
+				ChaState: item.ChaState,
+				Avg_U:item.Avg_U,
+				Avg_T:item.Avg_T,
+				Avg_R:item.Avg_R,
 			})
 		});
 

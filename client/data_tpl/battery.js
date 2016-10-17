@@ -7,7 +7,8 @@ var data = `{
     "Resistor": {float|8.47|8},
     "DrvCurrent": {float|1.673|2},
     "Eff_N": 300,
-    "Capacity": 90
+    "Lifetime":{int|50|50},
+    "Capacity":{int|50|50}
 }`;
 
 module.exports = data;

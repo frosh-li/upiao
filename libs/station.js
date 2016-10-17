@@ -13,12 +13,20 @@ module.exports = {
 		var data = {
 			record_time:record_time,
 			sn_key:str.sn_key,
+			GroBats:str.GroBats,
+			Groups:str.Groups,
 			sid:str.sid,
-			T:str.Temperature,
-			Humi:str.Humidity,
-			U:str.Voltage,
-			I:str.Current,
-			charge_state: str.ChaState
+			Temperature:str.Temperature,
+			TemCol:str.TemCol,
+			Humidity:str.Humidity,
+			HumCol:str.HumCol,
+			Voltage:str.Voltage,
+			VolCol:str.VolCol,
+			Current:str.Current,
+			CurCol:str.CurCol,
+			ChaState: str.ChaState,
+			Capacity:str.Capacity,
+			Lifetime:str.Lifetime
 		}
 		conn.query('select * from tb_station_module where sn_key=?',str.sn_key, function(err, res){
 			if(err){
@@ -37,7 +45,7 @@ module.exports = {
 							if(err){
 								return console.log('insert error', err);
 							}
-							console.log('insert done');
+							console.log('insert done', data.sn_key);
 						})
 					})
 				})
@@ -46,7 +54,7 @@ module.exports = {
 					if(err){
 						return console.log('insert error', err);
 					}
-					console.log('insert done');
+					console.log('insert done', data.sn_key);
 				})
 			}
 		})

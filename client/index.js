@@ -31,7 +31,7 @@ client.on('error', (error)=> {
 }
 
 var clients = process.argv[2] || 1;
-
+/*
 for(var i = 0 ; i < clients ; i++){
     (function(i){
     
@@ -39,3 +39,7 @@ for(var i = 0 ; i < clients ; i++){
 
     })(i)
 }
+*/
+['1151200002','1160612345','1160612346'].forEach(function(item){
+    startClient(item*10000);
+})

@@ -127,7 +127,7 @@ var errCodes = {
 			"AvgR",
 			"MaxDevR_R",
 			"MaxDevR_O",
-			"MacDevR_Y",
+			"MaxDevR_Y",
 		]
 	}
 };

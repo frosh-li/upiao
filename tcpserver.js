@@ -16,7 +16,7 @@ var server = net.createServer(function(socket){
 		console.log('some one connect'.green);
 	});
 	socket.on('error', (err)=>{
-		console.log(err.error);
+		console.trace(err.error,err);
 	});
 
 	socket.on('data', (data)=>{
