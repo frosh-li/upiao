@@ -48,14 +48,14 @@ module.exports = {
 				DevUCol:item.DevUCol,
 				DevTCol:item.DevTCol,
 			})
-		});
+		});/*
 		conn.query(`select * from tb_battery_module where sn_key in (${sn_keys.join(",")})`,function(err, res){
 			if(err){
 				return console.log(err);
 			}
 			if(res&&res.length > 0){
 				insertBulkHistory(res, function(){
-					conn.query(`delete from tb_battery_module where sn_key in (${sn_keys.join(",")})`,function(err, res3){
+					conn.query(`delete from tb_battery_module`,function(err, res3){
 						if(err){
 							return console.log(err);
 						}
@@ -68,6 +68,8 @@ module.exports = {
 
 			}
 		})
+        */
+        insertBulk(data);
 
 	}
 }
@@ -95,7 +97,7 @@ function buildMultiSql(data){
 
 function insertBulkHistory(data,cb){
     var sql = buildMultiSql(data);
-		conn.query(`insert into tb_battery_module_history(${sql.values}) values ${sql.vals}`, function(err, results){
+		conn.query(`insert into tb_battery_module_history (select * from tb_battery_module)`, function(err, results){
 			if(err){
 				console.log('insert battery history error', err);
 			}else{
@@ -108,7 +110,7 @@ function insertBulkHistory(data,cb){
 
 function insertBulk(data, table){
     var sql = buildMultiSql(data);
-    var isql = `insert into tb_battery_module(${sql.values}) values ${sql.vals}`;
+    var isql = `insert into tb_battery_module_history(${sql.values}) values ${sql.vals}`;
 		conn.query(isql, function(err, results){
 			if(err){
 				console.log('insert battery error', err);

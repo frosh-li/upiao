@@ -51,10 +51,10 @@ module.exports = {
 			if(err){
 				return console.log(err);
 			}
-
+            /*
 			if(res&&res.length > 0){
 				insertBulkHistory(res, function(){
-					conn.query(`delete from tb_group_module where sn_key in (${sn_keys.join(",")})`,function(err, res3){
+					conn.query(`delete from tb_group_module`,function(err, res3){
 						if(err){
 							return console.log(err);
 						}
@@ -66,7 +66,8 @@ module.exports = {
 			}else{
 				insertBulk(data);
 
-			}
+			}*/
+		    insertBulk(data);
 		})
 
 	}
@@ -108,7 +109,7 @@ function insertBulkHistory(data,cb){
 
 function insertBulk(data, table){
     var sql = buildMultiSql(data);
-    var isql = `insert into tb_group_module(${sql.values}) values ${sql.vals}`;
+    var isql = `insert into tb_group_module_history(${sql.values}) values ${sql.vals}`;
     console.log(isql.green);
 		conn.query(isql, function(err, results){
 			if(err){

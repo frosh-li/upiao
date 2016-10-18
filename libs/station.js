@@ -32,12 +32,13 @@ module.exports = {
 			if(err){
 				return console.log(err);
 			}
+            /*
 			if(res&&res.length > 0){
 				conn.query('insert into tb_station_module_history set ?', res, function(err, res2){
 					if(err){
 						return console.log(err);
 					}
-					conn.query('delete from tb_station_module where sn_key=?',str.sn_key, function(err, res3){
+					conn.query('delete from tb_station_module', function(err, res3){
 						if(err){
 							return console.log(err);
 						}
@@ -50,13 +51,14 @@ module.exports = {
 					})
 				})
 			}else{
-				conn.query('insert into tb_station_module set ?', data, function(err, results){
+            */
+				conn.query('insert into tb_station_module_history set ?', data, function(err, results){
 					if(err){
 						return console.log('insert error', err);
 					}
 					console.log('insert done', data.sn_key);
 				})
-			}
+			//}
 		})
 
 	}
