@@ -32,18 +32,18 @@ module.exports = {
 				sn_key:item.sn_key,
 				gid:item.gid,
 				sid:sid,
-				Humidity:item.Humidity,
-				HumCol:item.HumCol,
-				Voltage:item.Voltage,
-				VolCol:item.VolCol,
-				Current:item.Current,
-				CurCol:item.CurCol,
-				Temperature:item.Temperature,
-				TemCol:item.TemCol,
-				ChaState: item.ChaState,
-				Avg_U:item.Avg_U,
-				Avg_T:item.Avg_T,
-				Avg_R:item.Avg_R,
+				Humidity:item.Humidity || 0,
+				HumCol:item.HumCol || 0,
+				Voltage:item.Voltage || 0,
+				VolCol:item.VolCol || 0,
+				Current:item.Current || 0,
+				CurCol:item.CurCol || 0,
+				Temperature:item.Temperature|| 0,
+				TemCol:item.TemCol || 0,
+				ChaState: item.ChaState || 0,
+				Avg_U:item.Avg_U || 0,
+				Avg_T:item.Avg_T || 0,
+				Avg_R:item.Avg_R || 0,
 			})
 		});
 
@@ -110,10 +110,9 @@ function insertBulkHistory(data,cb){
 function insertBulk(data, table){
     var sql = buildMultiSql(data);
     var isql = `insert into tb_group_module_history(${sql.values}) values ${sql.vals}`;
-    console.log(isql.green);
 		conn.query(isql, function(err, results){
 			if(err){
-				console.log('insert group error', err);
+				console.log('insert group error', err, isql);
 			}else{
 				console.log('insert group done');
 			}

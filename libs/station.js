@@ -54,9 +54,9 @@ module.exports = {
             */
 				conn.query('insert into tb_station_module_history set ?', data, function(err, results){
 					if(err){
-						return console.log('insert error', err);
+						return console.log('insert station error', err);
 					}
-					console.log('insert done', data.sn_key);
+					console.log('insert station done', data.sn_key);
 				})
 			//}
 		})
