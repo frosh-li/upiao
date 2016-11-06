@@ -30,40 +30,54 @@ var dealData = function(str, socket){
 		let errorInsert = [];
 		if(StationErr){
 			let type="station";
-
-			for(let key in errCode[type]){
-				console.log(key, StationErr[key]);
-				if(StationErr[key] !== undefined){
-					let current = StationErr[errCode[type][key][0]];
-					let code = errCode[type][key][StationErr[key]];
-					errorInsert.push({
-						type:type,
-						sn_key:StationErr.sn_key,
-						code:code,
-						current:current
-					})
-				}
+			for(var key in StationErr.errors){
+				errorInsert.push({
+					type:type,
+					sn_key:StationErr.sn_key,
+					code:key,
+					current:StationErr.errors[key]
+				})
 			}
+			// for(let key in errCode[type]){
+			// 	console.log(key, StationErr[key]);
+			// 	if(StationErr[key] !== undefined){
+			// 		let current = StationErr[errCode[type][key][0]];
+			// 		let code = errCode[type][key][StationErr[key]];
+			// 		errorInsert.push({
+			// 			type:type,
+			// 			sn_key:StationErr.sn_key,
+			// 			code:code,
+			// 			current:current
+			// 		})
+			// 	}
+			// }
 
 		}
 
 		let GroupErr = str.GroupErr;
 		str.GroupErr && str.GroupErr.forEach(function(GroupErr){
 			let type="group";
-
-			for(let key in errCode[type]){
-				console.log(key, GroupErr[key]);
-				if(GroupErr[key] !== undefined){
-					let current = GroupErr[errCode[type][key][0]];
-					let code = errCode[type][key][GroupErr[key]];
-					errorInsert.push({
-						type:type,
-						sn_key:GroupErr.sn_key,
-						code:code,
-						current:current
-					})
-				}
+			for(var key in GroupErr.errors){
+				errorInsert.push({
+					type:type,
+					sn_key:GroupErr.sn_key,
+					code:key,
+					current:GroupErr.errors[key]
+				})
 			}
+			// for(let key in errCode[type]){
+			// 	console.log(key, GroupErr[key]);
+			// 	if(GroupErr[key] !== undefined){
+			// 		let current = GroupErr[errCode[type][key][0]];
+			// 		let code = errCode[type][key][GroupErr[key]];
+			// 		errorInsert.push({
+			// 			type:type,
+			// 			sn_key:GroupErr.sn_key,
+			// 			code:code,
+			// 			current:current
+			// 		})
+			// 	}
+			// }
 
 		})
 
@@ -74,20 +88,27 @@ var dealData = function(str, socket){
 
 
 			let type="battery";
-
-			for(let key in errCode[type]){
-				console.log(key, BatteryErr[key]);
-				if(BatteryErr[key] !== undefined){
-					let current = BatteryErr[errCode[type][key][0]];
-					let code = errCode[type][key][BatteryErr[key]];
-					errorInsert.push({
-						type:type,
-						sn_key:BatteryErr.sn_key,
-						code:code,
-						current:current
-					})
-				}
+			for(var key in BatteryErr.errors){
+				errorInsert.push({
+					type:type,
+					sn_key:BatteryErr.sn_key,
+					code:key,
+					current:BatteryErr.errors[key]
+				})
 			}
+			// for(let key in errCode[type]){
+			// 	console.log(key, BatteryErr[key]);
+			// 	if(BatteryErr[key] !== undefined){
+			// 		let current = BatteryErr[errCode[type][key][0]];
+			// 		let code = errCode[type][key][BatteryErr[key]];
+			// 		errorInsert.push({
+			// 			type:type,
+			// 			sn_key:BatteryErr.sn_key,
+			// 			code:code,
+			// 			current:current
+			// 		})
+			// 	}
+			// }
 
 		})
 		console.log(errorInsert);

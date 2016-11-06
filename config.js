@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 配置文件
  * 数据库配置
  */
@@ -7,7 +7,7 @@ module.exports = {
 	db:{
 		host:"127.0.0.1",
 		user:"root",
-		password:"",
+		password:"bmsroot",
 		database: "db_bms_english4",
 		multipleStatements:true,
 		dateStrings:true

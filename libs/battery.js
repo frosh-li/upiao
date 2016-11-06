@@ -40,7 +40,7 @@ module.exports = {
 				Temperature:item.Temperature || 0,
 				TemCol:item.TemCol || 0,
 				Capacity:item.Capacity || 0,
-				LifeTime:item.LifeTime || 0,
+				Lifetime:item.Lifetime || 0,
 				Dev_R:item.Dev_R || 0,
 				Dev_U:item.Dev_U || 0,
 				Dev_T:item.Dev_T || 0,
