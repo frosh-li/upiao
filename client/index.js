@@ -40,6 +40,6 @@ for(var i = 0 ; i < clients ; i++){
     })(i)
 }
 */
-['1151200002','1160612345','1160612346'].forEach(function(item){
+['1160612346'].forEach(function(item){
     startClient(item*10000);
 })

@@ -2,6 +2,7 @@
 const net = require("net");
 const CONFIG = require("./config");
 var parse = require("./common/parse.js");
+global.watchSite = require('./common/watchSite');
 var parseData = parse.parseData;
 
 var server = net.createServer(function(socket){
@@ -14,8 +15,10 @@ var server = net.createServer(function(socket){
 	socket.on('connect', ()=>{
 		clients[remoteAddress].odata = ""
 		console.log('some one connect'.green);
+
 	});
 	socket.on('error', (err)=>{
+		watchSite.disConnectSite(socket.sn_key);
 		console.trace(err.error,err);
 	});
 
@@ -40,6 +43,7 @@ var server = net.createServer(function(socket){
 			delete sockets[socket.sn_key];
 		}
 		console.log('client disconnect'.warn);
+		watchSite.disConnectSite(socket.sn_key);
 		showConnections();
 		return;
 	})
