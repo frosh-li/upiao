@@ -8,7 +8,14 @@ var errCode = require('../libs/errorConfig');
 
 var dealData = function(str, socket){
 	var record_time = new Date();
-	str = JSON.parse(str);
+	try{
+		str = JSON.parse(str);	
+	}catch(e){
+		console.log('error---------------');
+		console.log(str);
+		return;
+	}
+	
 	// console.log(str);
 	if(str&&str.StationData){
 		station.deal(str.StationData, record_time);

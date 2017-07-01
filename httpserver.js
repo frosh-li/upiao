@@ -13,6 +13,11 @@ var routes = [
 		method:"POST",
 		path:"/setparam",
 		func:SetParam
+	},
+	{
+		method:"POST",
+		path:"/updateServer",
+		func:UpdateServer
 	}
 ];
 const server = http.createServer((req, res) => {
@@ -48,6 +53,13 @@ const server = http.createServer((req, res) => {
 		cfunc.call(null, req, res);
 	})
 });
+const { exec } = require('child_process');
+function UpdateServer(req, res){
+	exec("git pull", {cwd:"/Applications/XAMPP/xamppfiles/htdocs"}, function(err, stdout, stderr){
+		console.log('git update',err, stdout, stderr);
+		return res.json({status:200});
+	})
+}
 
 function GetParam(req, res){
 	res.json({status:200, msg:"get param", query: req.query});
