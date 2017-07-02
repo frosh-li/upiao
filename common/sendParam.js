@@ -54,7 +54,6 @@ var StationPar = [
 ];
 
 var GroupPar = [
-	"sn_key",
 	"GroBatNum",
 	"CurRange",
 	"KI",
@@ -75,7 +74,6 @@ var GroupPar = [
 ];
 
 var BatteryPar = [
-	"sn_key",
 	"KV",
 	"KT",
 	"KI",
@@ -116,8 +114,38 @@ function getParam(ctype, body){
 module.exports = function(ctype, body){
 	var ret = {};
 	if(ctype == "StationPar"){
-		StationPar.forEach(function(item){
-			ret[item] = body[item];	
+		ret.StationPar = {};
+		StationPar.forEach(function(item,index){
+			// console.log(item, index);
+			var cindex = (index-2) <10 ?("0"+(index-2)):(index-2+"");
+			if(index < 2){
+				ret.StationPar[item] = body[item];
+				
+			}else{
+				if(body[item])
+					ret.StationPar[cindex] = parseFloat(body[item]);
+			}
+			//ret.StationPar[cindex] = body[item];	
+		})
+	}
+	if(ctype == "GroupPar"){
+		ret.GroupPar = {};
+		GroupPar.forEach(function(item,index){
+			// console.log(item, index);
+			var cindex = (index) <10 ?("0"+(index)):(index+"");
+			if(body[item])
+				ret.GroupPar[cindex] = parseFloat(body[item]);
+			
+		})
+	}
+	if(ctype == "BatteryPar"){
+		ret.BatteryPar = {};
+		BatteryPar.forEach(function(item,index){
+			// console.log(item, index);
+			var cindex = (index) <10 ?("0"+(index)):(index+"");
+			if(body[item])
+				ret.BatteryPar[cindex] = parseFloat(body[item]);
+			
 		})
 	}
 	var writeData = JSON.stringify(ret);

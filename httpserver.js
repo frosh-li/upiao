@@ -70,7 +70,7 @@ function SetParam(req, res){
 		return res.json({status:400, msg:"method need to be post"});
 	}
 	sendParamHard(req.query.type, req.body);
-	res.json({status:200,msg:"set param done", query: req.query,body:req.body});
+	res.json({response:{code:0,msg:"set param done", query: req.query,body:req.body}});
 }
 
 server.on('clientError', (err, socket) => {

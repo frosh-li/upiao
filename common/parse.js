@@ -22,7 +22,15 @@ var dealData = function(str, socket){
 		if(str.StationData && str.StationData.sn_key){
 			socket.sn_key = str.StationData.sn_key;
 			sockets[socket.sn_key] = socket;
+			console.log('parse data from ',socket.sn_key)
+		}else{
+			console.log('can not parse data')
 		}
+	}
+
+	if(str && str.StationPar){
+		// 如果是参数，处理参数
+		console.log(str);
 	}
 	if(str && str.GroupData){
 		group.deal(str.GroupData,record_time,str.StationData.sid);
@@ -32,7 +40,7 @@ var dealData = function(str, socket){
 	}
 
 	if(str && (str.StationErr || str.GroupErr || str.BatteryErr)){
-		console.log('has error'.green);
+		// console.log('has error'.green);
 		let StationErr = str.StationErr;
 		let errorInsert = [];
 		if(StationErr){
@@ -118,7 +126,7 @@ var dealData = function(str, socket){
 			// }
 
 		})
-		console.log(errorInsert);
+		// console.log(errorInsert);
 		if(errorInsert.length > 0){
 			insertErrorBulk(errorInsert);
 		}
@@ -167,7 +175,7 @@ function insertErrorBulk(data){
 			})
 			
 		}).then(function(_){
-			console.log('update or insert', _);
+			// console.log('update or insert', _);
 			var sql;
 			if(_ == 'update'){
 				sql = `update my_alerts 
@@ -191,7 +199,7 @@ function insertErrorBulk(data){
 				if(err){
 					console.log('insert error error', err);
 				}else{
-					console.log('insert error done'.green);
+					// console.log('insert error done'.green);
 				}
 				insertErrorBulk(data);
 			})
@@ -206,7 +214,7 @@ function insertErrorBulk(data){
 
 
 function parseData(client, socket){
-	console.log('start parse data');
+	// console.log('start parse data');
 	if(/^<[^>]*>/.test(client.odata)){
 	   //如果有數據直接處理
 	   var omatch = client.odata.match(/^<[^>]*>/)[0];
@@ -216,7 +224,7 @@ function parseData(client, socket){
 	   client.odata = client.odata.replace(fullString,"");
 	   parseData(client, socket);
 	}else{
-		console.log('no match');
+		// console.log('no match');
 	}
 }
 

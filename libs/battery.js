@@ -101,7 +101,7 @@ function insertBulkHistory(data,cb){
 			if(err){
 				console.log('insert battery history error', err);
 			}else{
-				console.log('insert battery history done');
+				// console.log('insert battery history done');
 			}
             cb();
 			//insertBulkHistory(data, cb);
@@ -115,7 +115,7 @@ function insertBulk(data, table){
 			if(err){
 				console.log('insert battery error', err);
 			}else{
-				console.log('insert battery done');
+				//console.log('insert battery done');
 			}
 			//insertBulkHistory(data, cb);
 		})

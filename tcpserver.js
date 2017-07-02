@@ -6,18 +6,20 @@ global.watchSite = require('./common/watchSite');
 var parseData = parse.parseData;
 
 var server = net.createServer(function(socket){
-	socket.setTimeout(30000);
+	socket.setTimeout(60000);
 	var remoteAddress = socket.remoteAddress;
 	console.log('socket remote address is'.magenta, remoteAddress.green);
 	console.log('new client connected'.green);
 	clients[remoteAddress] = {odata: ""};
 	showConnections();
+	socket.setKeepAlive(true);
 	socket.on('connect', ()=>{
 		clients[remoteAddress].odata = "";
 		console.log(new Date(),'some one connect'.green);
 
 	});
 	socket.on('error', (err)=>{
+		socket.destroy();
 		watchSite.disConnectSite(socket.sn_key);
 		console.trace(err.error,err);
 	});

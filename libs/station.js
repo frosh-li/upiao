@@ -57,7 +57,7 @@ module.exports = {
 					if(err){
 						return console.log('insert station error', err);
 					}
-					console.log('insert station done', data.sn_key);
+					//console.log('insert station done', data.sn_key);
 				})
 			//}
 		})

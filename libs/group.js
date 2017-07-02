@@ -101,7 +101,7 @@ function insertBulkHistory(data,cb){
 			if(err){
 				console.log('insert group history error', err);
 			}else{
-				console.log('insert group history done');
+				//console.log('insert group history done');
 			}
 			cb();
 		})
@@ -114,7 +114,7 @@ function insertBulk(data, table){
 			if(err){
 				console.log('insert group error', err, isql);
 			}else{
-				console.log('insert group done');
+				//console.log('insert group done');
 			}
 			//insertBulkHistory(data, cb);
 		})
