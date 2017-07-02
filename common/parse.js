@@ -148,7 +148,8 @@ function insertErrorBulk(data){
 					return reject(err);
 				}
 				if(ret && ret.length > 0){
-					return reject(new Error('ignored'));
+					// console.log('ignored');
+					return reject('ignored');
 				}else{
 					return resolve('ok');
 				}
@@ -205,7 +206,12 @@ function insertErrorBulk(data){
 			})
 		}).catch(function(err){
 			if(err){
-				console.log(err);
+				if(err.messeage == "ignored"){
+					return;
+				}else{
+					console.log(err);	
+				}
+				
 			}
 			insertErrorBulk(data);
 		})
