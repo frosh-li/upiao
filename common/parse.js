@@ -40,7 +40,7 @@ var dealData = function(str, socket){
 	}
 
 	if(str && (str.StationErr || str.GroupErr || str.BatteryErr)){
-		// console.log('has error'.green);
+		console.log(str.StationErr);
 		let StationErr = str.StationErr;
 		let errorInsert = [];
 		if(StationErr){

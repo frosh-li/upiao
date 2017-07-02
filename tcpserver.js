@@ -66,7 +66,7 @@ server.listen(CONFIG.tcpserver);
 function showConnections(){
 	server.getConnections(function(err, num){
 		if(!err){
-			console.log(new Date(),'current connections is'.magenta, num.toString().green);
+			console.log(new Date(),'current connections is'.magenta, num.toString().green,clients);
 		}else{
 			console.log(err);
 		}
