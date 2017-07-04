@@ -18,6 +18,16 @@ var routes = [
 		method:"POST",
 		path:"/updateServer",
 		func:UpdateServer
+	},
+	{
+		method:"GET",
+		path:"/allclients",
+		func:AllClients
+	},
+	{
+		method:"POST",
+		path:"/irc",
+		func:ircollect
 	}
 ];
 const server = http.createServer((req, res) => {
@@ -71,6 +81,38 @@ function SetParam(req, res){
 	}
 	sendParamHard(req.query.type, req.body);
 	res.json({response:{code:0,msg:"set param done", query: req.query,body:req.body}});
+}
+
+// <{"WhatTime": {  "sn_key":"11611061050000",  "sid": 9 }}>  请求时间
+function ircollect(req, res){
+	console.log('start to 内阻采集');
+	console.log(req.body.batterys);
+  	var batterys = req.body.batterys.split(",");
+	var sn_key = batterys[0].substring(0,10)+"0000";
+		console.log('开始请求内阻采集',sn_key);
+	console.log(sockets[sn_key]);
+	if(sockets[sn_key]){
+		console.log('开始请求内阻采集',sn_key);
+		console.log('batterys', batterys);
+		batterys.forEach(function(bat){
+			var towrite = `<{"FuncSel":{"Operator": 130, "00":${parseInt(bat.substring(10,12))},"01":${parseInt(bat.substring(12,14))},"02":21,"03":0}}>`;
+			// 00 第一组
+			// 01 组内编号
+			// 02 操作码 21
+			// 03 0
+			console.log(towrite.toString())
+			sockets[sn_key].write(towrite.toString());
+			
+		})
+	}	
+	res.json({
+		status:200,
+		batterys: req.body.batterys.split(",")
+	})
+}
+
+function AllClients(req, res){
+	res.json({status:200, msg:"get allclient", clients: clients});
 }
 
 server.on('clientError', (err, socket) => {

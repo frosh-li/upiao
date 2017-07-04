@@ -19,6 +19,14 @@ var server = net.createServer(function(socket){
 
 	});
 	socket.on('error', (err)=>{
+		for(var key in clients){
+			if(socket == clients[key]){
+				delete clients[key];
+			}
+		}
+		if(socket && socket.sn_key){
+			delete sockets[socket.sn_key];
+		}
 		socket.destroy();
 		watchSite.disConnectSite(socket.sn_key);
 		console.trace(err.error,err);
@@ -36,6 +44,16 @@ var server = net.createServer(function(socket){
 	})
 
 	socket.on('timeout', ()=>{
+
+		for(var key in clients){
+			if(socket == clients[key]){
+				delete clients[key];
+			}
+		}
+		if(socket && socket.sn_key){
+			delete sockets[socket.sn_key];
+		}
+
 		socket.destroy();
 		watchSite.disConnectSite(socket.sn_key);
 		console.log(new Date(),'socket timeout'.warn,socket.sn_key);
@@ -83,7 +101,7 @@ function clearSites(){
 	conn.query('delete from tb_station_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_group_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_battery_module where record_time'+"<'"+nowString+"'");
-	conn.query('update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<'+"<'"+nowClearCautionString+"'")
+	conn.query('update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<"'+nowClearCautionString+"'")
 }
 
 setInterval(clearSites,5000);

@@ -28,6 +28,28 @@ var dealData = function(str, socket){
 		}
 	}
 
+	if(str && str.ResistorVal){
+		console.log('内阻返回值');
+		console.log(str);
+		// { ResistorVal: [ { sn_key: '11611061050101', Resistor: 10.6 } ] }
+		let R = str.ResistorVal[0].Resistor;
+		let sn_key = str.ResistorVal[0].sn_key;
+		var obj = {
+			stationid:sn_key.substring(0,10) + "0000",
+			groupid:sn_key.substring(10,12),
+			batteryid:sn_key.substring(12,14),
+			R:R
+		}
+		conn.query(`insert into my_collect set ?`, obj, function(err, res){
+			if(err){
+				console.log(err);
+			}else{
+				console.log('内阻采集成功', obj);
+			}
+		});
+	}
+
+	
 	if(str && str.StationPar){
 		// 如果是参数，处理参数
 		console.log(str);
