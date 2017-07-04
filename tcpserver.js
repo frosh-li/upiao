@@ -101,7 +101,7 @@ function clearSites(){
 	conn.query('delete from tb_station_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_group_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_battery_module where record_time'+"<'"+nowString+"'");
-	conn.query('update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<"'+nowClearCautionString+"'")
+	conn.query('update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<"'+nowClearCautionString+'"')
 }
 
 setInterval(clearSites,5000);
