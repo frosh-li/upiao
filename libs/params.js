@@ -46,6 +46,8 @@ function updateParams(sn_key, table, Params, datas){
 				conn.query(`update tb_${table}_param set ${updateStr.join(",")} where sn_key=${sn_key}`, updateObj, (err, results)=>{
 					if(err){
 						console.log(err);
+					}else{
+						console.log(`update params for ${table} ${sn_key} success`);
 					}
 					return resolve(1);
 				});
@@ -63,6 +65,8 @@ function updateParams(sn_key, table, Params, datas){
 				conn.query(`insert into tb_${table}_param set ?`, updateObj, (err, results)=>{
 					if(err){
 						console.log(err);
+					}else{
+						console.log(`insert params for ${table} ${sn_key} success`);
 					}
 					return resolve(1);
 				});
