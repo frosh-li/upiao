@@ -17,6 +17,7 @@ function update(datas){
 }
 
 function updateParams(sn_key, table, Params, datas){
+	console.log('开始更新参数',sn_key, table,Params);
 	new Promise((resolve, reject)=>{
 		conn.query(`select * from tb_${table}_param where sn_key=${sn_key} limit 1`, (err, results, fields)=>{
 			if(err){
