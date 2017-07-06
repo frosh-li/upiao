@@ -10,7 +10,7 @@
  * @return {[type]}       [description]
  */
 function update(datas){
-	let sn_key = datas.StationPar.sn_key;
+	let sn_key = +datas.StationPar.sn_key;
 	updateParams(sn_key,"station", "StationPar",datas);
 	updateParams(sn_key,"group", "GroupPar",datas);
 	updateParams(sn_key,"battery", "BatteryPar",datas);
@@ -36,7 +36,7 @@ function updateParams(sn_key, table, Params, datas){
 		if(ctype == 1){
 			return new Promise((resolve, reject)=>{
 				var updateObj = {};
-				updateObj.sn_key = sn_key;
+				updateObj.sn_key = +sn_key;
 				let updateStr = [];
 				fields.forEach(function(item){
 					if(item.name == "sn_key"){
@@ -60,7 +60,7 @@ function updateParams(sn_key, table, Params, datas){
 		}else{
 			return new Promise((resolve, reject)=>{
 				var updateObj = {};
-				updateObj.sn_key = sn_key;
+				updateObj.sn_key = +sn_key;
 				fields.forEach(function(item){
 					if(item.name == "sn_key"){
 						return;
