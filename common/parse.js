@@ -6,6 +6,8 @@ var battery = require('../libs/battery');
 
 var errCode = require('../libs/errorConfig');
 
+var params = require("../libs/params");
+
 var dealData = function(str, socket){
 	var record_time = new Date();
 	try{
@@ -53,6 +55,7 @@ var dealData = function(str, socket){
 	if(str && str.StationPar){
 		// 如果是参数，处理参数
 		console.log(str);
+		params.update(str);
 	}
 	if(str && str.GroupData){
 		group.deal(str.GroupData,record_time,str.StationData.sid);
