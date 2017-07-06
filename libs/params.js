@@ -19,20 +19,24 @@ function update(datas){
 function updateParams(sn_key, table, Params, datas){
 	console.log('开始更新参数',sn_key, table,Params);
 	new Promise((resolve, reject)=>{
+		let sql = `select * from tb_${table}_param where sn_key=${sn_key} limit 1`;
+		console.log(sql);
 		conn.query(`select * from tb_${table}_param where sn_key=${sn_key} limit 1`, (err, results, fields)=>{
 			if(err){
 				return reject(err);
 			}
 			if(results.length == 0){
 				// insert
-				return resolve(fields,0);
+				return resolve({fields:fields,ctype:0});
 				
 			}else{
 				// update
-				return resolve(fields,1);
+				return resolve({fields:fields,ctype:1});
 			}
 		})
-	}).then((fields, ctype)=>{
+	}).then((_)=>{
+		var fields = _.fields,
+				ctype  = _.ctype;
 		if(ctype == 1){
 			return new Promise((resolve, reject)=>{
 				var updateObj = {};
