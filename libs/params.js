@@ -35,13 +35,15 @@ function updateParams(sn_key, table, Params, datas){
 			return new Promise((resolve, reject)=>{
 				var updateObj = {};
 				updateObj.sn_key = sn_key;
+				let updateStr = [];
 				fields.forEach(function(item){
 					if(item == "sn_key"){
 						return;
 					}
+					updateStr.push(item+"=?");
 					updateObj[item] = datas[Params][item];
 				});
-				conn.query(`update tb_${table}_param set ? where sn_key=${sn_key}`, updateObj, (err, results)=>{
+				conn.query(`update tb_${table}_param set ${updateStr.join(",")} where sn_key=${sn_key}`, updateObj, (err, results)=>{
 					if(err){
 						console.log(err);
 					}
