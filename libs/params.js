@@ -40,7 +40,7 @@ function updateParams(sn_key, table, Params, datas){
 		if(ctype == 1){
 			return new Promise((resolve, reject)=>{
 				var updateObj = {};
-				updateObj.sn_key = +sn_key;
+				// updateObj.sn_key = +sn_key;
 				let updateStr = [];
 				fields.forEach(function(item){
 					if(item.name == "sn_key"){
