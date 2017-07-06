@@ -11,12 +11,12 @@
  */
 function update(datas){
 	let sn_key = datas.StationPar.sn_key;
-	updateParams(sn_key,"station", "StationPar");
-	updateParams(sn_key,"group", "GroupPar");
-	updateParams(sn_key,"battery", "BatteryPar");
+	updateParams(sn_key,"station", "StationPar",datas);
+	updateParams(sn_key,"group", "GroupPar",datas);
+	updateParams(sn_key,"battery", "BatteryPar",datas);
 }
 
-function updateParams(sn_key, table, Params){
+function updateParams(sn_key, table, Params, datas){
 	new Promise((resolve, reject)=>{
 		conn.query(`select * from tb_${table}_param where sn_key=${sn_key} limit 1`, (err, results, fields)=>{
 			if(err){
