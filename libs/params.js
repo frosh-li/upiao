@@ -23,7 +23,7 @@ function updateParams(sn_key, table, Params, datas){
 			if(err){
 				return reject(err);
 			}
-			if(results.length == 0){
+			if(results.length == 1){
 				// update
 				return resolve(fields,0);
 			}else{
