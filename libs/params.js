@@ -39,11 +39,11 @@ function updateParams(sn_key, table, Params, datas){
 				updateObj.sn_key = sn_key;
 				let updateStr = [];
 				fields.forEach(function(item){
-					if(item == "sn_key"){
+					if(item.name == "sn_key"){
 						return;
 					}
-					updateStr.push(item+"=?");
-					updateObj[item] = datas[Params][item];
+					updateStr.push(item.name+"=?");
+					updateObj[item.name] = datas[Params][item.name];
 				});
 				let sql = `update tb_${table}_param set ${updateStr.join(",")} where sn_key=${sn_key}`;
 				console.log(sql);
@@ -62,10 +62,10 @@ function updateParams(sn_key, table, Params, datas){
 				var updateObj = {};
 				updateObj.sn_key = sn_key;
 				fields.forEach(function(item){
-					if(item == "sn_key"){
+					if(item.name == "sn_key"){
 						return;
 					}
-					updateObj[item] = datas[Params][item];
+					updateObj[item.name] = datas[Params][item.name];
 				});
 				let sql = `insert into tb_${table}_param set ?`;
 				console.log(sql);
