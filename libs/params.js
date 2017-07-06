@@ -23,16 +23,17 @@ function updateParams(sn_key, table, Params, datas){
 			if(err){
 				return reject(err);
 			}
-			if(results.length == 1){
-				// update
-				return resolve(fields,0);
-			}else{
+			if(results.length == 0){
 				// insert
+				return resolve(fields,0);
+				
+			}else{
+				// update
 				return resolve(fields,1);
 			}
 		})
 	}).then((fields, ctype)=>{
-		if(ctype == 0){
+		if(ctype == 1){
 			return new Promise((resolve, reject)=>{
 				var updateObj = {};
 				updateObj.sn_key = sn_key;
@@ -46,6 +47,7 @@ function updateParams(sn_key, table, Params, datas){
 				});
 				let sql = `update tb_${table}_param set ${updateStr.join(",")} where sn_key=${sn_key}`;
 				console.log(sql);
+				console.log(updateObj);
 				conn.query(sql, updateObj, (err, results)=>{
 					if(err){
 						console.log(err);
@@ -65,6 +67,9 @@ function updateParams(sn_key, table, Params, datas){
 					}
 					updateObj[item] = datas[Params][item];
 				});
+				let sql = `insert into tb_${table}_param set ?`;
+				console.log(sql);
+				console.log(updateObj);
 				conn.query(`insert into tb_${table}_param set ?`, updateObj, (err, results)=>{
 					if(err){
 						console.log(err);
