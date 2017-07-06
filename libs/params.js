@@ -44,7 +44,9 @@ function updateParams(sn_key, table, Params, datas){
 					updateStr.push(item+"=?");
 					updateObj[item] = datas[Params][item];
 				});
-				conn.query(`update tb_${table}_param set ${updateStr.join(",")} where sn_key=${sn_key}`, updateObj, (err, results)=>{
+				let sql = `update tb_${table}_param set ${updateStr.join(",")} where sn_key=${sn_key}`;
+				console.log(sql);
+				conn.query(sql, updateObj, (err, results)=>{
 					if(err){
 						console.log(err);
 					}else{
