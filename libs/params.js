@@ -39,15 +39,15 @@ function updateParams(sn_key, table, Params, datas){
 				ctype  = _.ctype;
 		if(ctype == 1){
 			return new Promise((resolve, reject)=>{
-				var updateObj = {};
+				var updateObj = [];
 				// updateObj.sn_key = +sn_key;
 				let updateStr = [];
 				fields.forEach(function(item){
 					if(item.name == "sn_key"){
 						return;
 					}
-					updateStr.push(item.name+"=:"+item.name);
-					updateObj[item.name] = datas[Params][item.name];
+					updateStr.push(item.name+"=?");
+					updateObj.push(datas[Params][item.name]);
 				});
 				let sql = `update tb_${table}_param set ${updateStr.join(",")} where sn_key=${sn_key}`;
 				console.log(sql);
