@@ -26,7 +26,8 @@ module.exports = {
 			CurCol:str.CurCol,
 			ChaState: str.ChaState,
 			Capacity:str.Capacity,
-			Lifetime:str.Lifetime
+			Lifetime:str.Lifetime,
+			CurSensor:str.CurSensor
 		}
 		watchSite.onConnectSite(str.sn_key);
 		conn.query('select * from tb_station_module where sn_key=?',str.sn_key, function(err, res){
