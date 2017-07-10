@@ -83,6 +83,27 @@ function SetParam(req, res){
 	res.json({response:{code:0,msg:"set param done", query: req.query,body:req.body}});
 }
 
+
+function stepCol(batterys,sn_key){
+	var bat = batterys.shift();
+	if(!bat){
+		console.log('所以采集完成',sn_key);
+		return;
+	}
+	var towrite = `<{"FuncSel":{"Operator": 130, "00":${parseInt(bat.substring(10,12))},"01":${parseInt(bat.substring(12,14))},"02":21,"03":0}}>`;
+		// 00 第一组
+		// 01 组内编号
+		// 02 操作码 21
+		// 03 0
+
+		console.log(towrite.toString())
+		sockets[sn_key].write(towrite.toString());	
+		setTimeout(function(){
+			stepCol(batterys, sn_key);	
+		}, 2500);
+		
+}
+
 // <{"WhatTime": {  "sn_key":"11611061050000",  "sid": 9 }}>  请求时间
 function ircollect(req, res){
 	console.log('start to 内阻采集');
@@ -94,21 +115,12 @@ function ircollect(req, res){
 	if(sockets[sn_key]){
 		console.log('开始请求内阻采集',sn_key);
 		console.log('batterys', batterys);
-		batterys.forEach(function(bat){
-			var towrite = `<{"FuncSel":{"Operator": 130, "00":${parseInt(bat.substring(10,12))},"01":${parseInt(bat.substring(12,14))},"02":21,"03":0}}>`;
-			// 00 第一组
-			// 01 组内编号
-			// 02 操作码 21
-			// 03 0
-			((towrite)=>{
-				setTimeout(()=>{
-					// 电池采集时间间隔设置为2500秒
-					console.log(towrite.toString())
-					sockets[sn_key].write(towrite.toString());	
-				}),2500	
-			})(towrite);
+
+		stepCol(batterys, sn_key);
+		// batterys.forEach(function(bat){
+			
 	
-		})
+		// })
 	}	
 	res.json({
 		status:200,
