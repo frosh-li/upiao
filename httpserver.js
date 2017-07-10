@@ -100,9 +100,12 @@ function ircollect(req, res){
 			// 01 组内编号
 			// 02 操作码 21
 			// 03 0
-			console.log(towrite.toString())
-			sockets[sn_key].write(towrite.toString());
-			
+			(setTimeout(()=>{
+				// 电池采集时间间隔设置为2500秒
+				console.log(towrite.toString())
+				sockets[sn_key].write(towrite.toString());	
+			}),2500)(towrite);
+	
 		})
 	}	
 	res.json({
