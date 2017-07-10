@@ -28,8 +28,11 @@ var server = net.createServer(function(socket){
 			delete sockets[socket.sn_key];
 		}
 		socket.destroy();
+
 		watchSite.disConnectSite(socket.sn_key);
+
 		console.trace(err.error,err);
+		socket.end();
 	});
 
 	socket.on('data', (data)=>{
@@ -57,6 +60,7 @@ var server = net.createServer(function(socket){
 		socket.destroy();
 		watchSite.disConnectSite(socket.sn_key);
 		console.log(new Date(),'socket timeout'.warn,socket.sn_key);
+		socket.end();
 	});
 
 	socket.on('end', (data)=>{
