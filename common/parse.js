@@ -218,9 +218,9 @@ function insertErrorBulk(data){
 			var obj = [
 				item.current,
 				new Date(),
+				item.limit,
 				item.sn_key,
-				item.code,
-				item.limit
+				item.code
 			];
 			conn.query(sql, _=='insert'?item:obj, function(err, results){
 				if(err){
