@@ -72,7 +72,7 @@ var dealData = function(str, socket){
 			let type="station";
 			for(var key in StationErr.errors){
 				if(key.startsWith("Limit")){
-					return;
+					continue;
 				}
 				errorInsert.push({
 					type:type,
@@ -104,7 +104,7 @@ var dealData = function(str, socket){
 			let type="group";
 			for(var key in GroupErr.errors){
 				if(key.startsWith("Limit")){
-					return;
+					continue;
 				}
 				errorInsert.push({
 					type:type,
@@ -127,7 +127,7 @@ var dealData = function(str, socket){
 			let type="battery";
 			for(var key in BatteryErr.errors){
 				if(key.startsWith("Limit")){
-					return;
+					continue;
 				}
 				errorInsert.push({
 					type:type,
@@ -154,6 +154,7 @@ var dealData = function(str, socket){
 
 		})
 		// console.log(errorInsert);
+		console.log('报警条数为',errorInsert.length);
 		if(errorInsert.length > 0){
 			insertErrorBulk(errorInsert);
 		}
@@ -163,6 +164,7 @@ var dealData = function(str, socket){
 
 function insertErrorBulk(data){
 	var item = data.shift();
+	//console.log(item)
 	if(item){
 		new Promise(function(resolve, reject){
 			// 如果是忽略狀態不加入數據
