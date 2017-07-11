@@ -79,6 +79,7 @@ var dealData = function(str, socket){
 					sn_key:StationErr.sn_key,
 					code:key,
 					current:StationErr.errors[key],
+					time:new Date(),
 					climit:StationErr.errors["Limit_"+key] || 0
 				})
 			}
@@ -109,6 +110,7 @@ var dealData = function(str, socket){
 					type:type,
 					sn_key:GroupErr.sn_key,
 					code:key,
+					time:new Date(),
 					current:GroupErr.errors[key],
 					climit:GroupErr.errors["Limit_"+key] || 0
 				})
@@ -131,6 +133,7 @@ var dealData = function(str, socket){
 					type:type,
 					sn_key:BatteryErr.sn_key,
 					code:key,
+					time:new Date(),
 					current:BatteryErr.errors[key],
 					climit:BatteryErr.errors["Limit_"+key] || 0
 				})
