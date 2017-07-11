@@ -202,7 +202,7 @@ function insertErrorBulk(data){
 		}).then(function(_){
 			// console.log('update or insert', _);
 			var sql;
-			if(_ == 'update'){
+			if(_ != 'insert'){
 				sql = `update my_alerts 
 					set
 					current=?,
