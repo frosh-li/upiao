@@ -71,11 +71,15 @@ var dealData = function(str, socket){
 		if(StationErr){
 			let type="station";
 			for(var key in StationErr.errors){
+				if(key.startsWith("Limit")){
+					return;
+				}
 				errorInsert.push({
 					type:type,
 					sn_key:StationErr.sn_key,
 					code:key,
-					current:StationErr.errors[key]
+					current:StationErr.errors[key],
+					limit:StationErr.errors["Limit_"+key] || 0
 				})
 			}
 			// for(let key in errCode[type]){
@@ -98,26 +102,17 @@ var dealData = function(str, socket){
 		str.GroupErr && str.GroupErr.forEach(function(GroupErr){
 			let type="group";
 			for(var key in GroupErr.errors){
+				if(key.startsWith("Limit")){
+					return;
+				}
 				errorInsert.push({
 					type:type,
 					sn_key:GroupErr.sn_key,
 					code:key,
-					current:GroupErr.errors[key]
+					current:GroupErr.errors[key],
+					limit:GroupErr.errors["Limit_"+key] || 0
 				})
 			}
-			// for(let key in errCode[type]){
-			// 	console.log(key, GroupErr[key]);
-			// 	if(GroupErr[key] !== undefined){
-			// 		let current = GroupErr[errCode[type][key][0]];
-			// 		let code = errCode[type][key][GroupErr[key]];
-			// 		errorInsert.push({
-			// 			type:type,
-			// 			sn_key:GroupErr.sn_key,
-			// 			code:code,
-			// 			current:current
-			// 		})
-			// 	}
-			// }
 
 		})
 
@@ -129,11 +124,15 @@ var dealData = function(str, socket){
 
 			let type="battery";
 			for(var key in BatteryErr.errors){
+				if(key.startsWith("Limit")){
+					return;
+				}
 				errorInsert.push({
 					type:type,
 					sn_key:BatteryErr.sn_key,
 					code:key,
-					current:BatteryErr.errors[key]
+					current:BatteryErr.errors[key],
+					limit:BatteryErr.errors["Limit_"+key] || 0
 				})
 			}
 			// for(let key in errCode[type]){
@@ -207,7 +206,8 @@ function insertErrorBulk(data){
 				sql = `update my_alerts 
 					set
 					current=?,
-					time=?
+					time=?,
+					limit=?
 					where sn_key=?
 					and
 					code=?
@@ -219,7 +219,8 @@ function insertErrorBulk(data){
 				item.current,
 				new Date(),
 				item.sn_key,
-				item.code
+				item.code,
+				item.limit
 			];
 			conn.query(sql, _=='insert'?item:obj, function(err, results){
 				if(err){
