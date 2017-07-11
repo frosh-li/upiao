@@ -192,7 +192,7 @@ function insertErrorBulk(data){
 						return reject(err);
 					}
 					if(ret && ret.length > 0 ){
-						return resolve('update');
+						return resolve(ret[0]);
 					}else{
 						return resolve('insert');
 					}
@@ -208,9 +208,7 @@ function insertErrorBulk(data){
 					current=?,
 					time=?,
 					climit=?
-					where sn_key=?
-					and
-					code=?
+					where id=${_.id}
 				`;
 			}else{
 				sql = "insert into my_alerts set ?";
