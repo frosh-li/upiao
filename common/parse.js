@@ -183,7 +183,7 @@ function insertErrorBulk(data){
 			return new Promise(function(resolve, reject){
 				var sql = `
 					select * from my_alerts where
-					status != 2 and status != 4 and
+					status = 0 and
 					sn_key = '${item.sn_key}' and
 					code = '${item.code}'
 				`;
