@@ -218,7 +218,7 @@ function insertErrorBulk(data){
 			var obj = [
 				item.current,
 				new Date(),
-				item.limit,
+				item.climit,
 				item.sn_key,
 				item.code
 			];
