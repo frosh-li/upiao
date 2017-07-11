@@ -79,7 +79,7 @@ var dealData = function(str, socket){
 					sn_key:StationErr.sn_key,
 					code:key,
 					current:StationErr.errors[key],
-					limit:StationErr.errors["Limit_"+key] || 0
+					climit:StationErr.errors["Limit_"+key] || 0
 				})
 			}
 			// for(let key in errCode[type]){
@@ -110,7 +110,7 @@ var dealData = function(str, socket){
 					sn_key:GroupErr.sn_key,
 					code:key,
 					current:GroupErr.errors[key],
-					limit:GroupErr.errors["Limit_"+key] || 0
+					climit:GroupErr.errors["Limit_"+key] || 0
 				})
 			}
 
@@ -132,7 +132,7 @@ var dealData = function(str, socket){
 					sn_key:BatteryErr.sn_key,
 					code:key,
 					current:BatteryErr.errors[key],
-					limit:BatteryErr.errors["Limit_"+key] || 0
+					climit:BatteryErr.errors["Limit_"+key] || 0
 				})
 			}
 			// for(let key in errCode[type]){
@@ -207,7 +207,7 @@ function insertErrorBulk(data){
 					set
 					current=?,
 					time=?,
-					limit=?
+					climit=?
 					where sn_key=?
 					and
 					code=?
