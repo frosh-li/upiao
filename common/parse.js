@@ -80,7 +80,7 @@ var dealData = function(str, socket){
 					code:key,
 					current:StationErr.errors[key],
 					time:new Date(),
-					climit:StationErr.errors["Limit_"+key] || 0
+					climit:StationErr.limits["Limit_"+key] || 0
 				})
 			}
 			// for(let key in errCode[type]){
@@ -112,7 +112,7 @@ var dealData = function(str, socket){
 					code:key,
 					time:new Date(),
 					current:GroupErr.errors[key],
-					climit:GroupErr.errors["Limit_"+key] || 0
+					climit:GroupErr.limits["Limit_"+key] || 0
 				})
 			}
 
@@ -135,7 +135,7 @@ var dealData = function(str, socket){
 					code:key,
 					time:new Date(),
 					current:BatteryErr.errors[key],
-					climit:BatteryErr.errors["Limit_"+key] || 0
+					climit:BatteryErr.limits["Limit_"+key] || 0
 				})
 			}
 			// for(let key in errCode[type]){
