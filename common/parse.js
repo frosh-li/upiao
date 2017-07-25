@@ -4,6 +4,8 @@ var station = require('../libs/station');
 var group = require('../libs/group');
 var battery = require('../libs/battery');
 
+var sendmsgFunc = require('../sendmsg/');
+
 var errCode = require('../libs/errorConfig');
 
 var params = require("../libs/params");
@@ -83,20 +85,6 @@ var dealData = function(str, socket){
 					climit:StationErr.limits["Limit_"+key] || 0
 				})
 			}
-			// for(let key in errCode[type]){
-			// 	console.log(key, StationErr[key]);
-			// 	if(StationErr[key] !== undefined){
-			// 		let current = StationErr[errCode[type][key][0]];
-			// 		let code = errCode[type][key][StationErr[key]];
-			// 		errorInsert.push({
-			// 			type:type,
-			// 			sn_key:StationErr.sn_key,
-			// 			code:code,
-			// 			current:current
-			// 		})
-			// 	}
-			// }
-
 		}
 
 		let GroupErr = str.GroupErr;
@@ -122,8 +110,6 @@ var dealData = function(str, socket){
 		let BatteryErr = str.BatteryErr;
 
 		str.BatteryErr && str.BatteryErr.forEach(function(BatteryErr){
-
-
 			let type="battery";
 			for(var key in BatteryErr.errors){
 				if(key.startsWith("Limit")){
@@ -138,20 +124,6 @@ var dealData = function(str, socket){
 					climit:BatteryErr.limits["Limit_"+key] || 0
 				})
 			}
-			// for(let key in errCode[type]){
-			// 	console.log(key, BatteryErr[key]);
-			// 	if(BatteryErr[key] !== undefined){
-			// 		let current = BatteryErr[errCode[type][key][0]];
-			// 		let code = errCode[type][key][BatteryErr[key]];
-			// 		errorInsert.push({
-			// 			type:type,
-			// 			sn_key:BatteryErr.sn_key,
-			// 			code:code,
-			// 			current:current
-			// 		})
-			// 	}
-			// }
-
 		})
 		// console.log(errorInsert);
 		console.log('报警条数为',errorInsert.length);
@@ -218,6 +190,7 @@ function insertErrorBulk(data){
 			}else{
 				sql = "insert into my_alerts set ?";
 			}
+			sendMsg(item);
 			var obj = [
 				item.current,
 				new Date(),
@@ -245,6 +218,51 @@ function insertErrorBulk(data){
 			insertErrorBulk(data);
 		})
 	}
+}
+
+
+function sendMsg(item){
+	new Promise((resolve, reject)=>{
+		conn.query(`select * from my_station_alert_desc where en='${item.code}' and my_station_alert_desc.type=${item.type}`, function(err, res){
+			if(err){
+				console.log('sendmsg error',err,item);
+			}else{
+				var msgContent = res[0]['desc'];
+				if(res[0].send_msg == 0){
+					// 不需要发送短信
+					console.log('报警不需要发送短信',msgContent);
+					return;
+				}
+
+				conn.query(`select functionary_phone,functionary_sms from my_site where serial_number=${item.sn_key.substring(0,10)+"0000"}`, function(err, result){
+					if(err){
+						console.log('get data from site error', err);
+						return;
+					}
+					if(result && result.length > 0){
+						var mobile = result[0]['functionary_phone'];
+						var ifsendmsg = result[0]['functionary_sms'];
+						if(!ifsendmsg){
+							// 不需要发送短信
+							console.log("站点设置成不发送短信",msgContent);
+							return;
+						}
+						if(/^[0-9]{11}$/.test(mobile)){
+							console.log('发送短信', mobile, msgContent);
+							sendmsgFunc(mobile,msgContent);
+						}else{
+							console.log('手机格式错误', mobile);
+						}
+						
+					}
+				})
+				// functionary_phone  functionary_sms
+				// 检查站点设置中这条记录是否需要发送短信
+				
+				// sendmsgFunc()
+			}
+		})
+	})
 }
 
 
