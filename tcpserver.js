@@ -96,7 +96,7 @@ function showConnections(){
 }
 
 function clearSites(){
-	var now = new Date(new Date()-1000*60);
+	var now = new Date(new Date()-1000*60*3);
 	var nowString = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate())+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
 	var nowCaution = new Date(new Date()-1000*60*5);
 	var nowClearCautionString = nowCaution.getFullYear()+"-"+(nowCaution.getMonth()+1)+"-"+(nowCaution.getDate())+" "+nowCaution.getHours()+":"+nowCaution.getMinutes()+":"+nowCaution.getSeconds();

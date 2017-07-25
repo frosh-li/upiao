@@ -15,7 +15,7 @@ function onConnectSite(sn_key){
 function disConnectSite(sn_key){
 	var desc = "站点连接断开";
 	var tips = "检查站点或本地网络状况，电源及通信线路或联系BMS厂家";
-    var sql = `insert into systemAlarm(station, \`desc\`, tips) values(${sn_key}, '${desc}', '${tips}')`;
+    var sql = `insert into systemalarm(station, \`desc\`, tips) values(${sn_key}, '${desc}', '${tips}')`;
     console.log(sql);
 	conn.query(sql, function(err, results){
 		if(err){
