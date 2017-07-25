@@ -10,6 +10,8 @@ var request = require('request');
 
 var config = require('./config');
 
+const pass = tomd5(config.pass);
+
 function tomd5(pass){
     md5.update(pass);
     var sign = md5.digest('hex');
@@ -27,7 +29,7 @@ function getbizId(){
 function sendmsg(mobile, content){
     let postData = {
         accName:config.user,
-        accPwd:tomd5(config.pass),
+        accPwd:pass,
         aimcodes:mobile,
         content:content+"【BMS】",
         bizId:getbizId(),
