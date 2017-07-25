@@ -223,7 +223,7 @@ function insertErrorBulk(data){
 
 function sendMsg(item){
 	new Promise((resolve, reject)=>{
-		conn.query(`select * from my_station_alert_desc where en='${item.code}' and my_station_alert_desc.type=${item.type}`, function(err, res){
+		conn.query(`select * from my_station_alert_desc where en='${item.code}' and my_station_alert_desc.type='${item.type}'`, function(err, res){
 			if(err){
 				console.log('sendmsg error',err,item);
 			}else{
