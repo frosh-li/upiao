@@ -249,6 +249,8 @@ function sendMsg(item){
 						}
 						if(/^[0-9]{11}$/.test(mobile)){
 							msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
+							msgContent += ",组号:"+item.sn_key.substr(10,2);
+							msgContent += ",电池号:"+item.sn_key.substr(12,2);
 							console.log('发送短信', mobile, msgContent);
 							sendmsgFunc(mobile,msgContent);
 						}else{
