@@ -234,7 +234,7 @@ function sendMsg(item){
 					return;
 				}
 
-				conn.query(`select functionary_phone,functionary_sms from my_site where serial_number=${item.sn_key.substring(0,10)+"0000"}`, function(err, result){
+				conn.query(`select site_name,sid,functionary_phone,functionary_sms from my_site where serial_number=${item.sn_key.substring(0,10)+"0000"}`, function(err, result){
 					if(err){
 						console.log('get data from site error', err);
 						return;
@@ -248,6 +248,7 @@ function sendMsg(item){
 							return;
 						}
 						if(/^[0-9]{11}$/.test(mobile)){
+							msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
 							console.log('发送短信', mobile, msgContent);
 							sendmsgFunc(mobile,msgContent);
 						}else{
