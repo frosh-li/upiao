@@ -50,6 +50,7 @@ function sendmsg(mobile, content){
                 console.log(err);
                 return reject(err);
             }
+            console.log(body);
             return resolve(body);
         })
     
