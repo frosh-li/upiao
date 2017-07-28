@@ -39,6 +39,9 @@ var server = net.createServer(function(socket){
 		var record_time = new Date();
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
 		clients[remoteAddress].odata += inputData;
+		if(socket.sn_key){
+			console.log((socket.sn_key+"收发数据中").green);	
+		}
 		parseData(clients[remoteAddress],socket);
 	});
 
@@ -106,7 +109,7 @@ function clearSites(){
 	conn.query('delete from tb_group_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_battery_module where record_time'+"<'"+nowString+"'");
 	var clearSql = 'update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<now()-500';
-	console.log('clear nowCaution', clearSql);
+//	console.log('clear nowCaution', clearSql);
 	conn.query(clearSql)
 
 	// 清理系统报警
