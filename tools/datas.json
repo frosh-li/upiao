@@ -1,0 +1,117 @@
+<{
+"StationData":
+{
+"sn_key":"{{sn_key}}0000", "sid": {{sid}},
+"CurSensor":"101",
+"Groups": 2,"GroBats": 16,"Current": 0.09,"Voltage": 40.88,"Temperature": 22,"Humidity": 47,"ChaState": 0,"CurCol": 253,"VolCol": 0,"TemCol": 0,"HumCol": 0,"Lifetime": 53,"Capacity": 47},
+"GroupData":
+[
+{
+"sn_key":"{{sn_key}}0100",
+"gid": 1,"CurSensor": 0,"GroBats": 3,"Current": 80.37,"Voltage": 40.88,"Temperature": 25.4,"CurState": 2,"Avg_U": 13.63,"Avg_T": 25.4,"Avg_R": 10.87,"CurCol": 1,"TemCol": 0},
+{
+"sn_key":"{{sn_key}}0200",
+"gid": 2,"CurSensor": 1,"GroBats": 3,"Current":-80.28,"Voltage": 40.77,"Temperature": 25.2,"CurState": 1,"Avg_U": 13.59,"Avg_T": 25.2,"Avg_R": 11.39,"CurCol": 1,"TemCol": 0}
+],
+"BatteryData":
+[
+{
+"sn_key":"{{sn_key}}0101",
+"gid": 1,"bid": 1,"Voltage": 13.59,"Temperature": 25.0,"Resistor": 11.20,"DrvCurrent": 1.774,"Eff_N": 300,"Capacity": 53,"Dev_U":-0.04,"Dev_T":-0.4,"Dev_R": 0.34,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 60},
+{
+"sn_key":"{{sn_key}}0102",
+"gid": 1,"bid": 2,"Voltage": 13.73,"Temperature": 25.0,"Resistor": 10.82,"DrvCurrent": 1.786,"Eff_N": 300,"Capacity": 56,"Dev_U": 0.10,"Dev_T":-0.4,"Dev_R":-0.04,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 63},
+{
+"sn_key":"{{sn_key}}0103",
+"gid": 1,"bid": 3,"Voltage": 13.56,"Temperature": 26.3,"Resistor": 10.57,"DrvCurrent": 1.743,"Eff_N": 300,"Capacity": 58,"Dev_U":-0.07,"Dev_T": 0.9,"Dev_R":-0.29,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 65},
+{
+"sn_key":"{{sn_key}}0104",
+"gid": 1,"bid": 4,"Voltage": 13.59,"Temperature": 25.0,"Resistor": 11.20,"DrvCurrent": 1.774,"Eff_N": 300,"Capacity": 53,"Dev_U":-0.04,"Dev_T":-0.4,"Dev_R": 0.34,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 60},
+{
+"sn_key":"{{sn_key}}0105",
+"gid": 1,"bid": 5,"Voltage": 13.73,"Temperature": 25.0,"Resistor": 10.82,"DrvCurrent": 1.786,"Eff_N": 300,"Capacity": 56,"Dev_U": 0.10,"Dev_T":-0.4,"Dev_R":-0.04,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 63},
+{
+"sn_key":"{{sn_key}}0106",
+"gid": 1,"bid": 6,"Voltage": 13.56,"Temperature": 26.3,"Resistor": 10.57,"DrvCurrent": 1.743,"Eff_N": 300,"Capacity": 58,"Dev_U":-0.07,"Dev_T": 0.9,"Dev_R":-0.29,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 65},
+{
+"sn_key":"{{sn_key}}0107",
+"gid": 1,"bid": 7,"Voltage": 13.59,"Temperature": 25.0,"Resistor": 11.20,"DrvCurrent": 1.774,"Eff_N": 300,"Capacity": 53,"Dev_U":-0.04,"Dev_T":-0.4,"Dev_R": 0.34,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 60},
+{
+"sn_key":"{{sn_key}}0108",
+"gid": 1,"bid": 8,"Voltage": 13.73,"Temperature": 25.0,"Resistor": 10.82,"DrvCurrent": 1.786,"Eff_N": 300,"Capacity": 56,"Dev_U": 0.10,"Dev_T":-0.4,"Dev_R":-0.04,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 63},
+{
+"sn_key":"{{sn_key}}0109",
+"gid": 1,"bid": 9,"Voltage": 13.56,"Temperature": 26.3,"Resistor": 10.57,"DrvCurrent": 1.743,"Eff_N": 300,"Capacity": 58,"Dev_U":-0.07,"Dev_T": 0.9,"Dev_R":-0.29,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 65},
+{
+"sn_key":"{{sn_key}}0110",
+"gid": 1,"bid": 10,"Voltage": 13.59,"Temperature": 25.0,"Resistor": 11.20,"DrvCurrent": 1.774,"Eff_N": 300,"Capacity": 53,"Dev_U":-0.04,"Dev_T":-0.4,"Dev_R": 0.34,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 60},
+{
+"sn_key":"{{sn_key}}0111",
+"gid": 1,"bid":11,"Voltage": 13.73,"Temperature": 25.0,"Resistor": 10.82,"DrvCurrent": 1.786,"Eff_N": 300,"Capacity": 56,"Dev_U": 0.10,"Dev_T":-0.4,"Dev_R":-0.04,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 63},
+{
+"sn_key":"{{sn_key}}0112",
+"gid": 1,"bid": 12,"Voltage": 13.56,"Temperature": 26.3,"Resistor": 10.57,"DrvCurrent": 1.743,"Eff_N": 300,"Capacity": 58,"Dev_U":-0.07,"Dev_T": 0.9,"Dev_R":-0.29,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 65},
+{
+"sn_key":"{{sn_key}}0113",
+"gid": 1,"bid": 13,"Voltage": 13.59,"Temperature": 25.0,"Resistor": 11.20,"DrvCurrent": 1.774,"Eff_N": 300,"Capacity": 53,"Dev_U":-0.04,"Dev_T":-0.4,"Dev_R": 0.34,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 60},
+{
+"sn_key":"{{sn_key}}0114",
+"gid": 1,"bid": 14,"Voltage": 13.73,"Temperature": 25.0,"Resistor": 10.82,"DrvCurrent": 1.786,"Eff_N": 300,"Capacity": 56,"Dev_U": 0.10,"Dev_T":-0.4,"Dev_R":-0.04,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 63},
+{
+"sn_key":"{{sn_key}}0115",
+"gid": 1,"bid": 15,"Voltage": 13.56,"Temperature": 26.3,"Resistor": 10.57,"DrvCurrent": 1.743,"Eff_N": 300,"Capacity": 58,"Dev_U":-0.07,"Dev_T": 0.9,"Dev_R":-0.29,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 65},
+{
+"sn_key":"{{sn_key}}0116",
+"gid": 1,"bid": 16,"Voltage": 13.59,"Temperature": 25.0,"Resistor": 11.20,"DrvCurrent": 1.774,"Eff_N": 300,"Capacity": 53,"Dev_U":-0.04,"Dev_T":-0.4,"Dev_R": 0.34,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 60},
+
+
+{
+"sn_key":"{{sn_key}}0201",
+"gid": 2,"bid": 1,"Voltage": 13.61,"Temperature": 25.0,"Resistor": 11.04,"DrvCurrent": 1.779,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T":-0.2,"Dev_R":-0.35,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61},
+{
+"sn_key":"{{sn_key}}0202",
+"gid": 2,"bid": 2,"Voltage": 13.60,"Temperature": 25.5,"Resistor": 11.06,"DrvCurrent": 1.769,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T": 0.3,"Dev_R":-0.32,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61},
+{
+"sn_key":"{{sn_key}}0203",
+"gid": 2,"bid": 3,"Voltage": 13.57,"Temperature": 25.0,"Resistor": 12.06,"DrvCurrent": 1.769,"Eff_N": 300,"Capacity": 47,"Dev_U":-0.02,"Dev_T":-0.2,"Dev_R": 0.67,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 53},
+{
+"sn_key":"{{sn_key}}0204",
+"gid": 2,"bid": 4,"Voltage": 13.61,"Temperature": 25.0,"Resistor": 11.04,"DrvCurrent": 1.779,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T":-0.2,"Dev_R":-0.35,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61},
+{
+"sn_key":"{{sn_key}}0205",
+"gid": 2,"bid": 5,"Voltage": 13.60,"Temperature": 25.5,"Resistor": 11.06,"DrvCurrent": 1.769,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T": 0.3,"Dev_R":-0.32,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61},
+{
+"sn_key":"{{sn_key}}0206",
+"gid": 2,"bid": 6,"Voltage": 13.57,"Temperature": 25.0,"Resistor": 12.06,"DrvCurrent": 1.769,"Eff_N": 300,"Capacity": 47,"Dev_U":-0.02,"Dev_T":-0.2,"Dev_R": 0.67,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 53},
+{
+"sn_key":"{{sn_key}}0207",
+"gid": 2,"bid": 7,"Voltage": 13.61,"Temperature": 25.0,"Resistor": 11.04,"DrvCurrent": 1.779,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T":-0.2,"Dev_R":-0.35,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61},
+{
+"sn_key":"{{sn_key}}0208",
+"gid": 2,"bid": 8,"Voltage": 13.60,"Temperature": 25.5,"Resistor": 11.06,"DrvCurrent": 1.769,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T": 0.3,"Dev_R":-0.32,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61},
+{
+"sn_key":"{{sn_key}}0209",
+"gid": 2,"bid": 9,"Voltage": 13.57,"Temperature": 25.0,"Resistor": 12.06,"DrvCurrent": 1.769,"Eff_N": 300,"Capacity": 47,"Dev_U":-0.02,"Dev_T":-0.2,"Dev_R": 0.67,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 53},
+{
+"sn_key":"{{sn_key}}0210",
+"gid": 2,"bid": 10,"Voltage": 13.61,"Temperature": 25.0,"Resistor": 11.04,"DrvCurrent": 1.779,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T":-0.2,"Dev_R":-0.35,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61},
+{
+"sn_key":"{{sn_key}}0211",
+"gid": 2,"bid": 11,"Voltage": 13.60,"Temperature": 25.5,"Resistor": 11.06,"DrvCurrent": 1.769,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T": 0.3,"Dev_R":-0.32,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61},
+{
+"sn_key":"{{sn_key}}0212",
+"gid": 2,"bid": 12,"Voltage": 13.57,"Temperature": 25.0,"Resistor": 12.06,"DrvCurrent": 1.769,"Eff_N": 300,"Capacity": 47,"Dev_U":-0.02,"Dev_T":-0.2,"Dev_R": 0.67,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 53},
+{
+"sn_key":"{{sn_key}}0213",
+"gid": 2,"bid": 13,"Voltage": 13.61,"Temperature": 25.0,"Resistor": 11.04,"DrvCurrent": 1.779,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T":-0.2,"Dev_R":-0.35,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61},
+{
+"sn_key":"{{sn_key}}0214",
+"gid": 2,"bid": 14,"Voltage": 13.60,"Temperature": 25.5,"Resistor": 11.06,"DrvCurrent": 1.769,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T": 0.3,"Dev_R":-0.32,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61},
+{
+"sn_key":"{{sn_key}}0215",
+"gid": 2,"bid": 15,"Voltage": 13.57,"Temperature": 25.0,"Resistor": 12.06,"DrvCurrent": 1.769,"Eff_N": 300,"Capacity": 47,"Dev_U":-0.02,"Dev_T":-0.2,"Dev_R": 0.67,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 53},
+{
+"sn_key":"{{sn_key}}0216",
+"gid": 2,"bid": 16,"Voltage": 13.61,"Temperature": 25.0,"Resistor": 11.04,"DrvCurrent": 1.779,"Eff_N": 300,"Capacity": 54,"Dev_U": 0.01,"Dev_T":-0.2,"Dev_R":-0.35,"VolCol": 0,"TemCol": 0,"ResCol": 3,"DevUCol": 0,"DevTCol": 0,"DevRCol": 0,"Lifetime": 61}
+]
+}>
