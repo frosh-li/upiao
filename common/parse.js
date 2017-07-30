@@ -189,8 +189,9 @@ function insertErrorBulk(data){
 				`;
 			}else{
 				sql = "insert into my_alerts set ?";
+				sendMsg(item);
 			}
-			sendMsg(item);
+			
 			var obj = [
 				item.current,
 				new Date(),
