@@ -128,7 +128,7 @@ function syncParams(){
     conn.query(sql, (err, results)=>{
         results.forEach((item)=>{
             sendParamHard('StationPar', {
-                sn_key:item.sn_key,
+                sn_key:item.sn_key.toString,
                 CurSensor: item.CurSensor
             });
         });
