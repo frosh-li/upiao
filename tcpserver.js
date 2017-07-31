@@ -115,9 +115,37 @@ function clearSites(){
 	// 清理系统报警
 	conn.query('delete from systemalarm where station not in (select serial_number from my_site)');
 }
+var sendParamHard = require("./common/sendParam.js");
+/**
+ * 每隔30秒检查一次是否需要同步参数
+ * 同步参数条件为
+ * 在tb_station_module表中有数据
+ * 但是在tb_station_param表中无数据
+ */
+function syncParams(){
+    let sql = `
+        select 
+        tb_station_module.sn_key,
+        tb_station_module.CurSensor 
+        from 
+        tb_station_module
+        where
+        sn_key not in (select serial_number from my_site) 
+        `;
+    console.log(sql);
+    conn.query(sql, (err, _, results)=>{
+        results.forEach((item)=>{
+            sendParamHard('StationPar', {
+                sn_key:item.sn_key,
+                CurSensor: item.CurSensor
+            });
+        });
+    });
+}
 
 setInterval(clearSites,5000);
 setInterval(showConnections,10000);
+setInterval(syncParams,30000);
 
 module.exports = {
 	start:function(){
