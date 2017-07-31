@@ -125,7 +125,7 @@ var sendParamHard = require("./common/sendParam.js");
 function syncParams(){
     let sql = "select tb_station_module.sn_key,tb_station_module.CurSensor from tb_station_module where sn_key not in (select serial_number from my_site) ";
     console.log(sql);
-    conn.query(sql, (err, _, results)=>{
+    conn.query(sql, (err, results)=>{
         results.forEach((item)=>{
             sendParamHard('StationPar', {
                 sn_key:item.sn_key,
