@@ -6,7 +6,7 @@ global.watchSite = require('./common/watchSite');
 var parseData = parse.parseData;
 
 var server = net.createServer(function(socket){
-	socket.setTimeout(60000);
+	socket.setTimeout(60000*5);
 	var remoteAddress = socket.remoteAddress;
 	console.log('socket remote address is'.magenta, remoteAddress.green);
 	console.log('new client connected'.green);
@@ -99,7 +99,7 @@ function showConnections(){
 }
 
 function clearSites(){
-	var now = new Date(new Date()-1000*60*3);
+	var now = new Date(new Date()-1000*60*5);
 	var nowString = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate())+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
 	var nowCaution = new Date(new Date()-1000*60*5);
 	var nowClearCautionString = nowCaution.getFullYear()+"-"+(nowCaution.getMonth()+1)+"-"+(nowCaution.getDate())+" "+nowCaution.getHours()+":"+nowCaution.getMinutes()+":"+nowCaution.getSeconds();

@@ -13,7 +13,7 @@ function connServer(sn_key){
   		let cdata = datasjson.replace(/{{sn_key}}/g, sn_key).replace("{{sid}}",parseInt(sn_key.toString().substring(7)));
   		client.write(cdata);	
   		console.log('send data', sn_key);
-	  },10000);
+	  },60000);
 
 	});
 	client.on('data', (data) => {
