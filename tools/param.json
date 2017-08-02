@@ -1,0 +1,14 @@
+<{
+"StationPar":
+{
+ "sn_key":"{{sn_key}}", "sid":{{sid}},
+"CurSensor":"101",
+"Groups": 2,"GroBats": 16,"Time_MR": 604800,"SampleInt": 20,"MaxTem_R": 55.0,"MaxTem_O": 50.0,"MaxTem_Y": 45.0,"MinTem_R": 3.0,"MinTem_O": 6.0,"MinTem_Y": 9.0,"MaxHum_R": 90,"MaxHum_O": 85,"MaxHum_Y": 80,"MinHum_R": 3,"MinHum_O": 5,"MinHum_Y": 8,"CurRange": 100,"KI": 0.031250,"ZeroCurADC": 2400,"DisChaLim_R": 40.00,"DisChaLim_O": 35.00,"DisChaLim_Y": 30.00,"ChaLim_R":-20.00,"ChaLim_O":-18.00,"ChaLim_Y":-16.00,"HiVolLim_R": 222.40,"HiVolLim_O": 220.80,"HiVolLim_Y": 219.20,"LoVolLim_R": 172.80,"LoVolLim_O": 174.40,"LoVolLim_Y": 176.00,"GroCurDevLim_R": 10.00,"GroCurDevLim_O": 7.00,"GroCurDevLim_Y": 4.00,"GroVolDevLim_R": 3.00,"GroVolDevLim_O": 2.00,"GroVolDevLim_Y": 1.00,"GroTemDevLim_R": 7,"GroTemDevLim_O": 5,"GroTemDevLim_Y": 3,"ChaCriterion": 0.80,"FloChaVol": 13.60},
+"GroupPar":
+{
+"sn_key":"{{sn_key}}",
+"GroBatNum": 16,"CurRange": 100,"KI": 0.031250,"ZeroCurADC": 2400,"DisChaLim_R": 30.00,"DisChaLim_O": 28.00,"DisChaLim_Y": 25.00,"ChaLim_R":-20.00,"ChaLim_O":-18.00,"ChaLim_Y":-16.00,"MaxTem_R": 60.00,"MaxTem_O": 55.00,"MaxTem_Y": 50.00,"MinTem_R": 3.00,"MinTem_O": 5.00,"MinTem_Y": 9.00,"ChaCriterion": 0.50},
+"BatteryPar":
+{
+"sn_key":"{{sn_key}}","KV": 0.0043330,"KT":-0.1290,"KI": 0.001000,"T0": 23.5,"ADC_T0": 2400,"T1": 60.0,"ADC_T1": 2090,"MaxU_R": 14.10,"MaxU_O": 14.00,"MaxU_Y": 13.90,"MinU_R": 10.20,"MinU_O": 10.50,"MinU_Y": 10.80,"MaxT_R": 55.0,"MaxT_O": 50.0,"MaxT_Y": 45.0,"MinT_R": 3.0,"MinT_O": 6.0,"MinT_Y": 9.0,"MaxR_R": 15.00,"MaxR_O": 12.50,"MaxR_Y": 10.00,"MaxDevU_R": 0.50,"MaxDevU_O": 0.40,"MaxDevU_Y": 0.30,"MaxDevT_R": 5.0,"MaxDevT_O": 4.0,"MaxDevT_Y": 3.0,"MaxDevR_R": 5.00,"MaxDevR_O": 4.00,"MaxDevR_Y": 3.00,"Sta_R": 5.00,"Lim_R": 30.00,"DisChaLim_U": 8.80,"ChaLim_U": 14.30,"FloCha_U": 13.60,"NomCap": 100.0}
+}>
