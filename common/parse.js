@@ -224,46 +224,57 @@ function insertErrorBulk(data){
 
 function sendMsg(item){
 	new Promise((resolve, reject)=>{
-		conn.query(`select * from my_station_alert_desc where en='${item.code}' and my_station_alert_desc.type='${item.type}'`, function(err, res){
+		conn.query("select sms_on_off from my_config where sms_on_off='s:1:\"1\";'", function(err, res){
 			if(err){
-				console.log('sendmsg error',err,item);
-			}else{
-				var msgContent = res[0]['desc'];
-				if(res[0].send_msg == 0){
-					// 不需要发送短信
-					console.log('报警不需要发送短信',msgContent);
-					return;
-				}
+				return;
+			}
+			if(res && res.length > 0){
 
-				conn.query(`select site_name,sid,functionary_phone,functionary_sms from my_site where serial_number=${item.sn_key.substring(0,10)+"0000"}`, function(err, result){
-					if(err){
-						console.log('get data from site error', err);
+
+			conn.query(`select * from my_station_alert_desc where en='${item.code}' and my_station_alert_desc.type='${item.type}'`, function(err, res){
+				if(err){
+					console.log('sendmsg error',err,item);
+				}else{
+					var msgContent = res[0]['desc'];
+					if(res[0].send_msg == 0){
+						// 不需要发送短信
+						console.log('报警不需要发送短信',msgContent);
 						return;
 					}
-					if(result && result.length > 0){
-						var mobile = result[0]['functionary_phone'];
-						var ifsendmsg = result[0]['functionary_sms'];
-						if(!ifsendmsg){
-							// 不需要发送短信
-							console.log("站点设置成不发送短信",msgContent);
+
+					conn.query(`select site_name,sid,functionary_phone,functionary_sms from my_site where serial_number=${item.sn_key.substring(0,10)+"0000"}`, function(err, result){
+						if(err){
+							console.log('get data from site error', err);
 							return;
 						}
-						if(/^[0-9]{11}$/.test(mobile)){
-							msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
-							msgContent += ",组号:"+item.sn_key.substr(10,2);
-							msgContent += ",电池号:"+item.sn_key.substr(12,2);
-							console.log('发送短信', mobile, msgContent);
-							sendmsgFunc(mobile,msgContent);
-						}else{
-							console.log('手机格式错误', mobile);
+						if(result && result.length > 0){
+							var mobile = result[0]['functionary_phone'];
+							var ifsendmsg = result[0]['functionary_sms'];
+							if(!ifsendmsg){
+								// 不需要发送短信
+								console.log("站点设置成不发送短信",msgContent);
+								return;
+							}
+							if(/^[0-9]{11}$/.test(mobile)){
+								msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
+								msgContent += ",组号:"+item.sn_key.substr(10,2);
+								msgContent += ",电池号:"+item.sn_key.substr(12,2);
+								console.log('发送短信', mobile, msgContent);
+								sendmsgFunc(mobile,msgContent);
+							}else{
+								console.log('手机格式错误', mobile);
+							}
+							
 						}
-						
-					}
-				})
-				// functionary_phone  functionary_sms
-				// 检查站点设置中这条记录是否需要发送短信
-				
-				// sendmsgFunc()
+					})
+					// functionary_phone  functionary_sms
+					// 检查站点设置中这条记录是否需要发送短信
+					
+					// sendmsgFunc()
+				}
+			})
+		}else{
+				console.log('全局设置不需要发送短信');
 			}
 		})
 	})
