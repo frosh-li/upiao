@@ -226,6 +226,7 @@ function sendMsg(item){
 	new Promise((resolve, reject)=>{
 		conn.query("select sms_on_off from my_config where sms_on_off='s:1:\"1\";'", function(err, res){
 			if(err){
+				console.log('check sms_on_off error', err);
 				return;
 			}
 			if(res && res.length > 0){
