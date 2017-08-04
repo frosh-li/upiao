@@ -224,7 +224,7 @@ function insertErrorBulk(data){
 
 function sendMsg(item){
 	new Promise((resolve, reject)=>{
-		conn.query("select * from my_config where `key`=sms_on_off and `value`='s:1:\"1\";'", function(err, res){
+		conn.query("select * from my_config where `key`='sms_on_off' and `value`='s:1:\"1\";'", function(err, res){
 			if(err){
 				console.log('check sms_on_off error', err);
 				return;
