@@ -6,7 +6,7 @@ global.watchSite = require('./common/watchSite');
 var parseData = parse.parseData;
 
 var server = net.createServer(function(socket){
-	socket.setTimeout(60000*5);
+	// socket.setTimeout(60000*5);
 	var remoteAddress = socket.remoteAddress;
 	console.log('socket remote address is'.magenta, remoteAddress.green);
 	console.log('new client connected'.green);
@@ -99,16 +99,16 @@ function showConnections(){
 }
 
 function clearSites(){
-	var now = new Date(new Date()-1000*60*5);
+	var now = new Date(new Date()-1000*60*30);
 	var nowString = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate())+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
-	var nowCaution = new Date(new Date()-1000*60*5);
+	var nowCaution = new Date(new Date()-1000*60*30);
 	var nowClearCautionString = nowCaution.getFullYear()+"-"+(nowCaution.getMonth()+1)+"-"+(nowCaution.getDate())+" "+nowCaution.getHours()+":"+nowCaution.getMinutes()+":"+nowCaution.getSeconds();
 	var currentDate = new Date();
 	var currentDateStr = currentDate.getFullYear()+"-"+(currentDate.getMonth()+1)+"-"+(currentDate.getDate())+" "+currentDate.getHours()+":"+currentDate.getMinutes()+":"+currentDate.getSeconds();
 	conn.query('delete from tb_station_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_group_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_battery_module where record_time'+"<'"+nowString+"'");
-	var clearSql = 'update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<now()-500';
+	var clearSql = 'update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<now()-3000';
 //	console.log('clear nowCaution', clearSql);
 	conn.query(clearSql)
 
