@@ -99,16 +99,17 @@ function showConnections(){
 }
 
 function clearSites(){
-	var now = new Date(new Date()-1000*60*30);
+	let clearTimer = 5;
+	var now = new Date(new Date()-1000*60*clearTimer);
 	var nowString = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate())+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
-	var nowCaution = new Date(new Date()-1000*60*30);
+	var nowCaution = new Date(new Date()-1000*60*clearTimer);
 	var nowClearCautionString = nowCaution.getFullYear()+"-"+(nowCaution.getMonth()+1)+"-"+(nowCaution.getDate())+" "+nowCaution.getHours()+":"+nowCaution.getMinutes()+":"+nowCaution.getSeconds();
 	var currentDate = new Date();
 	var currentDateStr = currentDate.getFullYear()+"-"+(currentDate.getMonth()+1)+"-"+(currentDate.getDate())+" "+currentDate.getHours()+":"+currentDate.getMinutes()+":"+currentDate.getSeconds();
 	conn.query('delete from tb_station_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_group_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_battery_module where record_time'+"<'"+nowString+"'");
-	var clearSql = 'update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<now()-3000';
+	var clearSql = 'update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<now()-500';
 //	console.log('clear nowCaution', clearSql);
 	conn.query(clearSql)
 
