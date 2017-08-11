@@ -16,7 +16,7 @@ var server = net.createServer(function(socket){
 	socket.on('connect', ()=>{
 		clients[remoteAddress].odata = "";
 		console.log(new Date(),'some one connect'.green);
-
+		socket.write(`<{"FuncSel":{"Operator":3}}>`);
 	});
 	socket.on('error', (err)=>{
 		for(var key in clients){
@@ -40,7 +40,7 @@ var server = net.createServer(function(socket){
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
 		clients[remoteAddress].odata += inputData;
 		if(socket.sn_key){
-			console.log((socket.sn_key+"收发数据中").green);	
+			console.log((socket.sn_key+" receive").green);	
 		}
 		parseData(clients[remoteAddress],socket);
 	});
