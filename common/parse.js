@@ -28,12 +28,13 @@ var dealData = function(str, socket){
 
 	if(/^\{\"sn_key\"\:\"[0-9]{14}\",\"sid\"\:[0-9]+\}$/.test(JSON.stringify(str))){
 		console.log('heart beat', JSON.stringify(str));
+		let sn_key = str.sn_key;
 		// 开始更新所有的station数据
-		conn.query(`update tb_station_module set record_time="${record_time}" where sn_key=${sn_key}`,commonErrorDeal);
+		conn.query("update tb_station_module set record_time=? where sn_key=?",[record_time, sn_key],commonErrorDeal);
 		// 开始更新所有的battery数据
-		conn.query(`update tb_group_module set record_time="${record_time}" where floor(sn_key/10000)=${Math.floor(sn_key/10000)}`,commonErrorDeal);
+		conn.query("update tb_group_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 		// 开始更新所有的battery数据
-		conn.query(`update tb_battery_module set record_time="${record_time}" where floor(sn_key/10000)=${Math.floor(sn_key/10000)}`,commonErrorDeal);
+		conn.query("update tb_battery_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 
 	}
 	

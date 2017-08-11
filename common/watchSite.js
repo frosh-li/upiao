@@ -1,5 +1,5 @@
 function onConnectSite(sn_key){
-    var sql = `delete from systemAlarm where station=${sn_key}`;
+    var sql = `delete from systemalarm where station=${sn_key}`;
 	conn.query(sql, function(err, results){
 		if(err){
 			console.log('update system alarm fail', err);

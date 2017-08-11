@@ -13,10 +13,10 @@ var server = net.createServer(function(socket){
 	clients[remoteAddress] = {odata: ""};
 	showConnections();
 	socket.setKeepAlive(true);
+	socket.write(`<{"FuncSel":{"Operator":3}}>`);
 	socket.on('connect', ()=>{
 		clients[remoteAddress].odata = "";
 		console.log(new Date(),'some one connect'.green);
-		socket.write(`<{"FuncSel":{"Operator":3}}>`);
 	});
 	socket.on('error', (err)=>{
 		for(var key in clients){
