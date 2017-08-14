@@ -116,7 +116,7 @@ module.exports = function(ctype, body){
 	if(ctype == "StationPar"){
 		ret.StationPar = {};
 		StationPar.forEach(function(item,index){
-			// console.log(item, index);
+			// logger.info(item, index);
 			var cindex = (index-2) <10 ?("0"+(index-2)):(index-2+"");
 			if(index < 2){
 				ret.StationPar[item] = body[item];
@@ -131,7 +131,7 @@ module.exports = function(ctype, body){
 	if(ctype == "GroupPar"){
 		ret.GroupPar = {};
 		GroupPar.forEach(function(item,index){
-			// console.log(item, index);
+			// logger.info(item, index);
 			var cindex = (index) <10 ?("0"+(index)):(index+"");
 			if(body[item])
 				ret.GroupPar[cindex] = parseFloat(body[item]);
@@ -141,7 +141,7 @@ module.exports = function(ctype, body){
 	if(ctype == "BatteryPar"){
 		ret.BatteryPar = {};
 		BatteryPar.forEach(function(item,index){
-			// console.log(item, index);
+			// logger.info(item, index);
 			var cindex = (index) <10 ?("0"+(index)):(index+"");
 			if(body[item])
 				ret.BatteryPar[cindex] = parseFloat(body[item]);
@@ -149,6 +149,6 @@ module.exports = function(ctype, body){
 		})
 	}
 	var writeData = JSON.stringify(ret);
-	console.log(writeData);
+	logger.info(writeData);
 	sockets[body.sn_key] && sockets[body.sn_key].write(`<${writeData}>`);
 }

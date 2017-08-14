@@ -37,8 +37,8 @@ const server = http.createServer((req, res) => {
 	res.setHeader('Content-Type', 'application/json');
 	res.setHeader("Access-Control-Allow-Origin","*");
 
-	console.log(req.method);
-	console.log(req.url);
+	logger.info(req.method);
+	logger.info(req.url);
 	var method = req.method;
 	var urlparse = url.parse(req.url);
     var cfunc = null;
@@ -66,7 +66,7 @@ const server = http.createServer((req, res) => {
 const { exec } = require('child_process');
 function UpdateServer(req, res){
 	exec("git pull", {cwd:"/Applications/XAMPP/xamppfiles/htdocs"}, function(err, stdout, stderr){
-		console.log('git update',err, stdout, stderr);
+		logger.info('git update',err, stdout, stderr);
 		return res.json({status:200});
 	})
 }
@@ -87,7 +87,7 @@ function SetParam(req, res){
 function stepCol(batterys,sn_key){
 	var bat = batterys.shift();
 	if(!bat){
-		console.log('所以采集完成',sn_key);
+		logger.info('所以采集完成',sn_key);
 		return;
 	}
 	var towrite = `<{"FuncSel":{"Operator": 130, "00":${parseInt(bat.substring(10,12))},"01":${parseInt(bat.substring(12,14))},"02":21,"03":0}}>`;
@@ -96,7 +96,7 @@ function stepCol(batterys,sn_key){
 		// 02 操作码 21
 		// 03 0
 
-		console.log(towrite.toString())
+		logger.info(towrite.toString())
 		sockets[sn_key].write(towrite.toString());	
 		setTimeout(function(){
 			stepCol(batterys, sn_key);	
@@ -106,15 +106,15 @@ function stepCol(batterys,sn_key){
 
 // <{"WhatTime": {  "sn_key":"11611061050000",  "sid": 9 }}>  请求时间
 function ircollect(req, res){
-	console.log('start to 内阻采集');
-	console.log(req.body.batterys);
+	logger.info('start to 内阻采集');
+	logger.info(req.body.batterys);
   	var batterys = req.body.batterys.split(",");
 	var sn_key = batterys[0].substring(0,10)+"0000";
-		console.log('开始请求内阻采集',sn_key);
-	console.log(sockets[sn_key]);
+		logger.info('开始请求内阻采集',sn_key);
+	logger.info(sockets[sn_key]);
 	if(sockets[sn_key]){
-		console.log('开始请求内阻采集',sn_key);
-		console.log('batterys', batterys);
+		logger.info('开始请求内阻采集',sn_key);
+		logger.info('batterys', batterys);
 
 		stepCol(batterys, sn_key);
 		// batterys.forEach(function(bat){
@@ -139,6 +139,6 @@ server.on('clientError', (err, socket) => {
 module.exports = {
 	start : function(){
 		server.listen(CONFIG.httpserver.port);
-		console.log('http server start at port ', CONFIG.httpserver.port);
+		logger.info('http server start at port ', CONFIG.httpserver.port);
 	}
 }

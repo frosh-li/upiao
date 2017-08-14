@@ -17,10 +17,10 @@ function update(datas){
 }
 
 function updateParams(sn_key, table, Params, datas){
-	console.log('开始更新参数',sn_key, table,Params);
+	logger.info('开始更新参数',sn_key, table,Params);
 	new Promise((resolve, reject)=>{
 		let sql = `select * from tb_${table}_param where sn_key=${sn_key} limit 1`;
-		console.log(sql);
+		logger.info(sql);
 		conn.query(`select * from tb_${table}_param where sn_key=${sn_key} limit 1`, (err, results, fields)=>{
 			if(err){
 				return reject(err);
@@ -50,13 +50,13 @@ function updateParams(sn_key, table, Params, datas){
 					updateObj.push(datas[Params][item.name]);
 				});
 				let sql = `update tb_${table}_param set ${updateStr.join(",")} where sn_key=${sn_key}`;
-				console.log(sql);
-				console.log(updateObj);
+				logger.info(sql);
+				logger.info(updateObj);
 				conn.query(sql, updateObj, (err, results)=>{
 					if(err){
-						console.log(err);
+						logger.info(err);
 					}else{
-						console.log(`update params for ${table} ${sn_key} success`);
+						logger.info(`update params for ${table} ${sn_key} success`);
 					}
 					return resolve(1);
 				});
@@ -72,13 +72,13 @@ function updateParams(sn_key, table, Params, datas){
 					updateObj[item.name] = datas[Params][item.name];
 				});
 				let sql = `insert into tb_${table}_param set ?`;
-				console.log(sql);
-				console.log(updateObj);
+				logger.info(sql);
+				logger.info(updateObj);
 				conn.query(`insert into tb_${table}_param set ?`, updateObj, (err, results)=>{
 					if(err){
-						console.log(err);
+						logger.info(err);
 					}else{
-						console.log(`insert params for ${table} ${sn_key} success`);
+						logger.info(`insert params for ${table} ${sn_key} success`);
 					}
 					return resolve(1);
 				});

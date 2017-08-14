@@ -49,14 +49,14 @@ module.exports = {
 
 		conn.query(`select * from tb_group_module where sn_key in (${sn_keys.join(",")})`,function(err, res){
 			if(err){
-				return console.log(err);
+				return logger.info(err);
 			}
             /*
 			if(res&&res.length > 0){
 				insertBulkHistory(res, function(){
 					conn.query(`delete from tb_group_module`,function(err, res3){
 						if(err){
-							return console.log(err);
+							return logger.info(err);
 						}
 
 						insertBulk(data);
@@ -99,9 +99,9 @@ function insertBulkHistory(data,cb){
     var isql = `insert into tb_group_module_history(${sql.values}) values ${sql.vals} `;
 		conn.query(isql, function(err, results){
 			if(err){
-				console.log('insert group history error', err);
+				logger.info('insert group history error', err);
 			}else{
-				//console.log('insert group history done');
+				//logger.info('insert group history done');
 			}
 			cb();
 		})
@@ -112,9 +112,9 @@ function insertBulk(data, table){
     var isql = `insert into tb_group_module_history(${sql.values}) values ${sql.vals}`;
 		conn.query(isql, function(err, results){
 			if(err){
-				console.log('insert group error', err, isql);
+				logger.info('insert group error', err, isql);
 			}else{
-				//console.log('insert group done');
+				//logger.info('insert group done');
 			}
 			//insertBulkHistory(data, cb);
 		})

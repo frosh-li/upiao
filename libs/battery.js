@@ -51,13 +51,13 @@ module.exports = {
 		});/*
 		conn.query(`select * from tb_battery_module where sn_key in (${sn_keys.join(",")})`,function(err, res){
 			if(err){
-				return console.log(err);
+				return logger.info(err);
 			}
 			if(res&&res.length > 0){
 				insertBulkHistory(res, function(){
 					conn.query(`delete from tb_battery_module`,function(err, res3){
 						if(err){
-							return console.log(err);
+							return logger.info(err);
 						}
 						insertBulk(data);
 					})
@@ -99,9 +99,9 @@ function insertBulkHistory(data,cb){
     var sql = buildMultiSql(data);
 		conn.query(`insert into tb_battery_module_history (select * from tb_battery_module)`, function(err, results){
 			if(err){
-				console.log('insert battery history error', err);
+				logger.info('insert battery history error', err);
 			}else{
-				// console.log('insert battery history done');
+				// logger.info('insert battery history done');
 			}
             cb();
 			//insertBulkHistory(data, cb);
@@ -113,9 +113,9 @@ function insertBulk(data, table){
     var isql = `insert into tb_battery_module_history(${sql.values}) values ${sql.vals}`;
 		conn.query(isql, function(err, results){
 			if(err){
-				console.log('insert battery error', err);
+				logger.info('insert battery error', err);
 			}else{
-				//console.log('insert battery done');
+				//logger.info('insert battery done');
 			}
 			//insertBulkHistory(data, cb);
 		})
@@ -124,9 +124,9 @@ function insertBulk(data, table){
 	if(item){
 		conn.query('insert into tb_battery_module set ?', item, function(err, results){
 			if(err){
-				console.log('insert battery error', err);
+				logger.info('insert battery error', err);
 			}else{
-				console.log('insert battery done');
+				logger.info('insert battery done');
 			}
 			insertBulk(data);
 		})

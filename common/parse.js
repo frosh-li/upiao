@@ -12,7 +12,7 @@ var params = require("../libs/params");
 
 function commonErrorDeal(err){
 	if(err){
-		console.log('heart beat error', err);
+		logger.info('heart beat error', err);
 	}
 }
 
@@ -21,13 +21,13 @@ var dealData = function(str, socket){
 	try{
 		str = JSON.parse(str);	
 	}catch(e){
-		console.log('error---------------');
-		console.log(str);
+		logger.info('error---------------');
+		logger.info(str);
 		return;
 	}
 
 	if(/^\{\"sn_key\"\:\"[0-9]{14}\",\"sid\"\:[0-9]+\}$/.test(JSON.stringify(str))){
-		console.log('heart beat', JSON.stringify(str));
+		logger.info('heart beat', JSON.stringify(str));
 		let sn_key = str.sn_key;
 		// 开始更新所有的station数据
 		conn.query("update tb_station_module set record_time=? where sn_key=?",[record_time, sn_key],commonErrorDeal);
@@ -38,21 +38,21 @@ var dealData = function(str, socket){
 
 	}
 	
-	// console.log(str);
+	// logger.info(str);
 	if(str&&str.StationData){
 		station.deal(str.StationData, record_time);
 		if(str.StationData && str.StationData.sn_key){
 			socket.sn_key = str.StationData.sn_key;
 			sockets[socket.sn_key] = socket;
-			console.log('parse data from ',socket.sn_key)
+			logger.info('parse data from ',socket.sn_key)
 		}else{
-			console.log('can not parse data')
+			logger.info('can not parse data')
 		}
 	}
 
 	if(str && str.ResistorVal){
-		console.log('内阻返回值');
-		console.log(str);
+		logger.info('内阻返回值');
+		logger.info(str);
 		// { ResistorVal: [ { sn_key: '11611061050101', Resistor: 10.6 } ] }
 		let R = str.ResistorVal[0].Resistor;
 		let sn_key = str.ResistorVal[0].sn_key;
@@ -64,9 +64,9 @@ var dealData = function(str, socket){
 		}
 		conn.query(`insert into my_collect set ?`, obj, function(err, res){
 			if(err){
-				console.log(err);
+				logger.info(err);
 			}else{
-				console.log('内阻采集成功', obj);
+				logger.info('内阻采集成功', obj);
 			}
 		});
 	}
@@ -74,7 +74,7 @@ var dealData = function(str, socket){
 	
 	if(str && str.StationPar){
 		// 如果是参数，处理参数
-		console.log(str);
+		logger.info(str);
 		params.update(str);
 	}
 	if(str && str.GroupData){
@@ -85,7 +85,7 @@ var dealData = function(str, socket){
 	}
 
 	if(str && (str.StationErr || str.GroupErr || str.BatteryErr)){
-		console.log(str.StationErr);
+		logger.info(str.StationErr);
 		let StationErr = str.StationErr;
 		let errorInsert = [];
 		if(StationErr){
@@ -143,8 +143,8 @@ var dealData = function(str, socket){
 				})
 			}
 		})
-		// console.log(errorInsert);
-		console.log('报警条数为',errorInsert.length);
+		// logger.info(errorInsert);
+		logger.info('报警条数为',errorInsert.length);
 		if(errorInsert.length > 0){
 			insertErrorBulk(errorInsert);
 		}
@@ -154,7 +154,7 @@ var dealData = function(str, socket){
 
 function insertErrorBulk(data){
 	var item = data.shift();
-	//console.log(item)
+	//logger.info(item)
 	if(item){
 		new Promise(function(resolve, reject){
 			// 如果是忽略狀態不加入數據
@@ -167,7 +167,7 @@ function insertErrorBulk(data){
 					return reject(err);
 				}
 				if(ret && ret.length > 0){
-					// console.log('ignored');
+					// logger.info('ignored');
 					return reject('ignored');
 				}else{
 					return resolve('ok');
@@ -195,7 +195,7 @@ function insertErrorBulk(data){
 			})
 			
 		}).then(function(_){
-			// console.log('update or insert', _);
+			// logger.info('update or insert', _);
 			var sql;
 			if(_ != 'insert'){
 				sql = `update my_alerts 
@@ -219,9 +219,9 @@ function insertErrorBulk(data){
 			];
 			conn.query(sql, _=='insert'?item:obj, function(err, results){
 				if(err){
-					console.log('insert error error', err);
+					logger.info('insert error error', err);
 				}else{
-					// console.log('insert error done'.green);
+					// logger.info('insert error done'.green);
 				}
 				insertErrorBulk(data);
 			})
@@ -230,7 +230,7 @@ function insertErrorBulk(data){
 				if(err.messeage == "ignored"){
 					return;
 				}else{
-					console.log(err);	
+					logger.info(err);	
 				}
 				
 			}
@@ -244,7 +244,7 @@ function sendMsg(item){
 	new Promise((resolve, reject)=>{
 		conn.query("select * from my_config where `key`='sms_on_off' and `value`='s:1:\"1\";'", function(err, res){
 			if(err){
-				console.log('check sms_on_off error', err);
+				logger.info('check sms_on_off error', err);
 				return;
 			}
 			if(res && res.length > 0){
@@ -252,18 +252,18 @@ function sendMsg(item){
 
 			conn.query(`select * from my_station_alert_desc where en='${item.code}' and my_station_alert_desc.type='${item.type}'`, function(err, res){
 				if(err){
-					console.log('sendmsg error',err,item);
+					logger.info('sendmsg error',err,item);
 				}else{
 					var msgContent = res[0]['desc'];
 					if(res[0].send_msg == 0){
 						// 不需要发送短信
-						console.log('报警不需要发送短信',msgContent);
+						logger.info('报警不需要发送短信',msgContent);
 						return;
 					}
 
 					conn.query(`select site_name,sid,functionary_phone,functionary_sms from my_site where serial_number=${item.sn_key.substring(0,10)+"0000"}`, function(err, result){
 						if(err){
-							console.log('get data from site error', err);
+							logger.info('get data from site error', err);
 							return;
 						}
 						if(result && result.length > 0){
@@ -271,17 +271,17 @@ function sendMsg(item){
 							var ifsendmsg = result[0]['functionary_sms'];
 							if(!ifsendmsg){
 								// 不需要发送短信
-								console.log("站点设置成不发送短信",msgContent);
+								logger.info("站点设置成不发送短信",msgContent);
 								return;
 							}
 							if(/^[0-9]{11}$/.test(mobile)){
 								msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
 								msgContent += ",组号:"+item.sn_key.substr(10,2);
 								msgContent += ",电池号:"+item.sn_key.substr(12,2);
-								console.log('发送短信', mobile, msgContent);
+								logger.info('发送短信', mobile, msgContent);
 								sendmsgFunc(mobile,msgContent);
 							}else{
-								console.log('手机格式错误', mobile);
+								logger.info('手机格式错误', mobile);
 							}
 							
 						}
@@ -293,7 +293,7 @@ function sendMsg(item){
 				}
 			})
 		}else{
-				console.log('全局设置不需要发送短信');
+				logger.info('全局设置不需要发送短信');
 			}
 		})
 	})
@@ -301,17 +301,17 @@ function sendMsg(item){
 
 
 function parseData(client, socket){
-	// console.log('start parse data');
+	// logger.info('start parse data');
 	if(/^<[^>]*>/.test(client.odata)){
 	   //如果有數據直接處理
 	   var omatch = client.odata.match(/^<[^>]*>/)[0];
-	   //console.log('omatch',omatch);
+	   //logger.info('omatch',omatch);
 	   let fullString = omatch;
 	   dealData(fullString.replace(/[<>]/g,""), socket);
 	   client.odata = client.odata.replace(fullString,"");
 	   parseData(client, socket);
 	}else{
-		// console.log('no match');
+		// logger.info('no match');
 	}
 }
 

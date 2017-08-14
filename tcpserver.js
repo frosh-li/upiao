@@ -1,22 +1,22 @@
 'use strict';
 const net = require("net");
 const CONFIG = require("./config");
+
 var parse = require("./common/parse.js");
 global.watchSite = require('./common/watchSite');
 var parseData = parse.parseData;
 
 var server = net.createServer(function(socket){
-	// socket.setTimeout(60000*5);
+	socket.setTimeout(60000);
 	var remoteAddress = socket.remoteAddress;
-	console.log('socket remote address is'.magenta, remoteAddress.green);
-	console.log('new client connected'.green);
+	logger.info('socket remote address is'.magenta, remoteAddress.green);
+	logger.info('new client connected'.green);
 	clients[remoteAddress] = {odata: ""};
 	showConnections();
 	socket.setKeepAlive(true);
 	socket.write(`<{"FuncSel":{"Operator":3}}>`);
 	socket.on('connect', ()=>{
 		clients[remoteAddress].odata = "";
-		console.log(new Date(),'some one connect'.green);
 	});
 	socket.on('error', (err)=>{
 		for(var key in clients){
@@ -31,7 +31,7 @@ var server = net.createServer(function(socket){
 
 		watchSite.disConnectSite(socket.sn_key);
 
-		console.trace(err.error,err);
+		logger.debug(err.error,err);
 		socket.end();
 	});
 
@@ -40,13 +40,13 @@ var server = net.createServer(function(socket){
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
 		clients[remoteAddress].odata += inputData;
 		if(socket.sn_key){
-			console.log((socket.sn_key+" receive").green);	
+			logger.info((socket.sn_key+" receive"));	
 		}
 		parseData(clients[remoteAddress],socket);
 	});
 
 	socket.on('drain', ()=>{
-		console.log(new Date(),'drain',socket.sn_key)
+		logger.info(new Date(),'drain',socket.sn_key)
 	})
 
 	socket.on('timeout', ()=>{
@@ -62,7 +62,7 @@ var server = net.createServer(function(socket){
 
 		socket.destroy();
 		watchSite.disConnectSite(socket.sn_key);
-		console.log(new Date(),'socket timeout'.warn,socket.sn_key);
+		logger.alert('socket timeout',socket.sn_key);
 		socket.end();
 	});
 
@@ -75,7 +75,7 @@ var server = net.createServer(function(socket){
 		if(socket && socket.sn_key){
 			delete sockets[socket.sn_key];
 		}
-		console.log(new Date(),'client disconnect'.warn);
+		logger.alert(new Date(),'client disconnect');
 		watchSite.disConnectSite(socket.sn_key);
 		showConnections();
 	})
@@ -91,15 +91,15 @@ server.listen(CONFIG.tcpserver);
 function showConnections(){
 	server.getConnections(function(err, num){
 		if(!err){
-			console.log(new Date(),'current connections is'.magenta, num.toString().green);
+			logger.info('current connections is', num.toString());
 		}else{
-			console.log(err);
+			logger.info(err);
 		}
 	});
 }
 
 function clearSites(){
-	let clearTimer = 5;
+	let clearTimer = 1;
 	var now = new Date(new Date()-1000*60*clearTimer);
 	var nowString = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate())+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
 	var nowCaution = new Date(new Date()-1000*60*clearTimer);
@@ -112,7 +112,7 @@ function clearSites(){
 	conn.query('delete from tb_group_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_battery_module where record_time'+"<'"+nowString+"'");
 	var clearSql = 'update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<"'+currentClearDateStr+'"';
-//	console.log('clear nowCaution', clearSql);
+//	logger.info('clear nowCaution', clearSql);
 	conn.query(clearSql)
 
 	// 清理系统报警
@@ -127,7 +127,7 @@ var sendParamHard = require("./common/sendParam.js");
  */
 function syncParams(){
     let sql = "select tb_station_module.sn_key,tb_station_module.CurSensor from tb_station_module where sn_key not in (select sn_key from tb_station_param) ";
-    console.log(sql);
+    logger.info(sql);
     conn.query(sql, (err, results)=>{
         results.forEach((item)=>{
             sendParamHard('StationPar', {
@@ -145,6 +145,6 @@ setInterval(syncParams,30000);
 module.exports = {
 	start:function(){
 		server.listen(CONFIG.tcpserver);
-		console.log(`tcp server start at port ${CONFIG.tcpserver.port}`.green);
+		logger.info(`tcp server start at port ${CONFIG.tcpserver.port}`.green);
 	}
 };

@@ -1,5 +1,6 @@
 'use strict';
 global.colors = require('colors');
+global.logger = require('js-logging').console();
 var mysql = require('mysql');
 colors.setTheme({
     silly: 'rainbow',

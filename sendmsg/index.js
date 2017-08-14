@@ -22,7 +22,7 @@ function getbizId(){
     var now = new Date();
     var ret= now.toLocaleDateString().replace(/[-:\/]/g,"")+now.toLocaleTimeString().replace(/[-:\/]/g,"");
 
-    console.log('bizId', ret);
+    logger.info('bizId', ret);
     return ret;
 }
 
@@ -35,8 +35,8 @@ function sendmsg(mobile, content){
         bizId:getbizId(),
         dataType:"json"
     };
-    console.log('posturl', config.url)
-    console.log('postData',postData);
+    logger.info('posturl', config.url)
+    logger.info('postData',postData);
     return new Promise((resolve, reject)=>{
     
         request({
@@ -47,10 +47,10 @@ function sendmsg(mobile, content){
             body:postData
         }, function(err,_,body){
             if(err){
-                console.log(err);
+                logger.info(err);
                 return reject(err);
             }
-            console.log(body);
+            logger.info(body);
             return resolve(body);
         })
     
