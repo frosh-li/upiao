@@ -119,10 +119,13 @@ function sendAllMsg(req, res){
 		})
 	}).then((data)=>{
 		data.forEach((item)=>{
-			let msgContent = "";
+			let msgContent = item['desc'];
+			msgContent += ",数值:"+item['current'];
+			msgContent += ",参考值:"+item['climit'];
 			msgContent += ",站点:"+item['site_name']+",站号:"+item['sid'];
 			msgContent += ",组号:"+item.sn_key.substr(10,2);
 			msgContent += ",电池号:"+item.sn_key.substr(12,2);
+			
 			var mobiles = [];
 			if(!item['functionary_sms'] && !item['area_owner_sms'] && !item['parent_owner_sms']){
 				// 不需要发送短信

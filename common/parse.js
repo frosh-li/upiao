@@ -274,7 +274,8 @@ function sendMsg(item){
 								logger.info("站点设置成不发送短信",msgContent);
 								return;
 							}
-
+							msgContent += ",数值:"+item['current'];
+							msgContent += ",参考值:"+item['climit'];
 							msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
 							msgContent += ",组号:"+item.sn_key.substr(10,2);
 							msgContent += ",电池号:"+item.sn_key.substr(12,2);
