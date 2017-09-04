@@ -3,6 +3,7 @@ const CONFIG = require('./config.js');
 const url = require("url");
 const querystring = require("querystring");
 var sendParamHard = require("./common/sendParam.js");
+var sendmsgFunc = require('./sendmsg/');
 var routes = [
 	{
 		method:"GET",
@@ -28,6 +29,12 @@ var routes = [
 		method:"POST",
 		path:"/irc",
 		func:ircollect
+	},
+
+	{
+		method:"POST",
+		path:"/sendmsg",
+		func:sendAllMsg
 	}
 ];
 const server = http.createServer((req, res) => {
@@ -81,6 +88,73 @@ function SetParam(req, res){
 	}
 	sendParamHard(req.query.type, req.body);
 	res.json({response:{code:0,msg:"set param done", query: req.query,body:req.body}});
+}
+
+function sendAllMsg(req, res){
+	if(req.method.toUpperCase() !== "POST"){
+		return res.json({status:400, msg:"method need to be post"});
+	}
+	new Promise((resolve, reject)=>{
+		let sql = `select 
+					my_site.site_name,
+					my_site.sid,
+					my_site.functionary_phone,
+					my_site.functionary_sms,
+					my_site.area_owner_phone,
+					my_site.area_owner_sms,
+					my_site.parent_owner_phone,
+					my_site.parent_owner_sms,
+					my_alerts.*,my_station_alert_desc.* from my_alerts,my_station_alert_desc,my_site 
+					where my_alerts.status=0 and my_station_alert_desc.en=my_alerts.code 
+					and my_site.serial_number=floor(my_alerts.sn_key/10000)*10000
+					`;
+		conn.query(sql, function(err, results){
+			if(err){
+				return reject(err);
+			}
+			if(!results || results.length == 0){
+				return reject(new Error('无需发送短信'));
+			}
+			return resolve(results);
+		})
+	}).then((data)=>{
+		data.forEach((item)=>{
+			let msgContent = "";
+			msgContent += ",站点:"+item['site_name']+",站号:"+item['sid'];
+			msgContent += ",组号:"+item.sn_key.substr(10,2);
+			msgContent += ",电池号:"+item.sn_key.substr(12,2);
+			var mobiles = [];
+			if(!item['functionary_sms'] && !item['area_owner_sms'] && !item['parent_owner_sms']){
+				// 不需要发送短信
+				logger.info("站点设置成不发送短信",msgContent);
+				return;
+			}
+			if(/^[0-9]{11}$/.test(item['functionary_phone'])){
+				mobiles.push(item['functionary_phone']);	
+			}else{
+				logger.info('手机格式错误', mobile);
+			}
+
+			if(/^[0-9]{11}$/.test(item['area_owner_phone'])){
+				mobiles.push(item['area_owner_phone']);	
+			}else{
+				logger.info('手机格式错误', item['area_owner_phone']);
+			}
+
+			if(/^[0-9]{11}$/.test(item['parent_owner_phone'])){
+				mobiles.push(item['parent_owner_phone']);	
+			}else{
+				logger.info('手机格式错误', item['parent_owner_phone']);
+			}
+
+			if(mobiles.length > 0){
+				logger.info('发送短信', mobiles, msgContent);
+				sendmsgFunc(mobiles.join(","),msgContent);
+			}else{
+				logger.info('所有手机格式都错误');	
+			}
+		})
+	})
 }
 
 

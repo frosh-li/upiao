@@ -300,7 +300,7 @@ function sendMsg(item){
 
 							if(mobiles.length > 0){
 								logger.info('发送短信', mobiles, msgContent);
-								sendmsgFunc(mobile.join(","),msgContent);
+								sendmsgFunc(mobiles.join(","),msgContent);
 							}else{
 								logger.info('所有手机格式都错误');	
 							}

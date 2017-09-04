@@ -14,6 +14,8 @@ var server = net.createServer(function(socket){
 	clients[remoteAddress] = {odata: ""};
 	showConnections();
 	socket.setKeepAlive(true);
+	console.log('bytesRead',socket.bytesRead);
+        console.log('bytesWritten',socket.bytesWritten); 
 	socket.write(`<{"FuncSel":{"Operator":3}}>`);
 	socket.on('connect', ()=>{
 		clients[remoteAddress].odata = "";
@@ -36,8 +38,10 @@ var server = net.createServer(function(socket){
 	});
 
 	socket.on('data', (data)=>{
+		console.log(data.toString('utf8'));
 		var record_time = new Date();
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
+		console.log(inputData);
 		clients[remoteAddress].odata += inputData;
 		if(socket.sn_key){
 			logger.info((socket.sn_key+" receive"));	

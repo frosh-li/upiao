@@ -36,7 +36,7 @@ function sendmsg(mobile, content){
         dataType:"json"
     };
     logger.info('posturl', config.url)
-    logger.info('postData',postData);
+    logger.info('postData',JSON.stringify(postData));
     return new Promise((resolve, reject)=>{
     
         request({
@@ -50,7 +50,7 @@ function sendmsg(mobile, content){
                 logger.info(err);
                 return reject(err);
             }
-            logger.info(body);
+            logger.info(JSON.stringify(body));
             return resolve(body);
         })
     
