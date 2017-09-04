@@ -261,7 +261,7 @@ function sendMsg(item){
 						return;
 					}
 
-					conn.query(`select site_name,sid,functionary_phone,functionary_sms from my_site where serial_number=${item.sn_key.substring(0,10)+"0000"}`, function(err, result){
+					conn.query(`select site_name,sid,functionary_phone,functionary_sms,area_owner_phone,area_owner_sms,parent_owner_phone,parent_owner_sms from my_site where serial_number=${item.sn_key.substring(0,10)+"0000"}`, function(err, result){
 						if(err){
 							logger.info('get data from site error', err);
 							return;
@@ -269,21 +269,41 @@ function sendMsg(item){
 						if(result && result.length > 0){
 							var mobile = result[0]['functionary_phone'];
 							var ifsendmsg = result[0]['functionary_sms'];
-							if(!ifsendmsg){
+							if(!ifsendmsg && !result[0]['area_owner_sms'] && !result[0]['parent_owner_sms']){
 								// 不需要发送短信
 								logger.info("站点设置成不发送短信",msgContent);
 								return;
 							}
+
+							msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
+							msgContent += ",组号:"+item.sn_key.substr(10,2);
+							msgContent += ",电池号:"+item.sn_key.substr(12,2);
+
+							var mobiles = [];
 							if(/^[0-9]{11}$/.test(mobile)){
-								msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
-								msgContent += ",组号:"+item.sn_key.substr(10,2);
-								msgContent += ",电池号:"+item.sn_key.substr(12,2);
-								logger.info('发送短信', mobile, msgContent);
-								sendmsgFunc(mobile,msgContent);
+								mobiles.push(mobile);	
 							}else{
 								logger.info('手机格式错误', mobile);
 							}
-							
+
+							if(/^[0-9]{11}$/.test(result[0]['area_owner_phone'])){
+								mobiles.push(result[0]['area_owner_phone']);	
+							}else{
+								logger.info('手机格式错误', result[0]['area_owner_phone']);
+							}
+
+							if(/^[0-9]{11}$/.test(result[0]['parent_owner_phone'])){
+								mobiles.push(result[0]['parent_owner_phone']);	
+							}else{
+								logger.info('手机格式错误', result[0]['parent_owner_phone']);
+							}
+
+							if(mobiles.length > 0){
+								logger.info('发送短信', mobiles, msgContent);
+								sendmsgFunc(mobile.join(","),msgContent);
+							}else{
+								logger.info('所有手机格式都错误');	
+							}
 						}
 					})
 					// functionary_phone  functionary_sms
