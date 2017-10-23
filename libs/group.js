@@ -32,6 +32,7 @@ module.exports = {
 				sn_key:item.sn_key,
 				gid:item.gid,
 				sid:sid,
+				GroBats:item.GroBats||0,
 				Humidity:item.Humidity || 0,
 				HumCol:item.HumCol || 0,
 				Voltage:item.Voltage || 0,
