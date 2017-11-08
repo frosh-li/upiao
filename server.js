@@ -24,4 +24,3 @@ global.sockets = {};
 require('./tcpserver').start();
 
 require('./httpserver').start();
-
