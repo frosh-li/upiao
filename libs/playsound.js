@@ -27,11 +27,13 @@ var player = {
                 })
                 .on('close', function(){
                     console.log('close player and ready to restart player');
+                    buffer = null;
                     if(self.flag == 0){
                         this.playing = true;
                         self.play();
                     }else{
                         flag = 1;
+                        speaker && speaker.end();
                     }
                 })
         }catch(e){
@@ -41,6 +43,7 @@ var player = {
                     this.playing = true;
                 }else{
                     flag = 1;
+                    speaker && speaker.end();
                 }
         }
         return this;
