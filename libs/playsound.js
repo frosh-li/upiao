@@ -5,17 +5,18 @@ const lame = require("lame");
 const fs = require('fs');
 
 var player = {
+    speaker: null,
     playing:false,
     flag: 0,
     play: function(){
         if(this.playing){
             return this;
         }
-        var speaker = new Speaker();
+	var speaker=this.speaker = new Speaker();
         var self = this;
         var buffer = fs.createReadStream('./alert.mp3').pipe(new lame.Decoder());
         // buffer.pipe();
-        try{
+//        try{
             buffer.pipe(speaker)
                 .on('close', function(){
                     console.log('stop speaker');
@@ -32,6 +33,7 @@ var player = {
                         speaker && speaker.end();
                     }
                 })
+/**
         }catch(e){
                 console.log(e);
                 if(self.flag == 0){
@@ -42,9 +44,11 @@ var player = {
                     speaker && speaker.end();
                 }
         }
+*/
         return this;
     },
     stop:function(){
+	this.speaker && this.speaker.end();
         this.flag = 1;
         this.playing = false;
         return this;
