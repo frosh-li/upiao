@@ -8,6 +8,9 @@ var player = {
     playing:false,
     flag: 0,
     play: function(){
+        if(this.playing){
+            return this;
+        }
         var speaker = new Speaker();
         var self = this;
         var buffer = fs.createReadStream('./alert.mp3').pipe(new lame.Decoder());
