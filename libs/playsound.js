@@ -26,7 +26,7 @@ var player = {
                     // play();
                 })
                 .on('close', function(){
-                    //console.log('close player');
+                    console.log('close player and ready to restart player');
                     if(self.flag == 0){
                         this.playing = true;
                         self.play();
