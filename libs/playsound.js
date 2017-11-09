@@ -22,10 +22,6 @@ var player = {
                     // play();
                 })
                 .on('flush', function(){
-                    console.log('flush data');
-                    // play();
-                })
-                .on('close', function(){
                     console.log('close player and ready to restart player');
                     buffer = null;
                     if(self.flag == 0){
