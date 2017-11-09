@@ -157,7 +157,7 @@ function checkAlert(){
 			return;
 		}
 		if(ret && ret[0] && ret[0].totals > 0){
-			player.play();
+			player.playing == false && player.play();
 		}else{
 			let sql2 = "select count(*) as ctotals from systemalarm";
 			conn.query(sql2, (err, ret2) => {
@@ -165,7 +165,7 @@ function checkAlert(){
 					return;
 				}
 				if(ret2 && ret2[0] && ret2[0].ctotals > 0){
-					player.play();
+					player.playing == false && player.play();
 				}else{
 					player.stop();
 				}
