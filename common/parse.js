@@ -19,7 +19,7 @@ function commonErrorDeal(err){
 var dealData = function(str, socket){
 	var record_time = new Date();
 	try{
-		str = JSON.parse(str);	
+		str = JSON.parse(str);
 	}catch(e){
 		logger.info('error---------------');
 		logger.info(str);
@@ -37,7 +37,7 @@ var dealData = function(str, socket){
 		conn.query("update tb_battery_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 
 	}
-	
+
 	// logger.info(str);
 	if(str&&str.StationData){
 		station.deal(str.StationData, record_time);
@@ -71,7 +71,7 @@ var dealData = function(str, socket){
 		});
 	}
 
-	
+
 	if(str && str.StationPar){
 		// 如果是参数，处理参数
 		logger.info(str);
@@ -88,9 +88,11 @@ var dealData = function(str, socket){
 		logger.info(str.StationErr);
 		let StationErr = str.StationErr;
 		let errorInsert = [];
+		let sn_key = '';
 		if(StationErr){
 			let type="station";
 			for(var key in StationErr.errors){
+				sn_key = StationErr.sn_key;
 				if(key.startsWith("Limit")){
 					continue;
 				}
@@ -108,6 +110,7 @@ var dealData = function(str, socket){
 		let GroupErr = str.GroupErr;
 		str.GroupErr && str.GroupErr.forEach(function(GroupErr){
 			let type="group";
+			sn_key = GroupErr.sn_key.substring(0,10)+'0000';
 			for(var key in GroupErr.errors){
 				if(key.startsWith("Limit")){
 					continue;
@@ -129,6 +132,7 @@ var dealData = function(str, socket){
 
 		str.BatteryErr && str.BatteryErr.forEach(function(BatteryErr){
 			let type="battery";
+			sn_key = GroupErr.sn_key.substring(0,10)+'0000';
 			for(var key in BatteryErr.errors){
 				if(key.startsWith("Limit")){
 					continue;
@@ -149,6 +153,14 @@ var dealData = function(str, socket){
 			insertErrorBulk(errorInsert);
 		}
 		// 如果有报警信息，进行报警
+		// 报警之后进行处理  类型心跳处理机制
+		// 开始更新所有的station数据
+
+		conn.query("update tb_station_module set record_time=? where sn_key=?",[record_time, sn_key],commonErrorDeal);
+		// 开始更新所有的battery数据
+		conn.query("update tb_group_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
+		// 开始更新所有的battery数据
+		conn.query("update tb_battery_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 	}
 }
 
@@ -159,8 +171,8 @@ function insertErrorBulk(data){
 		new Promise(function(resolve, reject){
 			// 如果是忽略狀態不加入數據
 			var sql = `select * from my_alerts where
-			 status=2 and 
-			 sn_key='${item.sn_key}' and 
+			 status=2 and
+			 sn_key='${item.sn_key}' and
 			 code='${item.code}'`;
 			conn.query(sql, function(err, ret){
 				if(err){
@@ -193,12 +205,12 @@ function insertErrorBulk(data){
 					}
 				})
 			})
-			
+
 		}).then(function(_){
 			// logger.info('update or insert', _);
 			var sql;
 			if(_ != 'insert'){
-				sql = `update my_alerts 
+				sql = `update my_alerts
 					set
 					current=?,
 					time=?,
@@ -209,7 +221,7 @@ function insertErrorBulk(data){
 				sql = "insert into my_alerts set ?";
 				sendMsg(item);
 			}
-			
+
 			var obj = [
 				item.current,
 				new Date(),
@@ -230,9 +242,9 @@ function insertErrorBulk(data){
 				if(err.messeage == "ignored"){
 					return;
 				}else{
-					logger.info(err);	
+					logger.info(err);
 				}
-				
+
 			}
 			insertErrorBulk(data);
 		})
@@ -282,19 +294,19 @@ function sendMsg(item){
 
 							var mobiles = [];
 							if(/^[0-9]{11}$/.test(mobile)){
-								mobiles.push(mobile);	
+								mobiles.push(mobile);
 							}else{
 								logger.info('手机格式错误', mobile);
 							}
 
 							if(/^[0-9]{11}$/.test(result[0]['area_owner_phone'])){
-								mobiles.push(result[0]['area_owner_phone']);	
+								mobiles.push(result[0]['area_owner_phone']);
 							}else{
 								logger.info('手机格式错误', result[0]['area_owner_phone']);
 							}
 
 							if(/^[0-9]{11}$/.test(result[0]['parent_owner_phone'])){
-								mobiles.push(result[0]['parent_owner_phone']);	
+								mobiles.push(result[0]['parent_owner_phone']);
 							}else{
 								logger.info('手机格式错误', result[0]['parent_owner_phone']);
 							}
@@ -303,13 +315,13 @@ function sendMsg(item){
 								logger.info('发送短信', mobiles, msgContent);
 								sendmsgFunc(mobiles.join(","),msgContent);
 							}else{
-								logger.info('所有手机格式都错误');	
+								logger.info('所有手机格式都错误');
 							}
 						}
 					})
 					// functionary_phone  functionary_sms
 					// 检查站点设置中这条记录是否需要发送短信
-					
+
 					// sendmsgFunc()
 				}
 			})
