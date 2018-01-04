@@ -146,10 +146,10 @@ setInterval(clearSites,5000);
 setInterval(showConnections,10000);
 setInterval(syncParams,30000);
 
-setInterval(checkAlert, 10000);
+//setInterval(checkAlert, 10000);
 
-var player = require('./libs/playsound.js');
-
+//var player = require('./libs/playsound.js');
+/*
 function checkAlert(){
 	logger.info('play sound alert');
 	let sql = "select count(*) as totals from my_alerts where status = 0";
@@ -176,7 +176,7 @@ function checkAlert(){
 		}
 	})
 }
-
+*/
 module.exports = {
 	start:function(){
 		server.listen(CONFIG.tcpserver);
