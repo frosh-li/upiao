@@ -132,7 +132,7 @@ var dealData = function(str, socket){
 
 		str.BatteryErr && str.BatteryErr.forEach(function(BatteryErr){
 			let type="battery";
-			sn_key = GroupErr.sn_key.substring(0,10)+'0000';
+			sn_key = BatteryErr.sn_key.substring(0,10)+'0000';
 			for(var key in BatteryErr.errors){
 				if(key.startsWith("Limit")){
 					continue;
@@ -147,7 +147,7 @@ var dealData = function(str, socket){
 				})
 			}
 		})
-		// logger.info(errorInsert);
+		logger.info('erroritem',JSON.stringify(errorInsert));
 		logger.info('报警条数为',errorInsert.length);
 		if(errorInsert.length > 0){
 			insertErrorBulk(errorInsert);
@@ -166,7 +166,7 @@ var dealData = function(str, socket){
 
 function insertErrorBulk(data){
 	var item = data.shift();
-	//logger.info(item)
+	logger.info('erroritem'+JSON.stringify(item))
 	if(item){
 		new Promise(function(resolve, reject){
 			// 如果是忽略狀態不加入數據
@@ -179,7 +179,7 @@ function insertErrorBulk(data){
 					return reject(err);
 				}
 				if(ret && ret.length > 0){
-					// logger.info('ignored');
+					logger.info('erroritem ignored', JSON.stringify(item));
 					return reject('ignored');
 				}else{
 					return resolve('ok');
@@ -207,7 +207,7 @@ function insertErrorBulk(data){
 			})
 
 		}).then(function(_){
-			// logger.info('update or insert', _);
+			 logger.info('erroritem updatr or insert', JSON.stringify(_));
 			var sql;
 			if(_ != 'insert'){
 				sql = `update my_alerts
@@ -233,7 +233,7 @@ function insertErrorBulk(data){
 				if(err){
 					logger.info('insert error error', err);
 				}else{
-					// logger.info('insert error done'.green);
+					logger.info('insert error done'.green);
 				}
 				insertErrorBulk(data);
 			})
