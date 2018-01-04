@@ -42,7 +42,6 @@ function disConnectSite(sn_key){
 			var ifsendmsg = result[0]['functionary_sms'];
 			if(!ifsendmsg && !result[0]['area_owner_sms'] && !result[0]['parent_owner_sms']){
 				// 不需要发送短信
-				logger.info("站点设置成不发送短信",msgContent);
 				return;
 			}
 			let msgContent = desc;
