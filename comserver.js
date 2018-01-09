@@ -6,90 +6,33 @@ var parse = require("./common/parse.js");
 global.watchSite = require('./common/watchSite');
 var parseData = parse.parseData;
 
-var server = net.createServer(function(socket){
-	socket.setTimeout(60000);
-	var remoteAddress = socket.remoteAddress;
-	logger.info('socket remote address is'.magenta, remoteAddress.green);
-	logger.info('new client connected'.green);
-	clients[remoteAddress] = {odata: ""};
-	showConnections();
-	socket.setKeepAlive(true);
-	console.log('bytesRead',socket.bytesRead);
-        console.log('bytesWritten',socket.bytesWritten); 
-	socket.write(`<{"FuncSel":{"Operator":3}}>`);
-	socket.on('connect', ()=>{
-		clients[remoteAddress].odata = "";
-	});
-	socket.on('error', (err)=>{
-		for(var key in clients){
-			if(socket == clients[key]){
-				delete clients[key];
+var SerialPort = require("serialport");  //引入模块
+var portName = 'COM1'; //定义串口名
+var config = {
+   baudRate: 9600,  //波特率
+   dataBits: 8,    //数据位
+   parity: 'none',   //奇偶校验
+   stopBits: 1,   //停止位
+   flowControl: false 
+}; 
+function start(){
+	global.serialPort = new SerialPort(portName, config, function(error, ports){
+		var remoteAddress = '127.0.0.1';
+		serialPort.write(`<{"FuncSel":{"Operator":3}}>`);	
+		serialPort.on('data', (data)=>{
+			console.log(data.toString('utf8'));
+			var record_time = new Date();
+			var inputData = data.toString('utf8').replace(/\r\n/mg,"");
+			console.log(inputData);
+			comClients[remoteAddress].odata += inputData;
+			if(serialPort.sn_key){
+				logger.info((serialPort.sn_key+" receive"));	
 			}
-		}
-		if(socket && socket.sn_key){
-			delete sockets[socket.sn_key];
-		}
-		socket.destroy();
-
-		watchSite.disConnectSite(socket.sn_key);
-
-		logger.debug(err.error,err);
-		socket.end();
+			parseData(comClients[remoteAddress],serialPort);
+		});
 	});
+}
 
-	socket.on('data', (data)=>{
-		console.log(data.toString('utf8'));
-		var record_time = new Date();
-		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
-		console.log(inputData);
-		clients[remoteAddress].odata += inputData;
-		if(socket.sn_key){
-			logger.info((socket.sn_key+" receive"));	
-		}
-		parseData(clients[remoteAddress],socket);
-	});
-
-	socket.on('drain', ()=>{
-		logger.info(new Date(),'drain',socket.sn_key)
-	})
-
-	socket.on('timeout', ()=>{
-
-		for(var key in clients){
-			if(socket == clients[key]){
-				delete clients[key];
-			}
-		}
-		if(socket && socket.sn_key){
-			delete sockets[socket.sn_key];
-		}
-
-		socket.destroy();
-		watchSite.disConnectSite(socket.sn_key);
-		logger.alert('socket timeout',socket.sn_key);
-		socket.end();
-	});
-
-	socket.on('end', (data)=>{
-		for(var key in clients){
-			if(socket == clients[key]){
-				delete clients[key];
-			}
-		}
-		if(socket && socket.sn_key){
-			delete sockets[socket.sn_key];
-		}
-		logger.alert(new Date(),'client disconnect');
-		watchSite.disConnectSite(socket.sn_key);
-		showConnections();
-	})
-});
-
-server.on('error', (err) => {
-  throw err;
-});
-
-server.listen(CONFIG.tcpserver);
 
 
 function showConnections(){
@@ -147,7 +90,7 @@ function syncParams(){
 }
 
 setInterval(clearSites,5000);
-setInterval(showConnections,10000);
+// setInterval(showConnections,10000);
 setInterval(syncParams,30000);
 
 //setInterval(checkAlert, 10000);
@@ -183,7 +126,7 @@ function checkAlert(){
 */
 module.exports = {
 	start:function(){
-		server.listen(CONFIG.tcpserver);
-		logger.info(`tcp server start at port ${CONFIG.tcpserver.port}`.green);
+		
+		logger.info(`com server start at port COM1`.green);
 	}
 };

@@ -151,4 +151,5 @@ module.exports = function(ctype, body){
 	var writeData = JSON.stringify(ret);
 	logger.info(writeData);
 	sockets[body.sn_key] && sockets[body.sn_key].write(`<${writeData}>`);
+	serialPort && serialPort.write(`<${writeData}>`);
 }

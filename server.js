@@ -19,8 +19,18 @@ const CONFIG = require("./config");
 global.conn = mysql.createConnection(CONFIG.db);
 global.formatData = require("./common/formatDate.js");
 global.clients = {};
+global.comClients = {};
 global.sockets = {};
+
+conn.connect(function(err){
+    if(err){
+        console.error('error on connecting', err.stack);
+        return;
+    }
+    console.log('connected as id ', conn.threadId);
+})
 
 require('./tcpserver').start();
 
 require('./httpserver').start();
+require('./comserver').start();
