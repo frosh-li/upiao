@@ -16,19 +16,36 @@ colors.setTheme({
 });
 // 加载配置文件
 const CONFIG = require("./config");
-global.conn = mysql.createConnection(CONFIG.db);
+global.conn = null;
 global.formatData = require("./common/formatDate.js");
 global.clients = {};
 global.comClients = {};
 global.sockets = {};
 
-conn.connect(function(err){
-    if(err){
-        console.error('error on connecting', err.stack);
-        return;
-    }
-    console.log('connected as id ', conn.threadId);
-})
+function autoConnMysql(){
+    conn = mysql.createConnection(CONFIG.db);    
+    conn.connect(function(err){
+        if(err){
+            console.error('error on connecting', err.stack);
+            logger.info('数据库连接失败，10秒后进行重连');
+            setTimeout(autoConnMysql , 10000);
+            return;
+        }else{
+            console.log('数据库连接成功,connected as id ', conn.threadId);    
+        }
+    });
+    conn.on('error', (err)=> {
+        if(err.code === 'PROTOCOL_CONNECTION_LOST'){
+            logger.info('数据库断开连接，10秒后进行重连');
+            autoConnMysql();
+        }else{
+            throw err;
+        }
+    })
+}
+
+autoConnMysql();
+
 
 require('./tcpserver').start();
 

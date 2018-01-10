@@ -13,12 +13,10 @@
     "express": "~4.12.2",
     "jade": "~1.9.2",
     "js-logging": "^0.1.0",
-    "lame": "^1.2.4",
     "morgan": "~1.5.1",
     "mysql": "^2.11.1",
     "request": "^2.81.0",
     "serialport": "^6.0.4",
-    "serve-favicon": "~2.2.0",
-    "speaker": "^0.4.0"
+    "serve-favicon": "~2.2.0"
   }
 }

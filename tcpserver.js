@@ -33,7 +33,7 @@ var server = net.createServer(function(socket){
 
 		watchSite.disConnectSite(socket.sn_key);
 
-		logger.debug(err.error,err);
+		logger.debug('end connect from error',err.error,err);
 		socket.end();
 	});
 
@@ -79,7 +79,7 @@ var server = net.createServer(function(socket){
 		if(socket && socket.sn_key){
 			delete sockets[socket.sn_key];
 		}
-		logger.alert(new Date(),'client disconnect');
+		logger.info(' from end client disconnect');
 		watchSite.disConnectSite(socket.sn_key);
 		showConnections();
 	})
