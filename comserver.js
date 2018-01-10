@@ -7,16 +7,9 @@ global.watchSite = require('./common/watchSite');
 var parseData = parse.parseData;
 
 var SerialPort = require("serialport");  //引入模块
-var portName = 'COM1'; //定义串口名
-var config = {
-   baudRate: 9600,  //波特率
-   dataBits: 8,    //数据位
-   parity: 'none',   //奇偶校验
-   stopBits: 1,   //停止位
-   flowControl: false 
-}; 
+
 function start(){
-	global.serialPort = new SerialPort(portName, config, function(error, ports){
+	global.serialPort = new SerialPort(CONFIG.com.name, CONFIG.com, function(error, ports){
 		var remoteAddress = '127.0.0.1';
 		serialPort.write(`<{"FuncSel":{"Operator":3}}>`);	
 		serialPort.on('data', (data)=>{

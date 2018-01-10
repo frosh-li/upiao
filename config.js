@@ -18,5 +18,13 @@ module.exports = {
 	},
 	httpserver:{
 		port:3000
+	},
+	com: {
+		name:'COM1',
+		baudRate: 9600,  //波特率
+		dataBits: 8,    //数据位
+		parity: 'none',   //奇偶校验
+		stopBits: 1,   //停止位
+		flowControl: false 
 	}
 };
