@@ -102,8 +102,30 @@ function disConnectSite(sn_key){
 	})
 }
 
+function clearSites(){
+	logger.info('start clear site data');
+	let clearTimer = 1;
+	var now = new Date(new Date()-1000*60*clearTimer);
+	var nowString = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate())+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
+	var nowCaution = new Date(new Date()-1000*60*clearTimer);
+	var nowClearCautionString = nowCaution.getFullYear()+"-"+(nowCaution.getMonth()+1)+"-"+(nowCaution.getDate())+" "+nowCaution.getHours()+":"+nowCaution.getMinutes()+":"+nowCaution.getSeconds();
+	var currentDate = new Date();
+	var currentDateStr = currentDate.getFullYear()+"-"+(currentDate.getMonth()+1)+"-"+(currentDate.getDate())+" "+currentDate.getHours()+":"+currentDate.getMinutes()+":"+currentDate.getSeconds();
+	var currentClearDate = new Date(currentDate - clearTimer*1000*60);
+	var currentClearDateStr = currentClearDate.getFullYear()+"-"+(currentClearDate.getMonth()+1)+"-"+(currentClearDate.getDate())+" "+currentClearDate.getHours()+":"+currentClearDate.getMinutes()+":"+currentClearDate.getSeconds();
+	conn.query('delete from tb_station_module where record_time'+"<'"+nowString+"'");
+	conn.query('delete from tb_group_module where record_time'+"<'"+nowString+"'");
+	conn.query('delete from tb_battery_module where record_time'+"<'"+nowString+"'");
+	var clearSql = 'update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<"'+currentClearDateStr+'"';
+//	logger.info('clear nowCaution', clearSql);
+	conn.query(clearSql);
+
+	// 清理系统报警
+	conn.query('delete from systemalarm where station not in (select serial_number from my_site)');
+}
 
 module.exports = {
 	disConnectSite:disConnectSite,
-	onConnectSite:onConnectSite
+	onConnectSite:onConnectSite,
+	clearSites: clearSites
 }
