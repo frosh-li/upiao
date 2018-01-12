@@ -99,7 +99,7 @@ function checkAlert(){
 */
 module.exports = {
 	start:function(){
-		
+		start();
 		logger.info(`com server start at port COM1`.green);
 	}
 };
