@@ -19,7 +19,7 @@ const CONFIG = require("./config");
 global.conn = null;
 global.formatData = require("./common/formatDate.js");
 global.clients = {};
-global.comClients = {};
+global.comClients = {'127.0.0.1':{'odata':''}};
 global.sockets = {};
 
 function autoConnMysql(){
