@@ -89,9 +89,6 @@ server.on('error', (err) => {
   throw err;
 });
 
-server.listen(CONFIG.tcpserver);
-
-
 function showConnections(){
 	server.getConnections(function(err, num){
 		if(!err){
