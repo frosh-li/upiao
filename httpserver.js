@@ -101,7 +101,7 @@ function sendCmd(req, res){
 	}
     var datas = req.body.cmd;
     try{
-        JSON.parse(datas);
+        JSON.parse(datas.replace("<","").replace(">",""));
         res.json({status: 200, msg:'send success'});
     }catch(e){
         res.json({status: 400, msg:'JSON error'});
