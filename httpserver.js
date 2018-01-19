@@ -35,7 +35,12 @@ var routes = [
 		method:"POST",
 		path:"/sendmsg",
 		func:sendAllMsg
-	}
+	},
+    {
+        method:"POST",
+        path:"/cmd",
+        func:sendCmd
+    }
 ];
 const server = http.createServer((req, res) => {
 	res.json = function(str){
@@ -88,6 +93,19 @@ function SetParam(req, res){
 	}
 	sendParamHard(req.query.type, req.body);
 	res.json({response:{code:0,msg:"set param done", query: req.query,body:req.body}});
+}
+
+function sendCmd(req, res){
+	if(req.method.toUpperCase() !== "POST"){
+		return res.json({status:400, msg:"method need to be post"});
+	}
+    var datas = req.body.cmd;
+    try{
+        JSON.parse(datas);
+        res.json({status: 200, msg:'send success'});
+    }catch(e){
+        res.json({status: 400, msg:'JSON error'});
+    }
 }
 
 function sendAllMsg(req, res){
