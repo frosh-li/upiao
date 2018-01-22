@@ -21,7 +21,7 @@ module.exports = {
 	},
 	com: {
 		name:'COM1',
-		baudRate: 9600,  //波特率
+		baudRate: 115200,  //波特率
 		dataBits: 8,    //数据位
 		parity: 'none',   //奇偶校验
 		stopBits: 1,   //停止位
