@@ -46,8 +46,5 @@ function autoConnMysql(){
 
 autoConnMysql();
 
-
-require('./tcpserver').start();
-
 require('./httpserver').start();
 require('./comserver').start();
