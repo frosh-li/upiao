@@ -8,6 +8,8 @@ var parseData = parse.parseData;
 
 var SerialPort = require("serialport");  //引入模块
 
+global.com_sn = "";
+
 function start(){
 	global.serialPort = new SerialPort(CONFIG.com.name, CONFIG.com, function(error, ports){
 		var remoteAddress = '127.0.0.1';
@@ -18,8 +20,8 @@ function start(){
 			var inputData = data.toString('utf8').replace(/\r\n/mg,"");
 			console.log(inputData);
 			comClients[remoteAddress].odata += inputData;
-			if(serialPort.sn_key){
-				logger.info((serialPort.sn_key+" receive"));	
+			if(com_sn){
+				logger.info((com_sn+" receive"));	
 			}
 			parseData(comClients[remoteAddress],serialPort);
 		});

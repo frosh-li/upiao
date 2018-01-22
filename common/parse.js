@@ -42,9 +42,9 @@ var dealData = function(str, socket){
 	if(str&&str.StationData){
 		station.deal(str.StationData, record_time);
 		if(str.StationData && str.StationData.sn_key){
-			socket.sn_key = str.StationData.sn_key;
-			sockets[socket.sn_key] = socket;
-			logger.info('parse data from ',socket.sn_key)
+			com_sn = str.StationData.sn_key;
+			// sockets[socket.sn_key] = socket;
+			logger.info('parse data from ',com_sn)
 		}else{
 			logger.info('can not parse data')
 		}
