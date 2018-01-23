@@ -336,15 +336,17 @@ function sendMsg(item){
 function parseData(client, socket){
 	// logger.info('start parse data');
 	if(/^<[^>]*>/.test(client.odata)){
+		serialPort.pause();
 	   //如果有數據直接處理
 	   var omatch = client.odata.match(/^<[^>]*>/)[0];
-	   //logger.info('omatch',omatch);
+	   logger.info('omatch',omatch);
 	   let fullString = omatch;
 	   dealData(fullString.replace(/[<>]/g,""), socket);
 	   client.odata = client.odata.replace(fullString,"");
 	   parseData(client, socket);
 	}else{
-		// logger.info('no match');
+		serialPort.resume();
+		logger.info('no match');
 	}
 }
 
