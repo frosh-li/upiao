@@ -24,7 +24,7 @@ function start(){
 			}
 			parseData(comClients[remoteAddress],serialPort);
 		});
-		serialPort.on('error', functione(err){
+		serialPort.on('error', function(err){
 			comClients[remoteAddress].odata = "";
 			com_sn = "";
 			logger.info(`serialPort error ${err.message}`.red);
