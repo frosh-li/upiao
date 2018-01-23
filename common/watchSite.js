@@ -103,7 +103,7 @@ function disConnectSite(sn_key){
 }
 
 function clearSites(){
-	logger.info('start clear site data');
+	// logger.info('start clear site data');
 	let clearTimer = 1;
 	var now = new Date(new Date()-1000*60*clearTimer);
 	var nowString = now.getFullYear()+"-"+(now.getMonth()+1)+"-"+(now.getDate())+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
