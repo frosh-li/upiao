@@ -336,7 +336,7 @@ function sendMsg(item){
 
 function parseData(client, socket){
 	// logger.info('start parse data');
-	if(/^<[^>]*>/.test(client.odata)){
+	if(/<[^>]*>/.test(client.odata)){
 		serialPort.pause();
 	   //如果有數據直接處理
 	   var omatch = client.odata.match(/^<[^>]*>/)[0];
