@@ -347,7 +347,7 @@ function parseData(client, socket){
 	   parseData(client, socket);
 	}else{
 		serialPort.resume();
-		fs.writefileSync(__dirname + "/datalog.txt", client.odata);
+		fs.writeFileSync(__dirname + "/datalog.txt", client.odata);
 		logger.info('no match');
 	}
 }
