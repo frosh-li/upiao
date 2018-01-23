@@ -2,6 +2,7 @@
 
 var station = require('../libs/station');
 var group = require('../libs/group');
+var fs = require('fs');
 var battery = require('../libs/battery');
 
 var sendmsgFunc = require('../sendmsg/');
@@ -346,6 +347,7 @@ function parseData(client, socket){
 	   parseData(client, socket);
 	}else{
 		serialPort.resume();
+		fs.writefileSync(__dirname + "/datalog.txt", client.odata);
 		logger.info('no match');
 	}
 }
