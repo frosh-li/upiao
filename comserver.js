@@ -25,6 +25,16 @@ function start(){
 			}
 			parseData(comClients[remoteAddress],serialPort);
 		});
+		serialPort.on('error', functione(err){
+			comClients[remoteAddress].odata = "";
+			com_sn = "";
+			logger.info(`serialPort error ${err.message}`.red);
+		});
+		serialPort.on('close', function(err){
+			com_sn = "";
+			comClients[remoteAddress].odata = "";
+			logger.info(`serialPort error closed`.red);
+		})
 	});
 }
 
