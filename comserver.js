@@ -15,7 +15,6 @@ function start(){
 		var remoteAddress = '127.0.0.1';
 		serialPort.write(`<{"FuncSel":{"Operator":3}}>`);	
 		serialPort.on('data', (data)=>{
-			console.log(data.toString('utf8'));
 			var record_time = new Date();
 			var inputData = data.toString('utf8').replace(/\r\n/mg,"");
 			console.log(inputData);
