@@ -29,6 +29,9 @@ function start(){
 			comClients[remoteAddress].odata = "";
 			com_sn = "";
 			logger.info(`serialPort error ${err.message}`.red);
+			setTimeout(()=>{
+				start();
+			}, 1000);
 		});
 		serialPort.on('close', function(err){
 			com_sn = "";
@@ -39,11 +42,11 @@ function start(){
 				start();
 			}, 1000);
 		});
-		setTimeout(()=>{
-			serialPort.close(()=>{
-				logger.info('serialPort closed'.green);
-			})
-		}, restartInterval)
+		// setTimeout(()=>{
+		// 	serialPort.close(()=>{
+		// 		logger.info('serialPort closed'.green);
+		// 	})
+		// }, restartInterval)
 	});
 }
 
