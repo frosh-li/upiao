@@ -9,18 +9,19 @@ var parseData = parse.parseData;
 var SerialPort = require("serialport");  //引入模块
 
 global.com_sn = "";
+const restartInterval = 1000 * 60 * 10;
 
 function start(){
 	global.serialPort = new SerialPort(CONFIG.com.name, CONFIG.com, function(error, ports){
 		var remoteAddress = '127.0.0.1';
-		serialPort.write(`<{"FuncSel":{"Operator":3}}>`);	
+		serialPort.write(`<{"FuncSel":{"Operator":3}}>`);
 		serialPort.on('data', (data)=>{
 			var record_time = new Date();
 			var inputData = data.toString('utf8').replace(/\r\n/mg,"");
 			console.log(inputData);
 			comClients[remoteAddress].odata += inputData;
 			if(com_sn){
-				logger.info((com_sn+" receive"));	
+				logger.info((com_sn+" receive"));
 			}
 			parseData(comClients[remoteAddress],serialPort);
 		});
@@ -33,7 +34,16 @@ function start(){
 			com_sn = "";
 			comClients[remoteAddress].odata = "";
 			logger.info(`serialPort error closed`.red);
-		})
+			logger.info("1s后重新打开串口");
+			setTimeout(()=>{
+				start();
+			}, 1000);
+		});
+		setTimeout(()=>{
+			serialPort.close(()=>{
+				logger.info('serialPort closed'.green);
+			})
+		}, restartInterval)
 	});
 }
 
