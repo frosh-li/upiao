@@ -42,11 +42,11 @@ function start(){
 				start();
 			}, 1000);
 		});
-		// setTimeout(()=>{
-		// 	serialPort.close(()=>{
-		// 		logger.info('serialPort closed'.green);
-		// 	})
-		// }, restartInterval)
+		setTimeout(()=>{
+			serialPort.close(()=>{
+				logger.info('serialPort closed'.green);
+			})
+		}, restartInterval)
 	});
 }
 
