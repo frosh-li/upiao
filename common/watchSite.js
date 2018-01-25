@@ -49,19 +49,19 @@ function disConnectSite(sn_key){
 
 			var mobiles = [];
 			if(/^[0-9]{11}$/.test(mobile)){
-				mobiles.push(mobile);	
+				mobiles.push(mobile);
 			}else{
 				logger.info('手机格式错误', mobile);
 			}
 
 			if(/^[0-9]{11}$/.test(result[0]['area_owner_phone'])){
-				mobiles.push(result[0]['area_owner_phone']);	
+				mobiles.push(result[0]['area_owner_phone']);
 			}else{
 				logger.info('手机格式错误', result[0]['area_owner_phone']);
 			}
 
 			if(/^[0-9]{11}$/.test(result[0]['parent_owner_phone'])){
-				mobiles.push(result[0]['parent_owner_phone']);	
+				mobiles.push(result[0]['parent_owner_phone']);
 			}else{
 				logger.info('手机格式错误', result[0]['parent_owner_phone']);
 			}
@@ -70,7 +70,7 @@ function disConnectSite(sn_key){
 				logger.info('发送短信', mobiles, msgContent);
 				sendmsgFunc(mobiles.join(","),msgContent);
 			}else{
-				logger.info('所有手机格式都错误');	
+				logger.info('所有手机格式都错误');
 			}
 		}
 	})
@@ -116,7 +116,7 @@ function clearSites(){
 	conn.query('delete from tb_station_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_group_module where record_time'+"<'"+nowString+"'");
 	conn.query('delete from tb_battery_module where record_time'+"<'"+nowString+"'");
-	var clearSql = 'update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<"'+currentClearDateStr+'"';
+	var clearSql = 'update my_alerts set status=4, markup="系统自动处理", markuptime="'+currentDateStr+'" where time<"'+currentClearDateStr+'" and status=0';
 //	logger.info('clear nowCaution', clearSql);
 	conn.query(clearSql);
 
