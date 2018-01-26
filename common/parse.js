@@ -336,7 +336,7 @@ function sendMsg(item){
 
 
 function parseData(socket){
-	// logger.info('start parse data');
+	// logger.info('start parse data', socket.odata);
 	if(/^<[^>]*>/.test(socket.odata)){
 	   //如果有數據直接處理
 	   var omatch = socket.odata.match(/^<[^>]*>/)[0];

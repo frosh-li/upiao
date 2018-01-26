@@ -15,7 +15,8 @@ var server = net.createServer(function(socket){
 	showConnections();
 	socket.setKeepAlive(true);
 	console.log('bytesRead',socket.bytesRead);
-        console.log('bytesWritten',socket.bytesWritten);
+	console.log('bytesWritten',socket.bytesWritten);
+	socket.odata = "";
 	socket.write(`<{"FuncSel":{"Operator":3}}>`);
 	socket.on('connect', ()=>{
 		socket.odata = "";
