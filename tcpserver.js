@@ -39,9 +39,9 @@ var server = net.createServer(function(socket){
 	});
 
 	socket.on('data', (data)=>{
-		console.log(data.toString('utf8'));
 		var record_time = new Date();
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
+		logger.info(inputData);
 		socket.odata += inputData;
 		if(socket.sn_key){
 			logger.info((socket.sn_key+" receive"));
