@@ -21,8 +21,10 @@ var dealData = function(str, socket){
 	try{
 		str = JSON.parse(str);
 	}catch(e){
+		// 如果出错清空之前的缓存数据
 		logger.info('error---------------');
 		logger.info(str);
+		socket.odata = "";
 		return;
 	}
 
@@ -333,16 +335,16 @@ function sendMsg(item){
 }
 
 
-function parseData(client, socket){
+function parseData(socket){
 	// logger.info('start parse data');
-	if(/^<[^>]*>/.test(client.odata)){
+	if(/^<[^>]*>/.test(socket.odata)){
 	   //如果有數據直接處理
-	   var omatch = client.odata.match(/^<[^>]*>/)[0];
-	   //logger.info('omatch',omatch);
+	   var omatch = socketodata.match(/^<[^>]*>/)[0];
+	   logger.info('omatch',omatch);
 	   let fullString = omatch;
 	   dealData(fullString.replace(/[<>]/g,""), socket);
-	   client.odata = client.odata.replace(fullString,"");
-	   parseData(client, socket);
+	   socket.odata = socket.odata.replace(fullString,"");
+		 parseData(socket);
 	}else{
 		// logger.info('no match');
 	}

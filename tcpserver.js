@@ -15,12 +15,13 @@ var server = net.createServer(function(socket){
 	showConnections();
 	socket.setKeepAlive(true);
 	console.log('bytesRead',socket.bytesRead);
-        console.log('bytesWritten',socket.bytesWritten); 
+        console.log('bytesWritten',socket.bytesWritten);
 	socket.write(`<{"FuncSel":{"Operator":3}}>`);
 	socket.on('connect', ()=>{
-		clients[remoteAddress].odata = "";
+		socket.odata = "";
 	});
 	socket.on('error', (err)=>{
+		socket.odata = "";
 		for(var key in clients){
 			if(socket == clients[key]){
 				delete clients[key];
@@ -41,12 +42,11 @@ var server = net.createServer(function(socket){
 		console.log(data.toString('utf8'));
 		var record_time = new Date();
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
-		console.log(inputData);
-		clients[remoteAddress].odata += inputData;
+		socket.odata += inputData;
 		if(socket.sn_key){
-			logger.info((socket.sn_key+" receive"));	
+			logger.info((socket.sn_key+" receive"));
 		}
-		parseData(clients[remoteAddress],socket);
+		parseData(socket);
 	});
 
 	socket.on('drain', ()=>{
@@ -54,7 +54,7 @@ var server = net.createServer(function(socket){
 	})
 
 	socket.on('timeout', ()=>{
-
+		socket.odata = "";
 		for(var key in clients){
 			if(socket == clients[key]){
 				delete clients[key];
@@ -71,6 +71,7 @@ var server = net.createServer(function(socket){
 	});
 
 	socket.on('end', (data)=>{
+		socket.odata = "";
 		for(var key in clients){
 			if(socket == clients[key]){
 				delete clients[key];
