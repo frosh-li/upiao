@@ -337,7 +337,7 @@ function sendMsg(item){
 
 function parseData(socket){
 	// logger.info('start parse data', socket.odata);
-	if(/^<[^>]*>/.test(socket.odata)){
+	if(/<[^>]*>/.test(socket.odata)){
 	   //如果有數據直接處理
 	   var omatch = socket.odata.match(/^<[^>]*>/)[0];
 	   logger.info('omatch',omatch);
@@ -346,6 +346,11 @@ function parseData(socket){
 	   socket.odata = socket.odata.replace(fullString,"");
 		 parseData(socket);
 	}else{
+		if(socket.odata.length > 20000){
+			// 数据过多，并且无法解析，断开连接重新来
+			socket.end();	
+			logger.info("close connection 因为数据过多，并且无法解析")
+		}
 		// logger.info('no match');
 	}
 }
