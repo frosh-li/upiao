@@ -8,7 +8,7 @@ let logger = require('js-logging').console();
 
 
 function connServer(sn_key){
-	let client = net.connect({port: stations.port,host:stations.host}, () => {
+	let client = net.connect({port: stations.port,host:stations.server}, () => {
 	  logger.info('connected to server!',sn_key);
 	  setInterval(function(){
   		let cdata = datasjson.replace(/{{sn_key}}/g, sn_key).replace("{{sid}}",parseInt(sn_key.toString().substring(7)));

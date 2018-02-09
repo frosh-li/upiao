@@ -2,88 +2,57 @@
 const net = require("net");
 const CONFIG = require("./config");
 
-var parse = require("./common/parse.js");
+const parse = require("./common/parse.js");
+const Utils = require("./common/utils.js");
+const Command = require("./constants/command.js");
+const Service = require("./services/service.js");
 global.watchSite = require('./common/watchSite');
-var parseData = parse.parseData;
+const parseData = parse.parseData;
 
-var server = net.createServer(function(socket){
+const server = net.createServer(function(socket){
+	// 设置超时
 	socket.setTimeout(60000);
-	var remoteAddress = socket.remoteAddress;
+	socket.setKeepAlive(true);
+	logger.info('init:bytesRead',socket.bytesRead);
+    logger.info('init:bytesWritten',socket.bytesWritten);
+
+	let remoteAddress = socket.remoteAddress;
+	clients[remoteAddress] = {odata: ""};
+
 	logger.info('socket remote address is'.magenta, remoteAddress.green);
 	logger.info('new client connected'.green);
-	clients[remoteAddress] = {odata: ""};
-	showConnections();
-	socket.setKeepAlive(true);
-	console.log('bytesRead',socket.bytesRead);
-	console.log('bytesWritten',socket.bytesWritten);
-	socket.odata = "";
-	socket.write(`<{"FuncSel":{"Operator":3}}>`);
-	socket.on('connect', ()=>{
-		socket.odata = "";
-	});
-	socket.on('error', (err)=>{
-		socket.odata = "";
-		for(var key in clients){
-			if(socket == clients[key]){
-				delete clients[key];
-			}
-		}
-		if(socket && socket.sn_key){
-			delete sockets[socket.sn_key];
-		}
-		socket.destroy();
+	// 请求一次所有站数据
+	socket.write(Command.stationData);
 
-		watchSite.disConnectSite(socket.sn_key);
-
-		logger.debug('end connect from error',err.error,err);
-		socket.end();
+	socket.on('connect', () => {
+		clients[remoteAddress].odata = "";
 	});
 
-	socket.on('data', (data)=>{
+	socket.on('data', (data) => {
 		var record_time = new Date();
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
 		logger.info(inputData);
-		socket.odata += inputData;
+		clients[remoteAddress].odata += inputData;
 		if(socket.sn_key){
 			logger.info((socket.sn_key+" receive"));
 		}
 		parseData(socket);
 	});
 
-	socket.on('drain', ()=>{
+	socket.on('drain', () => {
 		logger.info(new Date(),'drain',socket.sn_key)
-	})
-
-	socket.on('timeout', ()=>{
-		socket.odata = "";
-		for(var key in clients){
-			if(socket == clients[key]){
-				delete clients[key];
-			}
-		}
-		if(socket && socket.sn_key){
-			delete sockets[socket.sn_key];
-		}
-
-		socket.destroy();
-		watchSite.disConnectSite(socket.sn_key);
-		logger.alert('socket timeout',socket.sn_key);
-		socket.end();
 	});
 
-	socket.on('end', (data)=>{
-		socket.odata = "";
-		for(var key in clients){
-			if(socket == clients[key]){
-				delete clients[key];
-			}
-		}
-		if(socket && socket.sn_key){
-			delete sockets[socket.sn_key];
-		}
-		logger.info(' from end client disconnect');
-		watchSite.disConnectSite(socket.sn_key);
-		showConnections();
+	socket.on('error', (err) => {
+		Utils.disConnectSocket(socket, "error", err);
+	});
+
+	socket.on('timeout', () => {
+		Utils.disConnectSocket(socket, "timeout");
+	});
+
+	socket.on('end', (data) => {
+		Utils.disConnectSocket(socket, "end");
 	})
 });
 
@@ -91,44 +60,19 @@ server.on('error', (err) => {
   throw err;
 });
 
-function showConnections(){
-	server.getConnections(function(err, num){
-		if(!err){
-			logger.info('current connections is', num.toString());
-		}else{
-			logger.info(err);
-		}
-	});
-}
-
-
-var sendParamHard = require("./common/sendParam.js");
+setInterval(()=>{
+	Service.clearSites()
+},10000);
 /**
- * 每隔30秒检查一次是否需要同步参数
- * 同步参数条件为
- * 在tb_station_module表中有数据
- * 但是在tb_station_param表中无数据
+ * 10秒显示一次连接数
  */
-function syncParams(){
-    let sql = "select tb_station_module.sn_key,tb_station_module.CurSensor from tb_station_module where sn_key not in (select sn_key from tb_station_param) ";
-    logger.info(sql);
-    conn.query(sql, (err, results)=>{
-    	if(err){
-    		console.log(err);
-    		return;
-    	}
-        results.forEach((item)=>{
-            sendParamHard('StationPar', {
-                sn_key:item.sn_key.toString(),
-                CurSensor: item.CurSensor
-            });
-        });
-    });
-}
-
-setInterval(watchSite.clearSites,10000);
-setInterval(showConnections,10000);
-setInterval(syncParams,30000);
+setInterval(()=>{
+	Utils.showConnections(server)
+},10000);
+/**
+ * 30秒同步一次参数
+ */
+setInterval(Utils.syncParams,30000);
 
 //setInterval(checkAlert, 10000);
 

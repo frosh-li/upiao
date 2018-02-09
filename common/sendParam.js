@@ -5,7 +5,7 @@
  *
  * */
 
-var StationPar = [
+const StationPar = [
 	"sn_key",
 	"CurSensor",
 	"sid",
@@ -53,7 +53,7 @@ var StationPar = [
 	"FloChaVol",
 ];
 
-var GroupPar = [
+const GroupPar = [
 	"GroBatNum",
 	"CurRange",
 	"KI",
@@ -73,7 +73,7 @@ var GroupPar = [
 	"ChaCriterion",
 ];
 
-var BatteryPar = [
+const BatteryPar = [
 	"KV",
 	"KT",
 	"KI",
@@ -107,48 +107,45 @@ var BatteryPar = [
 	"MacDevR_Y",
 ];
 
-function getParam(ctype, body){
-	
+const ParamList = {
+	StationPar: StationPar,
+	GroupPar: GroupPar,
+	BatteryPar: BatteryPar,
 }
 
 module.exports = function(ctype, body){
-	var ret = {};
+	let ret = {};
 	if(ctype == "StationPar"){
 		ret.StationPar = {};
 		StationPar.forEach(function(item,index){
-			// logger.info(item, index);
-			var cindex = (index-2) <10 ?("0"+(index-2)):(index-2+"");
-			if(index < 2){
+			let cindex = (index-2) <10 ?("0"+(index-2)):(index-2+"");
+			if (index < 2) {
 				ret.StationPar[item] = body[item];
-				
-			}else{
-				if(body[item])
+			} else {
+				if(body[item]){
 					ret.StationPar[cindex] = parseFloat(body[item]);
+				}
 			}
-			//ret.StationPar[cindex] = body[item];	
-		})
+		});
 	}
-	if(ctype == "GroupPar"){
-		ret.GroupPar = {};
-		GroupPar.forEach(function(item,index){
-			// logger.info(item, index);
-			var cindex = (index) <10 ?("0"+(index)):(index+"");
-			if(body[item])
-				ret.GroupPar[cindex] = parseFloat(body[item]);
-			
-		})
+
+	if(ctype === "GroupPar" || ctype === "BatteryPar"){
+		ret[ctype] = {};
+		ParamList[ctype].forEach(function(item,index){
+			let cindex = (index) <10 ?("0"+(index)):(index+"");
+			if(body[item]){
+				ret[ctype][cindex] = parseFloat(body[item]);
+			}
+		});
 	}
-	if(ctype == "BatteryPar"){
-		ret.BatteryPar = {};
-		BatteryPar.forEach(function(item,index){
-			// logger.info(item, index);
-			var cindex = (index) <10 ?("0"+(index)):(index+"");
-			if(body[item])
-				ret.BatteryPar[cindex] = parseFloat(body[item]);
-			
-		})
+
+	/**
+	 * 如果传入空直接返回
+	 */
+	if(Object.keys(ret).length === 0){
+		return;
 	}
-	var writeData = JSON.stringify(ret);
-	logger.info(writeData);
+	let writeData = JSON.stringify(ret);
+	logger.info("send Data to Hard", writeData);
 	sockets[body.sn_key] && sockets[body.sn_key].write(`<${writeData}>`);
 }

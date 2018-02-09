@@ -4,7 +4,7 @@ var station = require('../libs/station');
 var group = require('../libs/group');
 var battery = require('../libs/battery');
 
-var sendmsgFunc = require('../sendmsg/');
+const Utils = require("./utils.js");
 
 var errCode = require('../libs/errorConfig');
 
@@ -274,53 +274,23 @@ function sendMsg(item){
 						logger.info('报警不需要发送短信',msgContent);
 						return;
 					}
-
-					conn.query(`select site_name,sid,functionary_phone,functionary_sms,area_owner_phone,area_owner_sms,parent_owner_phone,parent_owner_sms from my_site where serial_number=${item.sn_key.substring(0,10)+"0000"}`, function(err, result){
-						if(err){
-							logger.info('get data from site error', err);
-							return;
-						}
-						if(result && result.length > 0){
-							var mobile = result[0]['functionary_phone'];
-							var ifsendmsg = result[0]['functionary_sms'];
-							if(!ifsendmsg && !result[0]['area_owner_sms'] && !result[0]['parent_owner_sms']){
-								// 不需要发送短信
-								logger.info("站点设置成不发送短信",msgContent);
-								return;
-							}
-							msgContent += ",数值:"+item['current'];
-							msgContent += ",参考值:"+item['climit'];
-							msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
-							msgContent += ",组号:"+item.sn_key.substr(10,2);
-							msgContent += ",电池号:"+item.sn_key.substr(12,2);
-
-							var mobiles = [];
-							if(/^[0-9]{11}$/.test(mobile)){
-								mobiles.push(mobile);
-							}else{
-								logger.info('手机格式错误', mobile);
-							}
-
-							if(/^[0-9]{11}$/.test(result[0]['area_owner_phone'])){
-								mobiles.push(result[0]['area_owner_phone']);
-							}else{
-								logger.info('手机格式错误', result[0]['area_owner_phone']);
-							}
-
-							if(/^[0-9]{11}$/.test(result[0]['parent_owner_phone'])){
-								mobiles.push(result[0]['parent_owner_phone']);
-							}else{
-								logger.info('手机格式错误', result[0]['parent_owner_phone']);
-							}
-
-							if(mobiles.length > 0){
-								logger.info('发送短信', mobiles, msgContent);
-								sendmsgFunc(mobiles.join(","),msgContent);
-							}else{
-								logger.info('所有手机格式都错误');
-							}
-						}
-					})
+					// 发送掉站短信
+				    Service.getSiteInfo(sn_key)
+				        .then(result => {
+				            if(result && result.length > 0){
+								msgContent += ",数值:"+item['current'];
+								msgContent += ",参考值:"+item['climit'];
+								msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
+								msgContent += ",组号:"+item.sn_key.substr(10,2);
+								msgContent += ",电池号:"+item.sn_key.substr(12,2);
+				                Utils.sendMsg(result, msgContent)
+				            }else{
+				                logger.info('获取站点信息失败', sn_key);
+				            }
+				        })
+				        .catch((e) => {
+				            logger.info('get data from site error', err);
+				        });
 					// functionary_phone  functionary_sms
 					// 检查站点设置中这条记录是否需要发送短信
 
@@ -344,11 +314,11 @@ function parseData(socket){
 	   let fullString = omatch;
 	   dealData(fullString.replace(/[<>]/g,""), socket);
 	   socket.odata = socket.odata.replace(fullString,"");
-		 parseData(socket);
+	   parseData(socket);
 	}else{
 		if(socket.odata.length > 20000){
 			// 数据过多，并且无法解析，断开连接重新来
-			socket.end();	
+			socket.end();
 			logger.info("close connection 因为数据过多，并且无法解析")
 		}
 		// logger.info('no match');
