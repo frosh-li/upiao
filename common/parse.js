@@ -167,78 +167,29 @@ var dealData = function(str, socket){
 }
 
 function insertErrorBulk(data){
-	var item = data.shift();
+	let item = data.shift();
 	logger.info('erroritem'+JSON.stringify(item))
 	if(item){
-		new Promise(function(resolve, reject){
-			// 如果是忽略狀態不加入數據
-			var sql = `select * from my_alerts where
-			 status=2 and
-			 sn_key='${item.sn_key}' and
-			 code='${item.code}'`;
-			conn.query(sql, function(err, ret){
-				if(err){
-					return reject(err);
-				}
-				if(ret && ret.length > 0){
-					logger.info('erroritem ignored', JSON.stringify(item));
-					return reject('ignored');
-				}else{
-					return resolve('ok');
-				}
-			});
-		}).then(function(){
-			// 查看是否已經存在相同記錄並且沒有處理過
-			return new Promise(function(resolve, reject){
-				var sql = `
-					select * from my_alerts where
-					status = 0 and
-					sn_key = '${item.sn_key}' and
-					code = '${item.code}'
-				`;
-				conn.query(sql, function(err, ret){
-					if(err){
-						return reject(err);
-					}
-					if(ret && ret.length > 0 ){
-						return resolve(ret[0]);
-					}else{
-						return resolve('insert');
-					}
-				})
-			})
-
-		}).then(function(_){
-			 logger.info('erroritem updatr or insert', JSON.stringify(_));
-			var sql;
-			if(_ != 'insert'){
-				sql = `update my_alerts
-					set
-					current=?,
-					time=?,
-					climit=?
-					where id=${_.id}
-				`;
-			}else{
-				sql = "insert into my_alerts set ?";
-				sendMsg(item);
-			}
-
-			var obj = [
-				item.current,
-				new Date(),
-				item.climit,
-				item.sn_key,
-				item.code
-			];
-			conn.query(sql, _=='insert'?item:obj, function(err, results){
-				if(err){
-					logger.info('insert error error', err);
-				}else{
-					logger.info('insert error done'.green);
-				}
-				insertErrorBulk(data);
-			})
+        // 如果是忽略狀態不加入數據
+        Promise.all([
+            Service.getAlertsByStatus(item.sn_key, item,code, 2),
+            Service.getAlertsByStatus(item.sn_key, item,code, 0),
+        ]).then(result => {
+            let [ignore, hasSame] = result;
+            return new Promise((resolve, reject) => {
+                if(ignore !== false){
+                    return reject(new Error("已经忽略"));
+                }
+                return resolve(hasSame);
+            })
+        }).then(_ => {
+			logger.info('erroritem updatr or insert', JSON.stringify(_));
+            Service.InsertOrUpdateError(_,item)
+                .then(() => {
+                    insertErrorBulk();
+                }).catch(e => {
+                    logger.info(e);
+                })
 		}).catch(function(err){
 			if(err){
 				if(err.messeage == "ignored"){
@@ -256,51 +207,41 @@ function insertErrorBulk(data){
 
 function sendMsg(item){
 	new Promise((resolve, reject)=>{
-		conn.query("select * from my_config where `key`='sms_on_off' and `value`='s:1:\"1\";'", function(err, res){
-			if(err){
-				logger.info('check sms_on_off error', err);
-				return;
-			}
-			if(res && res.length > 0){
-
-
-			conn.query(`select * from my_station_alert_desc where en='${item.code}' and my_station_alert_desc.type='${item.type}'`, function(err, res){
-				if(err){
-					logger.info('sendmsg error',err,item);
-				}else{
-					var msgContent = res[0]['desc'];
-					if(res[0].send_msg == 0){
-						// 不需要发送短信
-						logger.info('报警不需要发送短信',msgContent);
-						return;
-					}
-					// 发送掉站短信
-				    Service.getSiteInfo(sn_key)
-				        .then(result => {
-				            if(result && result.length > 0){
-								msgContent += ",数值:"+item['current'];
-								msgContent += ",参考值:"+item['climit'];
-								msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
-								msgContent += ",组号:"+item.sn_key.substr(10,2);
-								msgContent += ",电池号:"+item.sn_key.substr(12,2);
-				                Utils.sendMsg(result, msgContent)
-				            }else{
-				                logger.info('获取站点信息失败', sn_key);
-				            }
-				        })
-				        .catch((e) => {
-				            logger.info('get data from site error', err);
-				        });
-					// functionary_phone  functionary_sms
-					// 检查站点设置中这条记录是否需要发送短信
-
-					// sendmsgFunc()
-				}
-			})
-		}else{
-				logger.info('全局设置不需要发送短信');
-			}
-		})
+        Promise.all([
+            Service.getAlertSetting(),
+            Service.getAlertDesc(item),
+        ]).then(res => {
+            let needSendMsg = res[0];
+            if(needSendMsg){
+                let alertDesc = res[1];
+                let msgContent = alertDesc['desc'];
+                if(alertDesc.send_msg == 0){
+                    // 不需要发送短信
+                    logger.info('报警不需要发送短信',msgContent);
+                    return;
+                }
+                // 发送掉站短信
+                Service.getSiteInfo(sn_key)
+                    .then(result => {
+                        if(result && result.length > 0){
+                            msgContent += ",数值:"+item['current'];
+                            msgContent += ",参考值:"+item['climit'];
+                            msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
+                            msgContent += ",组号:"+item.sn_key.substr(10,2);
+                            msgContent += ",电池号:"+item.sn_key.substr(12,2);
+                            Utils.sendMsg(result, msgContent)
+                        }else{
+                            logger.info('获取站点信息失败', sn_key);
+                        }
+                    })
+                    .catch((e) => {
+                        logger.info('get data from site error', err);
+                    });
+            }
+        })
+        .catch(e => {
+            logger.info(e);
+        })
 	})
 }
 
