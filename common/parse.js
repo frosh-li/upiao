@@ -212,7 +212,7 @@ function parseData(socket){
 	logger.info('start parse data', socket.odata);
 	if(/<[^>]*>/.test(socket.odata)){
 	   //如果有數據直接處理
-	   var omatch = socket.odata.match(/^<[^>]*>/)[0];
+	   let omatch = socket.odata.match(/^<[^>]*>/)[0];
 	   logger.info('omatch',omatch);
 	   let fullString = omatch;
 	   dealData(fullString.replace(/[<>]/g,""), socket);

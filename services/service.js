@@ -3,45 +3,48 @@ const formatDate = require('../common/formatDate.js');
  * 读取mysql数据的通用服务
  */
 class Service {
-sendMsg(item){
-	new Promise((resolve, reject)=>{
-        Promise.all([
-            this.getAlertSetting(),
-            this.getAlertDesc(item),
-        ]).then(res => {
-            let needSendMsg = res[0];
-            if(needSendMsg){
-                let alertDesc = res[1];
-                let msgContent = alertDesc['desc'];
-                if(alertDesc.send_msg == 0){
-                    // 不需要发送短信
-                    logger.info('报警不需要发送短信',msgContent);
-                    return;
+    /**
+    * 报警发送短信业务逻辑
+    */
+    sendMsg(item){
+    	new Promise((resolve, reject)=>{
+            Promise.all([
+                this.getAlertSetting(),
+                this.getAlertDesc(item),
+            ]).then(res => {
+                let needSendMsg = res[0];
+                if(needSendMsg){
+                    let alertDesc = res[1];
+                    let msgContent = alertDesc['desc'];
+                    if(alertDesc.send_msg == 0){
+                        // 不需要发送短信
+                        logger.info('报警不需要发送短信',msgContent);
+                        return;
+                    }
+                    // 发送掉站短信
+                    this.getSiteInfo(sn_key)
+                        .then(result => {
+                            if(result && result.length > 0){
+                                msgContent += ",数值:"+item['current'];
+                                msgContent += ",参考值:"+item['climit'];
+                                msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
+                                msgContent += ",组号:"+item.sn_key.substr(10,2);
+                                msgContent += ",电池号:"+item.sn_key.substr(12,2);
+                                Utils.sendMsg(result, msgContent)
+                            }else{
+                                logger.info('获取站点信息失败', sn_key);
+                            }
+                        })
+                        .catch((e) => {
+                            logger.info('get data from site error', err);
+                        });
                 }
-                // 发送掉站短信
-                this.getSiteInfo(sn_key)
-                    .then(result => {
-                        if(result && result.length > 0){
-                            msgContent += ",数值:"+item['current'];
-                            msgContent += ",参考值:"+item['climit'];
-                            msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
-                            msgContent += ",组号:"+item.sn_key.substr(10,2);
-                            msgContent += ",电池号:"+item.sn_key.substr(12,2);
-                            Utils.sendMsg(result, msgContent)
-                        }else{
-                            logger.info('获取站点信息失败', sn_key);
-                        }
-                    })
-                    .catch((e) => {
-                        logger.info('get data from site error', err);
-                    });
-            }
-        })
-        .catch(e => {
-            logger.info(e);
-        })
-	})
-}
+            })
+            .catch(e => {
+                logger.info(e);
+            })
+    	})
+    }
     /**
      * getStationListWithoutParam - 获取没有参数的站点列表数据
      * 用于同步参数
