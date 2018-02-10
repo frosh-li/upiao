@@ -18,7 +18,7 @@ const server = net.createServer(function(socket){
 
 	let remoteAddress = socket.remoteAddress;
 	clients[remoteAddress] = {odata: ""};
-
+	socket.odata = "";
 	logger.info('socket remote address is'.magenta, remoteAddress.green);
 	logger.info('new client connected'.green);
 	// 请求一次所有站数据
@@ -26,6 +26,7 @@ const server = net.createServer(function(socket){
 
 	socket.on('connect', () => {
 		clients[remoteAddress].odata = "";
+	    socket.odata = ""
 	});
 
 	socket.on('data', (data) => {
@@ -33,6 +34,7 @@ const server = net.createServer(function(socket){
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
 		logger.info(inputData);
 		clients[remoteAddress].odata += inputData;
+	    socket.odata += inputData;
 		if(socket.sn_key){
 			logger.info((socket.sn_key+" receive"));
 		}

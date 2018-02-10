@@ -9,6 +9,7 @@ const Utils = require("./utils.js");
 var errCode = require('../libs/errorConfig');
 
 var params = require("../libs/params");
+const Service = require("../services/service.js");
 
 function commonErrorDeal(err){
 	if(err){
@@ -172,8 +173,8 @@ function insertErrorBulk(data){
 	if(item){
         // 如果是忽略狀態不加入數據
         Promise.all([
-            Service.getAlertsByStatus(item.sn_key, item,code, 2),
-            Service.getAlertsByStatus(item.sn_key, item,code, 0),
+            Service.getAlertsByStatus(item.sn_key, item.code, 2),
+            Service.getAlertsByStatus(item.sn_key, item.code, 0),
         ]).then(result => {
             let [ignore, hasSame] = result;
             return new Promise((resolve, reject) => {
@@ -205,49 +206,10 @@ function insertErrorBulk(data){
 }
 
 
-function sendMsg(item){
-	new Promise((resolve, reject)=>{
-        Promise.all([
-            Service.getAlertSetting(),
-            Service.getAlertDesc(item),
-        ]).then(res => {
-            let needSendMsg = res[0];
-            if(needSendMsg){
-                let alertDesc = res[1];
-                let msgContent = alertDesc['desc'];
-                if(alertDesc.send_msg == 0){
-                    // 不需要发送短信
-                    logger.info('报警不需要发送短信',msgContent);
-                    return;
-                }
-                // 发送掉站短信
-                Service.getSiteInfo(sn_key)
-                    .then(result => {
-                        if(result && result.length > 0){
-                            msgContent += ",数值:"+item['current'];
-                            msgContent += ",参考值:"+item['climit'];
-                            msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
-                            msgContent += ",组号:"+item.sn_key.substr(10,2);
-                            msgContent += ",电池号:"+item.sn_key.substr(12,2);
-                            Utils.sendMsg(result, msgContent)
-                        }else{
-                            logger.info('获取站点信息失败', sn_key);
-                        }
-                    })
-                    .catch((e) => {
-                        logger.info('get data from site error', err);
-                    });
-            }
-        })
-        .catch(e => {
-            logger.info(e);
-        })
-	})
-}
 
 
 function parseData(socket){
-	// logger.info('start parse data', socket.odata);
+	logger.info('start parse data', socket.odata);
 	if(/<[^>]*>/.test(socket.odata)){
 	   //如果有數據直接處理
 	   var omatch = socket.odata.match(/^<[^>]*>/)[0];

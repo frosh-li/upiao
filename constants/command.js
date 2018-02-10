@@ -3,3 +3,5 @@ class Command {
         return `<{"FuncSel":{"Operator":3}}>`;
     }
 }
+
+module.exports = new Command();
