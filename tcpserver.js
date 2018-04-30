@@ -76,37 +76,6 @@ setInterval(()=>{
  */
 setInterval(Utils.syncParams,30000);
 
-//setInterval(checkAlert, 10000);
-
-//var player = require('./libs/playsound.js');
-/*
-function checkAlert(){
-	logger.info('play sound alert');
-	let sql = "select count(*) as totals from my_alerts where status = 0";
-	conn.query(sql, (err, ret) => {
-		if(err){
-			return;
-		}
-		if(ret && ret[0] && ret[0].totals > 0){
-			logger.info('has sound alert')
-			player.playing == false &&player.stop()&& player.play();
-		}else{
-			let sql2 = "select count(*) as ctotals from systemalarm";
-			conn.query(sql2, (err, ret2) => {
-				if(err){
-					return;
-				}
-				if(ret2 && ret2[0] && ret2[0].ctotals > 0){
-					logger.info('has system sound alert')
-					player.playing == false &&player.stop()&& player.play();
-				}else{
-					player.stop();
-				}
-			})
-		}
-	})
-}
-*/
 module.exports = {
 	start:function(){
 		server.listen(CONFIG.tcpserver);

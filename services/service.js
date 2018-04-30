@@ -87,12 +87,12 @@ class Service {
      * @return {type}        description
      */
     onConnectSite(sn_key) {
-        let sql = `delete from systemalarm where station=${sn_key}`;
+      let sql = `delete from systemalarm where station=${sn_key}`;
     	conn.query(sql, function(err, results){
     		if(err){
-    			logger.info('update system alarm fail', err);
+    			logger.info(`清理站点${sn_key}系统报警信息失败${err.message}`);
     		}else{
-    			logger.info('update system alarm done');
+    			logger.info(`清理站点${sn_key}系统报警信息完成`);
     		}
     	})
     }
@@ -107,12 +107,12 @@ class Service {
      * @return {type}         description
      */
     lostSite(sn_key, desc="", tips="") {
-        let sql = `insert into systemalarm(station, \`desc\`, tips) values(${sn_key}, '${desc}', '${tips}')`;
+      let sql = `insert into systemalarm(station, \`desc\`, tips) values(${sn_key}, '${desc}', '${tips}')`;
     	conn.query(sql, function(err, results){
     		if(err){
-    			logger.info('update system alarm fail', err);
+    			logger.info(`更新掉站信息${sn_key}失败${err.message}`);
     		}else{
-    			logger.info('update system alarm done');
+    			logger.info(`更新掉站信息成功${sn_key}`);
     		}
     	})
     }
@@ -127,25 +127,25 @@ class Service {
     clearRealdata(sn_key) {
         conn.query(`delete from tb_station_module where sn_key=${sn_key}`, function(err, data){
     		if(err){
-    			logger.info('remote from tb_station_module err', err);
+    			logger.info(`清理站实时表数据失败${sn_key}:${err.message}`);
     		}else{
-    			logger.info('remote from tb_station_module done');
+    			logger.info(`清理站实时表数据完成${sn_key}`);
     		}
     	})
 
     	conn.query(`delete from tb_group_module where floor(sn_key/10000) = ${sn_key/10000}`, function(err, data){
-    		if(err){
-    			logger.info('remote from tb_group_module err', err);
+        if(err){
+    			logger.info(`清理组实时表数据失败${sn_key}:${err.message}`);
     		}else{
-    			logger.info('remote from tb_group_module done');
+    			logger.info(`清理组实时表数据完成${sn_key}`);
     		}
     	})
 
     	conn.query(`delete from tb_battery_module where floor(sn_key/10000) = ${sn_key/10000}`, function(err, data){
-    		if(err){
-    			logger.info('remote from tb_battery_module err', err);
+        if(err){
+    			logger.info(`清理电池实时表数据失败${sn_key}:${err.message}`);
     		}else{
-    			logger.info('remote from tb_battery_module done');
+    			logger.info(`清理电池实时表数据完成${sn_key}`);
     		}
     	})
     }
@@ -190,21 +190,22 @@ class Service {
 
     	logger.info('start clear site data');
     	let clearTimer = 1;
+      let cautionClearTime = 5;
     	let now = new Date(new Date()-1000*60*clearTimer);
     	let nowString = formatDate(now);
-    	let nowCaution = new Date(new Date()-1000*60*clearTimer);
+    	let nowCaution = new Date(new Date()-1000*60*cautionClearTime);
     	let nowClearCautionString = formatDate(nowCaution);
     	let currentDate = new Date();
     	let currentDateStr = formatDate(currentDate);
     	let currentClearDate = new Date(currentDate - clearTimer*1000*60);
     	let currentClearDateStr = formatDate(currentClearDate);
 
-        ['tb_station_module', 'tb_group_module', 'tb_battery_module']
-            .forEach((table) => {
-                let clearOldSql = `delete from ${table} where record_time < "${nowString}"`;
-                logger.info("clear oldCaution", clearOldSql);
-                conn.query(clearOldSql);
-            });
+      ['tb_station_module', 'tb_group_module', 'tb_battery_module']
+        .forEach((table) => {
+            let clearOldSql = `delete from ${table} where record_time < "${nowString}"`;
+            logger.info("清理实时数据", clearOldSql);
+            conn.query(clearOldSql);
+        });
     	let clearSql = `update
                       my_alerts
                       set
@@ -215,7 +216,7 @@ class Service {
                       time<"${currentClearDateStr}"
                       and
                       status=0`;
-        logger.info('clear nowCaution', clearSql);
+      logger.info('定时清理站数据SQL', clearSql);
     	conn.query(clearSql);
 
     	// 清理系统报警
@@ -297,39 +298,49 @@ class Service {
     /*
     * 插入或者更新Error信息
     */
-    InsertOrUpdateError(ctypeItem, item) {
-        let obj = [
-            item.current,
-            new Date(),
-            item.climit,
-            item.sn_key,
-            item.code
-        ];
+    InsertOrUpdateError(item) {
+        // let obj = [
+        //     item.current,
+        //     new Date(),
+        //     item.climit,
+        //     item.sn_key,
+        //     item.code
+        // ];
         let sql;
-        // 存在状态为0的修改时间
-        // 不存在状态为0的直接插入
-        if(ctypeItem !== false){
-            sql = `update my_alerts
-                set
-                current=?,
-                time=?,
-                climit=?
-                where id=${ctypeItem.id}
-            `;
-        }else{
-            sql = "insert into my_alerts set ?";
-            this.sendMsg(item);
-        }
+        sql = "insert into my_alerts set ?";
+        this.sendMsg(item);
         return new Promise((resolve, reject) => {
-            conn.query(sql, ctypeItem === false ? item : obj, function(err, results){
-				if(err){
-					logger.info('insert error error', err);
-				}else{
-					logger.info('insert error done'.green);
-				}
-                return resolve("DONE");
-			})
+            // 插入历史
+            conn.query("insert into my_alerts_history set ?", item, (err, results) => {
+              if(err){
+                logger.info('插入报警历史失败');
+              }else{
+                logger.info('插入实时报警失败');
+              }
+            })
+            conn.query(sql, item, function(err, results){
+      				if(err){
+      					logger.info('插入实时报警失败', err);
+      				}else{
+      					logger.info('插入实时报警成功'.green);
+      				}
+              return resolve("DONE");
+      			})
         })
+    }
+
+    clearRealCaution(sn_key) {
+      return new Promise((resolve, reject) => {
+        let sql = `
+          delete from my_alerts where floor(sn_key/10000)="${Math.floor(sn_key/10000)}"
+        `;
+        conn.query(sql, function(err, ret){
+            if(err){
+                return reject(err);
+            }
+            return resolve(true);
+        })
+      })
     }
 }
 const service = new Service();

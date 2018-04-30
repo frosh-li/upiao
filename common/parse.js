@@ -38,7 +38,8 @@ var dealData = function(str, socket){
 		conn.query("update tb_group_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 		// 开始更新所有的battery数据
 		conn.query("update tb_battery_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
-
+		// 更新对应站点的报警信息
+		conn.query("update my_alerts set time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 	}
 
 	// logger.info(str);
@@ -153,7 +154,15 @@ var dealData = function(str, socket){
 		logger.info('erroritem',JSON.stringify(errorInsert));
 		logger.info('报警条数为',errorInsert.length);
 		if(errorInsert.length > 0){
-			insertErrorBulk(errorInsert);
+			let stationSnKey = Math.floor(sn_key/10000);
+			Service.clearRealCaution(stationSnKey)
+				.then(data => {
+					insertErrorBulk(errorInsert);
+				})
+				.catch(e => {
+					logger.error('报警处理失败',stationSnKey);
+				})
+
 		}
 		// 如果有报警信息，进行报警
 		// 报警之后进行处理  类型心跳处理机制
@@ -167,42 +176,62 @@ var dealData = function(str, socket){
 	}
 }
 
+
+/**
+ * insertErrorBulk - 报警信息处理
+ *  1、清除实时报警信息
+ * 	2、加入实时报警信息
+ * 	3、每隔一小时插入一次对应站点错误的历史数据
+ * @param  {type} data description
+ * @return {type}      description
+ */
 function insertErrorBulk(data){
 	let item = data.shift();
-	logger.info('erroritem'+JSON.stringify(item))
-	if(item){
-        // 如果是忽略狀態不加入數據
-        Promise.all([
-            Service.getAlertsByStatus(item.sn_key, item.code, 2),
-            Service.getAlertsByStatus(item.sn_key, item.code, 0),
-        ]).then(result => {
-            let [ignore, hasSame] = result;
-            return new Promise((resolve, reject) => {
-                if(ignore !== false){
-                    return reject(new Error("已经忽略"));
-                }
-                return resolve(hasSame);
-            })
-        }).then(_ => {
-			logger.info('erroritem updatr or insert', JSON.stringify(_));
-            Service.InsertOrUpdateError(_,item)
-                .then(() => {
-                    insertErrorBulk();
-                }).catch(e => {
-                    logger.info(e);
-                })
-		}).catch(function(err){
-			if(err){
-				if(err.messeage == "ignored"){
-					return;
-				}else{
-					logger.info(err);
-				}
-
-			}
-			insertErrorBulk(data);
-		})
+	logger.info('错误信息'+JSON.stringify(item))
+	if(!item){
+		logger.info('插入错误信息结束');
+		return;
 	}
+	Service.InsertOrUpdateError(item)
+		.then(() => {
+			insertErrorBulk();
+		}).catch(e => {
+			logger.info(e.message);
+		})
+	//
+	// if(item){
+  //       // 如果是忽略狀態不加入數據
+  //       Promise.all([
+  //           Service.getAlertsByStatus(item.sn_key, item.code, 2),
+  //           Service.getAlertsByStatus(item.sn_key, item.code, 0),
+  //       ]).then(result => {
+  //           let [ignore, hasSame] = result;
+  //           return new Promise((resolve, reject) => {
+  //               if(ignore !== false){
+  //                   return reject(new Error("已经忽略"));
+  //               }
+  //               return resolve(hasSame);
+  //           })
+  //       }).then(_ => {
+	// 		logger.info('erroritem updatr or insert', JSON.stringify(_));
+  //           Service.InsertOrUpdateError(_,item)
+  //               .then(() => {
+  //                   insertErrorBulk();
+  //               }).catch(e => {
+  //                   logger.info(e);
+  //               })
+	// 	}).catch(function(err){
+	// 		if(err){
+	// 			if(err.messeage == "ignored"){
+	// 				return;
+	// 			}else{
+	// 				logger.info(err);
+	// 			}
+	//
+	// 		}
+	// 		insertErrorBulk(data);
+	// 	})
+	//}
 }
 
 
