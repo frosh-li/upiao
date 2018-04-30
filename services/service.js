@@ -298,7 +298,7 @@ class Service {
     /*
     * 插入或者更新Error信息
     */
-    InsertOrUpdateError(item) {
+    InsertOrUpdateError(item, insertHistory) {
         // let obj = [
         //     item.current,
         //     new Date(),
@@ -311,13 +311,15 @@ class Service {
         this.sendMsg(item);
         return new Promise((resolve, reject) => {
             // 插入历史
-            conn.query("insert into my_alerts_history set ?", item, (err, results) => {
-              if(err){
-                logger.info('插入报警历史失败');
-              }else{
-                logger.info('插入实时报警失败');
-              }
-            })
+            if(insertHistory){
+              conn.query("insert into my_alerts_history set ?", item, (err, results) => {
+                if(err){
+                  logger.info('插入报警历史失败');
+                }else{
+                  logger.info('插入实时报警失败');
+                }
+              })
+            }
             conn.query(sql, item, function(err, results){
       				if(err){
       					logger.info('插入实时报警失败', err);

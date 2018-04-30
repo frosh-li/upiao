@@ -7,6 +7,7 @@ const Utils = require("./common/utils.js");
 const Command = require("./constants/command.js");
 const Service = require("./services/service.js");
 global.watchSite = require('./common/watchSite');
+global.cautionHistoryMap = {};
 const parseData = parse.parseData;
 
 const server = net.createServer(function(socket){

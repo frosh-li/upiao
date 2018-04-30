@@ -157,7 +157,16 @@ var dealData = function(str, socket){
 			let stationSnKey = Math.floor(sn_key/10000);
 			Service.clearRealCaution(stationSnKey)
 				.then(data => {
-					insertErrorBulk(errorInsert);
+					// 如果一小时之类已经插入过历史不再插入历史
+					let now = +new Date();
+					let cmap = cautionHistoryMap[stationSnKey];
+					let clerHistory = 1000*60*24;
+					let insertHistory = false;
+					if(cmap === undefined ||  now - cmap < clerHistory){
+						insertHistory = true;
+					}
+
+					insertErrorBulk(errorInsert, insertHistory, stationSnKey);
 				})
 				.catch(e => {
 					logger.error('报警处理失败',stationSnKey);
@@ -185,18 +194,21 @@ var dealData = function(str, socket){
  * @param  {type} data description
  * @return {type}      description
  */
-function insertErrorBulk(data){
+function insertErrorBulk(data, insertHistory, _sn_key){
 	let item = data.shift();
 	logger.info('错误信息'+JSON.stringify(item))
 	if(!item){
 		logger.info('插入错误信息结束');
+		// 设置最后一次的插入时间
+		cautionHistoryMap[_sn_key] = +new Date();
 		return;
 	}
-	Service.InsertOrUpdateError(item)
+	Service.InsertOrUpdateError(item, insertHistory)
 		.then(() => {
-			insertErrorBulk(data);
+			insertErrorBulk(data, insertHistory, _sn_key);
 		}).catch(e => {
 			logger.info(e.message);
+			insertErrorBulk(data, insertHistory, _sn_key);
 		})
 	//
 	// if(item){
