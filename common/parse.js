@@ -151,7 +151,7 @@ var dealData = function(str, socket){
 				})
 			}
 		})
-		logger.info('erroritem',JSON.stringify(errorInsert));
+		// logger.info('erroritem',JSON.stringify(errorInsert));
 		logger.info('报警条数为',errorInsert.length);
 		if(errorInsert.length > 0){
 			let stationSnKey = Math.floor(sn_key/10000);
@@ -162,7 +162,7 @@ var dealData = function(str, socket){
 					let cmap = cautionHistoryMap[stationSnKey];
 					let clerHistory = 1000*60*24;
 					let insertHistory = false;
-					logger.info(cautionHistoryMap);
+					logger.info(JSON.stringify(cautionHistoryMap, null, 4));
 					if(cmap === undefined ||  now - cmap < clerHistory){
 						insertHistory = true;
 					}
@@ -200,8 +200,10 @@ function insertErrorBulk(data, insertHistory, _sn_key){
 	logger.info('报警信息'+JSON.stringify(item))
 	if(!item){
 		logger.info('插入报警信息结束', _sn_key);
-		// 设置最后一次的插入时间
-		cautionHistoryMap[_sn_key] = +new Date();
+		// 设置最后一次的插入时间 插入过历史才会去修改
+		if(insertHistory){
+			cautionHistoryMap[_sn_key] = +new Date();
+		}
 		return;
 	}
 	Service.InsertOrUpdateError(item, insertHistory)
@@ -251,7 +253,6 @@ function insertErrorBulk(data, insertHistory, _sn_key){
 
 
 function parseData(socket){
-	logger.info('start parse data', socket.odata);
 	if(/<[^>]*>/.test(socket.odata)){
 	   //如果有數據直接處理
 	   let omatch = socket.odata.match(/^<[^>]*>/)[0];
