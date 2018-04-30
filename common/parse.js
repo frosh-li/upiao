@@ -162,6 +162,7 @@ var dealData = function(str, socket){
 					let cmap = cautionHistoryMap[stationSnKey];
 					let clerHistory = 1000*60*24;
 					let insertHistory = false;
+					logger.info(cautionHistoryMap);
 					if(cmap === undefined ||  now - cmap < clerHistory){
 						insertHistory = true;
 					}
@@ -196,9 +197,9 @@ var dealData = function(str, socket){
  */
 function insertErrorBulk(data, insertHistory, _sn_key){
 	let item = data.shift();
-	logger.info('错误信息'+JSON.stringify(item))
+	logger.info('报警信息'+JSON.stringify(item))
 	if(!item){
-		logger.info('插入错误信息结束');
+		logger.info('插入报警信息结束', _sn_key);
 		// 设置最后一次的插入时间
 		cautionHistoryMap[_sn_key] = +new Date();
 		return;
@@ -254,7 +255,6 @@ function parseData(socket){
 	if(/<[^>]*>/.test(socket.odata)){
 	   //如果有數據直接處理
 	   let omatch = socket.odata.match(/^<[^>]*>/)[0];
-	   logger.info('omatch',omatch);
 	   let fullString = omatch;
 	   dealData(fullString.replace(/[<>]/g,""), socket);
 	   socket.odata = socket.odata.replace(fullString,"");

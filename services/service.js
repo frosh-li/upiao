@@ -314,15 +314,15 @@ class Service {
             if(insertHistory){
               conn.query("insert into my_alerts_history set ?", item, (err, results) => {
                 if(err){
-                  logger.info('插入报警历史失败');
+                  logger.info('插入历史报警失败', err.message);
                 }else{
-                  logger.info('插入实时报警失败');
+                  logger.info('插入历史报警成功');
                 }
               })
             }
             conn.query(sql, item, function(err, results){
       				if(err){
-      					logger.info('插入实时报警失败', err);
+      					logger.info('插入实时报警失败', err.message);
       				}else{
       					logger.info('插入实时报警成功'.green);
       				}
