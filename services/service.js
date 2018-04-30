@@ -332,8 +332,9 @@ class Service {
     clearRealCaution(sn_key) {
       return new Promise((resolve, reject) => {
         let sql = `
-          delete from my_alerts where floor(sn_key/10000)="${Math.floor(sn_key/10000)}"
+          delete from my_alerts where floor(sn_key/10000)="${sn_key}"
         `;
+        logger.info('clearall', sql);
         conn.query(sql, function(err, ret){
             if(err){
                 return reject(err);
