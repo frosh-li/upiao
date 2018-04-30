@@ -163,7 +163,7 @@ var dealData = function(str, socket){
 					let clerHistory = 1000*60*24;
 					let insertHistory = false;
 					logger.info(JSON.stringify(cautionHistoryMap, null, 4));
-					if(cmap === undefined ||  now - cmap < clerHistory){
+					if(cmap === undefined ||  now - cmap >= clerHistory){
 						insertHistory = true;
 					}
 
