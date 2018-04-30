@@ -194,7 +194,7 @@ function insertErrorBulk(data){
 	}
 	Service.InsertOrUpdateError(item)
 		.then(() => {
-			insertErrorBulk();
+			insertErrorBulk(data);
 		}).catch(e => {
 			logger.info(e.message);
 		})
