@@ -306,7 +306,7 @@ class Service {
           let sql = `
             insert into my_alerts
             set
-            type=${item.type}
+            type="${item.type}"
             and
             code="${item.code}"
             and
@@ -319,10 +319,10 @@ class Service {
           `;
           console.log(sql);
           sqls.push(sql);
-          let sqls_history = `
+          let sql_history = `
             insert into my_alerts_history
             set
-            type=${item.type}
+            type="${item.type}"
             and
             code="${item.code}"
             and
@@ -333,7 +333,7 @@ class Service {
             climit="${item.climit}"
             where sn_key="${item.sn_key}"
           `;
-          sqls_history.push(sqls_history)
+          sqls_history.push(sql_history)
           console.log(sqls_history);
           this.sendMsg(item);
         })
