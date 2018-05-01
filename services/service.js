@@ -303,7 +303,7 @@ class Service {
         let sqls_history = []
         data.forEach(item => {
           sqls.push(`
-            insert into my_alerts
+            insert into my_alerts 
             set
             type=${item.type}
             and
