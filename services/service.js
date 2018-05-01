@@ -300,9 +300,10 @@ class Service {
     */
     batchInsertCaution(data, insertHistory) {
         let sqls = [];
-        let sqls_history = []
+        let sqls_history = [];
+
         data.forEach(item => {
-          sqls.push(`
+          let sql = `
             insert into my_alerts
             set
             type=${item.type}
@@ -313,24 +314,27 @@ class Service {
             and
             current="${item.current}"
             and
-            climit="${item.climit.toString()}"
+            climit="${item.climit}"
             where sn_key="${item.sn_key}"
-          `);
-          sqls_history.push(`
-              insert into my_alerts_history
-              set
-              type=${item.type}
-              and
-              code="${item.code}"
-              and
-              time="${item.time}"
-              and
-              current="${item.current.toString()}"
-              and
-              climit="${item.climit.toString()}"
-              where sn_key="${item.sn_key}"
-            `
-          )
+          `;
+          console.log(sql);
+          sqls.push(sql);
+          let sqls_history = `
+            insert into my_alerts_history
+            set
+            type=${item.type}
+            and
+            code="${item.code}"
+            and
+            time="${item.time}"
+            and
+            current="${item.current}"
+            and
+            climit="${item.climit}"
+            where sn_key="${item.sn_key}"
+          `;
+          sqls_history.push(sqls_history)
+          console.log(sqls_history);
           this.sendMsg(item);
         })
 
