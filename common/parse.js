@@ -170,7 +170,7 @@ var dealData = function(str, socket){
 					insertErrorBulk(errorInsert, insertHistory, stationSnKey);
 				})
 				.catch(e => {
-					logger.error('报警处理失败',stationSnKey);
+					logger.error('报警处理失败',stationSnKey, e.message);
 				})
 
 		}

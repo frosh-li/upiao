@@ -313,7 +313,7 @@ class Service {
             current="${item.current}"
             and
             climit="${item.climt}"
-            where sn_key="${sn_key}"
+            where sn_key="${item.sn_key}"
           `);
           this.sendMsg(item);
         })
