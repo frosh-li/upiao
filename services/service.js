@@ -296,35 +296,44 @@ class Service {
     }
 
     /*
-    * 插入或者更新Error信息
+    * 批量插入所有的报警信息到历史表和实时表
     */
-    InsertOrUpdateError(item, insertHistory) {
-        // let obj = [
-        //     item.current,
-        //     new Date(),
-        //     item.climit,
-        //     item.sn_key,
-        //     item.code
-        // ];
-        let sql;
-        sql = "insert into my_alerts set ?";
-        this.sendMsg(item);
+    batchInsertCaution(data, insertHistory) {
+        let sqls = [];
+        data.forEach(item => {
+          sqls.push(`
+            insert into alerts
+            set
+            type=${item.type}
+            and
+            code="${item.code}"
+            and
+            time=${item.time}
+            and
+            current="${item.current}"
+            and
+            climit="${item.climt}"
+            where sn_key="${sn_key}"
+          `);
+          this.sendMsg(item);
+        })
+
         return new Promise((resolve, reject) => {
             // 插入历史
             if(insertHistory){
-              conn.query("insert into my_alerts_history set ?", item, (err, results) => {
+              conn.query(sqls.join(";"),(err, results) => {
                 if(err){
-                  logger.info('插入历史报警失败', err.message);
+                  logger.info('批量插入历史报警失败', err.message);
                 }else{
-                  logger.info('插入历史报警成功');
+                  logger.info('批量插入历史报警成功');
                 }
               })
             }
-            conn.query(sql, item, function(err, results){
+            conn.query(sqls, item, function(err, results){
       				if(err){
-      					logger.info('插入实时报警失败', err.message);
+      					logger.info('批量插入历史报警失败', err.message);
       				}else{
-      					logger.info('插入实时报警成功'.green);
+      					logger.info('批量插入历史报警成功'.green);
       				}
               return resolve("DONE");
       			})

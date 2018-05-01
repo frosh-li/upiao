@@ -160,7 +160,7 @@ var dealData = function(str, socket){
 					// 如果一小时之类已经插入过历史不再插入历史
 					let now = +new Date();
 					let cmap = cautionHistoryMap[stationSnKey];
-					let clerHistory = 1000*60*24;
+					let clerHistory = 1000*60*60;
 					let insertHistory = false;
 					logger.info(JSON.stringify(cautionHistoryMap, null, 4));
 					if(cmap === undefined ||  now - cmap >= clerHistory){
@@ -196,57 +196,17 @@ var dealData = function(str, socket){
  * @return {type}      description
  */
 function insertErrorBulk(data, insertHistory, _sn_key){
-	let item = data.shift();
-	logger.info('报警信息'+JSON.stringify(item))
-	if(!item){
-		logger.info('插入报警信息结束', _sn_key);
-		// 设置最后一次的插入时间 插入过历史才会去修改
-		if(insertHistory){
-			cautionHistoryMap[_sn_key] = +new Date();
-		}
-		return;
-	}
-	Service.InsertOrUpdateError(item, insertHistory)
+	logger.info('报警信息'+JSON.stringify(data));
+	Service.batchInsertCaution(data, insertHistory)
 		.then(() => {
-			insertErrorBulk(data, insertHistory, _sn_key);
+			logger.info('插入报警信息结束', _sn_key);
+			// 设置最后一次的插入时间 插入过历史才会去修改
+			if(insertHistory){
+				cautionHistoryMap[_sn_key] = +new Date();
+			}
 		}).catch(e => {
 			logger.info(e.message);
-			insertErrorBulk(data, insertHistory, _sn_key);
 		})
-	//
-	// if(item){
-  //       // 如果是忽略狀態不加入數據
-  //       Promise.all([
-  //           Service.getAlertsByStatus(item.sn_key, item.code, 2),
-  //           Service.getAlertsByStatus(item.sn_key, item.code, 0),
-  //       ]).then(result => {
-  //           let [ignore, hasSame] = result;
-  //           return new Promise((resolve, reject) => {
-  //               if(ignore !== false){
-  //                   return reject(new Error("已经忽略"));
-  //               }
-  //               return resolve(hasSame);
-  //           })
-  //       }).then(_ => {
-	// 		logger.info('erroritem updatr or insert', JSON.stringify(_));
-  //           Service.InsertOrUpdateError(_,item)
-  //               .then(() => {
-  //                   insertErrorBulk();
-  //               }).catch(e => {
-  //                   logger.info(e);
-  //               })
-	// 	}).catch(function(err){
-	// 		if(err){
-	// 			if(err.messeage == "ignored"){
-	// 				return;
-	// 			}else{
-	// 				logger.info(err);
-	// 			}
-	//
-	// 		}
-	// 		insertErrorBulk(data);
-	// 	})
-	//}
 }
 
 
