@@ -300,9 +300,10 @@ class Service {
     */
     batchInsertCaution(data, insertHistory) {
         let sqls = [];
+        let sqls_history = []
         data.forEach(item => {
           sqls.push(`
-            insert into alerts
+            insert into my_alerts
             set
             type=${item.type}
             and
@@ -315,13 +316,29 @@ class Service {
             climit="${item.climt}"
             where sn_key="${item.sn_key}"
           `);
+          sqls_history.push(
+            `
+              insert into my_alerts_history
+              set
+              type=${item.type}
+              and
+              code="${item.code}"
+              and
+              time=${item.time}
+              and
+              current="${item.current}"
+              and
+              climit="${item.climt}"
+              where sn_key="${item.sn_key}"
+            `
+          )
           this.sendMsg(item);
         })
 
         return new Promise((resolve, reject) => {
             // 插入历史
             if(insertHistory){
-              conn.query(sqls.join(";"),(err, results) => {
+              conn.query(sqls_history.join(";"),(err, results) => {
                 if(err){
                   logger.info('批量插入历史报警失败', err.message);
                 }else{
@@ -329,7 +346,7 @@ class Service {
                 }
               })
             }
-            conn.query(sqls, item, function(err, results){
+            conn.query(sqls.join(";"), function(err, results){
       				if(err){
       					logger.info('批量插入历史报警失败', err.message);
       				}else{
