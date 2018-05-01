@@ -33,7 +33,7 @@ const server = net.createServer(function(socket){
 	socket.on('data', (data) => {
 		var record_time = new Date();
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
-		logger.info(inputData);
+		// logger.info(inputData);
 		clients[remoteAddress].odata += inputData;
 	    socket.odata += inputData;
 		if(socket.sn_key){

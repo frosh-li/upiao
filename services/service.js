@@ -303,13 +303,13 @@ class Service {
         let sqls_history = []
         data.forEach(item => {
           sqls.push(`
-            insert into my_alerts 
+            insert into my_alerts
             set
             type=${item.type}
             and
             code="${item.code}"
             and
-            time=${item.time}
+            time="${item.time}"
             and
             current="${item.current}"
             and
@@ -324,9 +324,9 @@ class Service {
               and
               code="${item.code}"
               and
-              time=${item.time}
+              time="${item.time}"
               and
-              current="${item.current}"
+              current="${item.current.toString()}"
               and
               climit="${item.climt}"
               where sn_key="${item.sn_key}"
