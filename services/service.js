@@ -303,10 +303,10 @@ class Service {
         let sqls_history = [];
 
         data.forEach(item => {
-          let sql = `insert into my_alerts(type, code, time, current, climit) values("${item.type}","${item.code}","${item.time}","${item.current}","${item.climit}") where sn_key="${item.sn_key}"`;
+          let sql = `insert into my_alerts(type, code, time, current, climit, sn_key) values("${item.type}","${item.code}","${item.time}","${item.current}","${item.climit}", "${item.sn_key}")`;
           console.log(sql);
           sqls.push(sql);
-          let sql_history = `insert into my_alerts_history(type, code, time, current, climit) values("${item.type}","${item.code}","${item.time}","${item.current}","${item.climit}") where sn_key="${item.sn_key}"`;
+          let sql_history = `insert into my_alerts_history(type, code, time, current, climit, sn_key) values("${item.type}","${item.code}","${item.time}","${item.current}","${item.climit}", "${item.sn_key}")`;
           sqls_history.push(sql_history)
           console.log(sqls_history);
           this.sendMsg(item);
