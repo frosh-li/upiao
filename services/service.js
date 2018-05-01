@@ -313,11 +313,10 @@ class Service {
             and
             current="${item.current}"
             and
-            climit="${item.climt}"
+            climit="${item.climit.toString()}"
             where sn_key="${item.sn_key}"
           `);
-          sqls_history.push(
-            `
+          sqls_history.push(`
               insert into my_alerts_history
               set
               type=${item.type}
@@ -328,7 +327,7 @@ class Service {
               and
               current="${item.current.toString()}"
               and
-              climit="${item.climt}"
+              climit="${item.climit.toString()}"
               where sn_key="${item.sn_key}"
             `
           )
