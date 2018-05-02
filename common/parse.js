@@ -105,7 +105,7 @@ var dealData = function(str, socket){
 					sn_key:StationErr.sn_key,
 					code:key,
 					current:StationErr.errors[key],
-					time:new Date(),
+					time:new Date().toLocaleString(),
 					climit:StationErr.limits["Limit_"+key] || 0
 				})
 			}
@@ -123,7 +123,7 @@ var dealData = function(str, socket){
 					type:type,
 					sn_key:GroupErr.sn_key,
 					code:key,
-					time:new Date(),
+					time:new Date().toLocaleString(),
 					current:GroupErr.errors[key],
 					climit:GroupErr.limits["Limit_"+key] || 0
 				})
@@ -145,7 +145,7 @@ var dealData = function(str, socket){
 					type:type,
 					sn_key:BatteryErr.sn_key,
 					code:key,
-					time:new Date(),
+					time:new Date().toLocaleString(),
 					current:BatteryErr.errors[key],
 					climit:BatteryErr.limits["Limit_"+key] || 0
 				})
@@ -170,7 +170,7 @@ var dealData = function(str, socket){
 					insertErrorBulk(errorInsert, insertHistory, stationSnKey);
 				})
 				.catch(e => {
-					logger.error('报警处理失败',stationSnKey, e.message);
+					logger.error('报警处理失败',stationSnKey, e);
 				})
 
 		}

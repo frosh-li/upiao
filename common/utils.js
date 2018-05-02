@@ -81,4 +81,5 @@ module.exports = {
     showConnections: showConnections,
     syncParams: syncParams,
 	sendMsg: sendMsg,
+	disConnectSocket: disConnectSocket
 }

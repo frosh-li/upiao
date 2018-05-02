@@ -6,8 +6,8 @@
 module.exports = {
 	db:{
 		host:"127.0.0.1",
-		user:"root",
-		password:"",
+		user:"db_bms_english4",
+		password:"bmsroot",
 		database: "db_bms_english4",
 		multipleStatements:true,
 		dateStrings:true

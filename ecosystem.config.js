@@ -8,15 +8,15 @@ module.exports = {
     // First application
     {
       name      : 'server',
-      script    : '/data/upiao/server.js',
+      script    : '/data/servers/upiao/server.js',
       env: {
         COMMON_VARIABLE: 'true'
       },
       env_production : {
         NODE_ENV: 'production'
       },
-      out_file:"/root/logs/out.log",
-      error_file:"/root/logs/error.log",
+      out_file:"/data/servers/logs/out.log",
+      error_file:"/data/servers/logs/error.log",
     }
   ],
 
