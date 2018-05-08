@@ -215,7 +215,7 @@ function insertErrorBulk(data, insertHistory, _sn_key){
 function parseData(socket){
 	if(/<[^>]*>/.test(socket.odata)){
 	   //如果有數據直接處理
-	   let omatch = socket.odata.match(/^<[^>]*>/)[0];
+	   let omatch = socket.odata.match(/<[^>]*>/)[0];
 	   let fullString = omatch;
 	   dealData(fullString.replace(/[<>]/g,""), socket);
 	   socket.odata = socket.odata.replace(fullString,"");
