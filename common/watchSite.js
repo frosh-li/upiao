@@ -7,7 +7,6 @@ function disConnectSite(sn_key){
 	}
 	let desc = "站点连接断开";
 	let tips = "检查站点或本地网络状况，电源及通信线路或联系BMS厂家";
-    logger.info(sql);
     Service.lostSite(sn_key, desc, tips);
 
 	// 发送掉站短信
