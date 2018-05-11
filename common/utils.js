@@ -39,7 +39,7 @@ function disConnectSocket(socket, ctype, err) {
     }
     socket.destroy();
     watchSite.disConnectSite(socket.sn_key);
-    logger.log(`socket ${ctype}`,socket.sn_key, err);
+    logger.info(`socket ${ctype}`,socket.sn_key, err);
     socket && socket.end();
 }
 
