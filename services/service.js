@@ -1,4 +1,5 @@
 const formatDate = require('../common/formatDate.js');
+const sendParamHard = require('../common/sendParam.js')
 /**
  * 读取mysql数据的通用服务
  */
