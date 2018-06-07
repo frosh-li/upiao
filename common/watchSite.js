@@ -8,7 +8,7 @@ function disConnectSite(sn_key){
 	let desc = "站点连接断开";
 	let tips = "检查站点或本地网络状况，电源及通信线路或联系BMS厂家";
     Service.lostSite(sn_key, desc, tips);
-
+    Service.addLog(`${sn_key}断开连接`);
 	// 发送掉站短信
     Service.getSiteInfo(sn_key)
         .then(result => {
@@ -32,5 +32,7 @@ function disConnectSite(sn_key){
 
 module.exports = {
 	disConnectSite:disConnectSite,
-	onConnectSite:Service.onConnectSite,
+	onConnectSite:(sn_key) => {
+        Service.onConnectSite(sn_key)
+    },
 }

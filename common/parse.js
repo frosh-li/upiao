@@ -46,6 +46,9 @@ var dealData = function(str, socket){
 	if(str&&str.StationData){
 		station.deal(str.StationData, record_time);
 		if(str.StationData && str.StationData.sn_key){
+			if(!socket.sn_key){
+				Service.addLog(`${str.StationData.sn_key}连接成功`);
+			}
 			socket.sn_key = str.StationData.sn_key;
 			sockets[socket.sn_key] = socket;
 			logger.info('parse data from ',socket.sn_key)
@@ -223,6 +226,7 @@ function parseData(socket){
 	}else{
 		if(socket.odata.length > 20000){
 			// 数据过多，并且无法解析，断开连接重新来
+			logger.info("to many error data to end");
 			socket.end();
 			logger.info("close connection 因为数据过多，并且无法解析")
 		}

@@ -4,6 +4,11 @@ const sendParamHard = require('../common/sendParam.js')
  * 读取mysql数据的通用服务
  */
 class Service {
+    addLog(msg) {
+        return new Promise((resolve, reject) => {
+           conn.query(`insert into my_running_log(content) values('${msg}')`); 
+        })
+    }
     /**
     * 报警发送短信业务逻辑
     */

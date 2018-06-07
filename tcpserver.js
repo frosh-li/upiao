@@ -13,7 +13,7 @@ const parseData = parse.parseData;
 const server = net.createServer(function(socket){
 	// 设置超时
 	socket.setTimeout(60000);
-	socket.setKeepAlive(true);
+	//socket.setKeepAlive(true);
 	logger.info('init:bytesRead',socket.bytesRead);
     logger.info('init:bytesWritten',socket.bytesWritten);
 
@@ -21,6 +21,8 @@ const server = net.createServer(function(socket){
 	clients[remoteAddress] = {odata: ""};
 	socket.odata = "";
 	logger.info('socket remote address is'.magenta, remoteAddress.green);
+	logger.info('socket local address is'.magenta, socket.localAddress.green);
+	logger.info('socket address is'.magenta, socket.address().address.green);
 	logger.info('new client connected'.green);
 	// 请求一次所有站数据
 	socket.write(Command.stationData);
@@ -55,6 +57,7 @@ const server = net.createServer(function(socket){
 	});
 
 	socket.on('end', (data) => {
+	  logger.error(data);
 		Utils.disConnectSocket(socket, "end");
 	})
 });
