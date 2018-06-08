@@ -1,0 +1,11 @@
+{
+  "server": "agentserver.node.aliyun.com:8080",
+  "appid": "36338",
+  "secret": "d6e7644debe954e9d2632813d4a5078ca310e345",
+  "logdir": "/tmp/",
+  "reconnectDelay": 10,
+  "heartbeatInterval": 60,
+  "reportInterval": 60,
+  "error_log": [],
+  "packages": []
+}
