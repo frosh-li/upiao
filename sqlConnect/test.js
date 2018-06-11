@@ -24,11 +24,14 @@ const moment = require('moment');
 	console.log('read template');
 	let data = [];
 	data = JSON.parse(JSON.stringify(ignores));
+	data.map((item, index) => {
+		data[index].updateTime = moment(item).format("YYYY/MM/DD HH:mm:ss");
+	})
 	console.log('----------')
 	console.dir(data);
 	const exlBuf2 = await ejsExcel.renderExcel(exlBuf, data);
 	console.log('render buffer');
-	fs.writeFileSync(path.resolve(__dirname, "../../qingda/", "./report-ignore-out.xlsx"), exlBuf2);
+	fs.writeFileSync(path.resolve(__dirname, "../../qingda/reports/", "./report-ignore-out.xlsx"), exlBuf2);
 	console.log('excel生成完成')
 	//console.log(ignores);
 })()
