@@ -2,86 +2,63 @@
 const net = require("net");
 const CONFIG = require("./config");
 
-var parse = require("./common/parse.js");
+const parse = require("./common/parse.js");
+const Utils = require("./common/utils.js");
+const Command = require("./constants/command.js");
+const Service = require("./services/service.js");
 global.watchSite = require('./common/watchSite');
-var parseData = parse.parseData;
+global.cautionHistoryMap = {};
+const parseData = parse.parseData;
 
-var server = net.createServer(function(socket){
+const server = net.createServer(function(socket){
+	// 设置超时
 	socket.setTimeout(60000);
-	var remoteAddress = socket.remoteAddress;
-	logger.info('socket remote address is'.magenta, remoteAddress.green);
-	logger.info('new client connected'.green);
+	//socket.setKeepAlive(true);
+	logger.info('init:bytesRead',socket.bytesRead);
+    logger.info('init:bytesWritten',socket.bytesWritten);
+
+	let remoteAddress = socket.remoteAddress;
 	clients[remoteAddress] = {odata: ""};
-	showConnections();
-	socket.setKeepAlive(true);
-	console.log('bytesRead',socket.bytesRead);
-        console.log('bytesWritten',socket.bytesWritten); 
-	socket.write(`<{"FuncSel":{"Operator":3}}>`);
-	socket.on('connect', ()=>{
+	socket.odata = "";
+	logger.info('socket remote address is'.magenta, remoteAddress.green);
+	logger.info('socket local address is'.magenta, socket.localAddress.green);
+	logger.info('socket address is'.magenta, socket.address().address.green);
+	logger.info('new client connected'.green);
+	// 请求一次所有站数据
+	socket.write(Command.stationData);
+
+	socket.on('connect', () => {
 		clients[remoteAddress].odata = "";
-	});
-	socket.on('error', (err)=>{
-		for(var key in clients){
-			if(socket == clients[key]){
-				delete clients[key];
-			}
-		}
-		if(socket && socket.sn_key){
-			delete sockets[socket.sn_key];
-		}
-		socket.destroy();
-
-		watchSite.disConnectSite(socket.sn_key);
-
-		logger.debug('end connect from error',err.error,err);
-		socket.end();
+	    socket.odata = ""
 	});
 
-	socket.on('data', (data)=>{
-		console.log(data.toString('utf8'));
+	socket.on('data', (data) => {
 		var record_time = new Date();
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
-		console.log(inputData);
+		// logger.info(inputData);
 		clients[remoteAddress].odata += inputData;
+	    socket.odata += inputData;
 		if(socket.sn_key){
-			logger.info((socket.sn_key+" receive"));	
+			logger.info((socket.sn_key+" receive"));
 		}
-		parseData(clients[remoteAddress],socket);
+		parseData(socket);
 	});
 
-	socket.on('drain', ()=>{
+	socket.on('drain', () => {
 		logger.info(new Date(),'drain',socket.sn_key)
-	})
-
-	socket.on('timeout', ()=>{
-
-		for(var key in clients){
-			if(socket == clients[key]){
-				delete clients[key];
-			}
-		}
-		if(socket && socket.sn_key){
-			delete sockets[socket.sn_key];
-		}
-
-		socket.destroy();
-		watchSite.disConnectSite(socket.sn_key);
-		logger.alert('socket timeout',socket.sn_key);
-		socket.end();
 	});
 
-	socket.on('end', (data)=>{
-		for(var key in clients){
-			if(socket == clients[key]){
-				delete clients[key];
-			}
-		}
-		if(socket && socket.sn_key){
-			delete sockets[socket.sn_key];
-		}
-		logger.info(' from end client disconnect');
-		watchSite.disConnectSite(socket.sn_key);
-		showConnections();
+	socket.on('error', (err) => {
+		Utils.disConnectSocket(socket, "error", err);
+	});
+
+	socket.on('timeout', () => {
+		Utils.disConnectSocket(socket, "timeout");
+	});
+
+	socket.on('end', (data) => {
+	  logger.error(data);
+		Utils.disConnectSocket(socket, "end");
 	})
 });
 
@@ -89,76 +66,20 @@ server.on('error', (err) => {
   throw err;
 });
 
-function showConnections(){
-	server.getConnections(function(err, num){
-		if(!err){
-			logger.info('current connections is', num.toString());
-		}else{
-			logger.info(err);
-		}
-	});
-}
-
-
-var sendParamHard = require("./common/sendParam.js");
+setInterval(()=>{
+	Service.clearSites()
+},10000);
 /**
- * 每隔30秒检查一次是否需要同步参数
- * 同步参数条件为
- * 在tb_station_module表中有数据
- * 但是在tb_station_param表中无数据
+ * 10秒显示一次连接数
  */
-function syncParams(){
-    let sql = "select tb_station_module.sn_key,tb_station_module.CurSensor from tb_station_module where sn_key not in (select sn_key from tb_station_param) ";
-    logger.info(sql);
-    conn.query(sql, (err, results)=>{
-    	if(err){
-    		console.log(err);
-    		return;
-    	}
-        results.forEach((item)=>{
-            sendParamHard('StationPar', {
-                sn_key:item.sn_key.toString(),
-                CurSensor: item.CurSensor
-            });
-        });
-    });
-}
+setInterval(()=>{
+	Utils.showConnections(server)
+},10000);
+/**
+ * 30秒同步一次参数
+ */
+setInterval(Utils.syncParams,30000);
 
-setInterval(watchSite.clearSites,10000);
-setInterval(showConnections,10000);
-setInterval(syncParams,30000);
-
-//setInterval(checkAlert, 10000);
-
-//var player = require('./libs/playsound.js');
-/*
-function checkAlert(){
-	logger.info('play sound alert');
-	let sql = "select count(*) as totals from my_alerts where status = 0";
-	conn.query(sql, (err, ret) => {
-		if(err){
-			return;
-		}
-		if(ret && ret[0] && ret[0].totals > 0){
-			logger.info('has sound alert')
-			player.playing == false &&player.stop()&& player.play();
-		}else{
-			let sql2 = "select count(*) as ctotals from systemalarm";
-			conn.query(sql2, (err, ret2) => {
-				if(err){
-					return;
-				}
-				if(ret2 && ret2[0] && ret2[0].ctotals > 0){
-					logger.info('has system sound alert')
-					player.playing == false &&player.stop()&& player.play();
-				}else{
-					player.stop();
-				}
-			})
-		}
-	})
-}
-*/
 module.exports = {
 	start:function(){
 		server.listen(CONFIG.tcpserver);

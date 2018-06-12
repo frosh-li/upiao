@@ -1,0 +1,16 @@
+{
+  "server": "47.94.238.179:60026",
+  "appid": "36338",
+  "secret": "d6e7644debe954e9d2632813d4a5078ca310e345",
+  "logdir": "/data/servers/logs/",
+  "error_log": [
+    "/root/.logs/error.#YYYY#-#MM#-#DD#-#HH#.log"
+  ],
+  "packages": [
+    "/data/servers/upiao/package.json"
+  ],
+  "disks": [
+    "/",
+    "/home/root"
+                                                                    ]
+}

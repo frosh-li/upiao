@@ -1,36 +1,14 @@
-var sendmsgFunc = require('../sendmsg/');
-
-function onConnectSite(sn_key){
-    var sql = `delete from systemalarm where station=${sn_key}`;
-	conn.query(sql, function(err, results){
-		if(err){
-			logger.info('update system alarm fail', err);
-		}else{
-			logger.info('update system alarm done');
-		}
-
-		//insertBulkHistory(data, cb);
-	})
-}
-
+const Service = require('../services/service.js');
+const Utils = require('./utils.js');
 
 function disConnectSite(sn_key){
 	if(!sn_key){
 		return;
 	}
-	var desc = "站点连接断开";
-	var tips = "检查站点或本地网络状况，电源及通信线路或联系BMS厂家";
-    var sql = `insert into systemalarm(station, \`desc\`, tips) values(${sn_key}, '${desc}', '${tips}')`;
-    logger.info(sql);
-	conn.query(sql, function(err, results){
-		if(err){
-			logger.info('update system alarm fail', err);
-		}else{
-			logger.info('update system alarm done');
-		}
-	})
-
-
+	let desc = "站点连接断开";
+	let tips = "检查站点或本地网络状况，电源及通信线路或联系BMS厂家";
+    Service.lostSite(sn_key, desc, tips);
+    Service.addLog(`${sn_key}断开连接`);
 	// 发送掉站短信
 	conn.query(`select site_name,sid,functionary_phone,functionary_sms,area_owner_phone,area_owner_sms,parent_owner_phone,parent_owner_sms from my_site where serial_number=${sn_key.substring(0,10)+"0000"}`, function(err, result){
 		if(err){
@@ -135,6 +113,7 @@ function clearSites(){
 
 module.exports = {
 	disConnectSite:disConnectSite,
-	onConnectSite:onConnectSite,
-	clearSites: clearSites
+	onConnectSite:(sn_key) => {
+        Service.onConnectSite(sn_key)
+    },
 }

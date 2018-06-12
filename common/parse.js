@@ -5,11 +5,12 @@ var group = require('../libs/group');
 var fs = require('fs');
 var battery = require('../libs/battery');
 
-var sendmsgFunc = require('../sendmsg/');
+const Utils = require("./utils.js");
 
 var errCode = require('../libs/errorConfig');
 
 var params = require("../libs/params");
+const Service = require("../services/service.js");
 
 function commonErrorDeal(err){
 	if(err){
@@ -22,8 +23,10 @@ var dealData = function(str, socket){
 	try{
 		str = JSON.parse(str);
 	}catch(e){
+		// 如果出错清空之前的缓存数据
 		logger.info('error---------------');
 		logger.info(str);
+		socket.odata = "";
 		return;
 	}
 
@@ -36,7 +39,8 @@ var dealData = function(str, socket){
 		conn.query("update tb_group_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 		// 开始更新所有的battery数据
 		conn.query("update tb_battery_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
-
+		// 更新对应站点的报警信息
+		conn.query("update my_alerts set time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 	}
 
 	// logger.info(str);
@@ -102,7 +106,7 @@ var dealData = function(str, socket){
 					sn_key:StationErr.sn_key,
 					code:key,
 					current:StationErr.errors[key],
-					time:new Date(),
+					time:new Date().toLocaleString(),
 					climit:StationErr.limits["Limit_"+key] || 0
 				})
 			}
@@ -120,7 +124,7 @@ var dealData = function(str, socket){
 					type:type,
 					sn_key:GroupErr.sn_key,
 					code:key,
-					time:new Date(),
+					time:new Date().toLocaleString(),
 					current:GroupErr.errors[key],
 					climit:GroupErr.limits["Limit_"+key] || 0
 				})
@@ -142,16 +146,34 @@ var dealData = function(str, socket){
 					type:type,
 					sn_key:BatteryErr.sn_key,
 					code:key,
-					time:new Date(),
+					time:new Date().toLocaleString(),
 					current:BatteryErr.errors[key],
 					climit:BatteryErr.limits["Limit_"+key] || 0
 				})
 			}
 		})
-		logger.info('erroritem',JSON.stringify(errorInsert));
+		// logger.info('erroritem',JSON.stringify(errorInsert));
 		logger.info('报警条数为',errorInsert.length);
 		if(errorInsert.length > 0){
-			insertErrorBulk(errorInsert);
+			let stationSnKey = Math.floor(sn_key/10000);
+			Service.clearRealCaution(stationSnKey)
+				.then(data => {
+					// 如果一小时之类已经插入过历史不再插入历史
+					let now = +new Date();
+					let cmap = cautionHistoryMap[stationSnKey];
+					let clerHistory = 1000*60*60;
+					let insertHistory = false;
+					logger.info(JSON.stringify(cautionHistoryMap, null, 4));
+					if(cmap === undefined ||  now - cmap >= clerHistory){
+						insertHistory = true;
+					}
+
+					insertErrorBulk(errorInsert, insertHistory, stationSnKey);
+				})
+				.catch(e => {
+					logger.error('报警处理失败',stationSnKey, e);
+				})
+
 		}
 		// 如果有报警信息，进行报警
 		// 报警之后进行处理  类型心跳处理机制
@@ -165,152 +187,31 @@ var dealData = function(str, socket){
 	}
 }
 
-function insertErrorBulk(data){
-	var item = data.shift();
-	logger.info('erroritem'+JSON.stringify(item))
-	if(item){
-		new Promise(function(resolve, reject){
-			// 如果是忽略狀態不加入數據
-			var sql = `select * from my_alerts where
-			 status=2 and
-			 sn_key='${item.sn_key}' and
-			 code='${item.code}'`;
-			conn.query(sql, function(err, ret){
-				if(err){
-					return reject(err);
-				}
-				if(ret && ret.length > 0){
-					logger.info('erroritem ignored', JSON.stringify(item));
-					return reject('ignored');
-				}else{
-					return resolve('ok');
-				}
-			});
-		}).then(function(){
-			// 查看是否已經存在相同記錄並且沒有處理過
-			return new Promise(function(resolve, reject){
-				var sql = `
-					select * from my_alerts where
-					status = 0 and
-					sn_key = '${item.sn_key}' and
-					code = '${item.code}'
-				`;
-				conn.query(sql, function(err, ret){
-					if(err){
-						return reject(err);
-					}
-					if(ret && ret.length > 0 ){
-						return resolve(ret[0]);
-					}else{
-						return resolve('insert');
-					}
-				})
-			})
 
-		}).then(function(_){
-			 logger.info('erroritem updatr or insert', JSON.stringify(_));
-			var sql;
-			if(_ != 'insert'){
-				sql = `update my_alerts
-					set
-					current=?,
-					time=?,
-					climit=?
-					where id=${_.id}
-				`;
-			}else{
-				sql = "insert into my_alerts set ?";
-				sendMsg(item);
+/**
+ * insertErrorBulk - 报警信息处理
+ *  1、清除实时报警信息
+ * 	2、加入实时报警信息
+ * 	3、每隔一小时插入一次对应站点错误的历史数据
+ * @param  {type} data description
+ * @return {type}      description
+ */
+function insertErrorBulk(data, insertHistory, _sn_key){
+	logger.info('报警信息'+JSON.stringify(data));
+	Service.batchInsertCaution(data, insertHistory)
+		.then(() => {
+			logger.info('插入报警信息结束', _sn_key);
+			// 设置最后一次的插入时间 插入过历史才会去修改
+			if(insertHistory){
+				cautionHistoryMap[_sn_key] = +new Date();
 			}
-
-			var obj = [
-				item.current,
-				new Date(),
-				item.climit,
-				item.sn_key,
-				item.code
-			];
-			conn.query(sql, _=='insert'?item:obj, function(err, results){
-				if(err){
-					logger.info('insert error error', err);
-				}else{
-					logger.info('insert error done'.green);
-				}
-				insertErrorBulk(data);
-			})
-		}).catch(function(err){
-			if(err){
-				if(err.messeage == "ignored"){
-					return;
-				}else{
-					logger.info(err);
-				}
-
-			}
-			insertErrorBulk(data);
+		}).catch(e => {
+			logger.info(e.message);
 		})
-	}
 }
 
 
-function sendMsg(item){
-	new Promise((resolve, reject)=>{
-		conn.query("select * from my_config where `key`='sms_on_off' and `value`='s:1:\"1\";'", function(err, res){
-			if(err){
-				logger.info('check sms_on_off error', err);
-				return;
-			}
-			if(res && res.length > 0){
 
-
-			conn.query(`select * from my_station_alert_desc where en='${item.code}' and my_station_alert_desc.type='${item.type}'`, function(err, res){
-				if(err){
-					logger.info('sendmsg error',err,item);
-				}else{
-					var msgContent = res[0]['desc'];
-					if(res[0].send_msg == 0){
-						// 不需要发送短信
-						logger.info('报警不需要发送短信',msgContent);
-						return;
-					}
-
-					conn.query(`select site_name,sid,functionary_phone,functionary_sms,area_owner_phone,area_owner_sms,parent_owner_phone,parent_owner_sms from my_site where serial_number=${item.sn_key.substring(0,10)+"0000"}`, function(err, result){
-						if(err){
-							logger.info('get data from site error', err);
-							return;
-						}
-						if(result && result.length > 0){
-							var mobile = result[0]['functionary_phone'];
-							var ifsendmsg = result[0]['functionary_sms'];
-							if(!ifsendmsg && !result[0]['area_owner_sms'] && !result[0]['parent_owner_sms']){
-								// 不需要发送短信
-								logger.info("站点设置成不发送短信",msgContent);
-								return;
-							}
-							msgContent += ",数值:"+item['current'];
-							msgContent += ",参考值:"+item['climit'];
-							msgContent += ",站点:"+result[0]['site_name']+",站号:"+result[0]['sid'];
-							msgContent += ",组号:"+item.sn_key.substr(10,2);
-							msgContent += ",电池号:"+item.sn_key.substr(12,2);
-
-							var mobiles = [];
-							if(/^[0-9]{11}$/.test(mobile)){
-								mobiles.push(mobile);
-							}else{
-								logger.info('手机格式错误', mobile);
-							}
-
-							if(/^[0-9]{11}$/.test(result[0]['area_owner_phone'])){
-								mobiles.push(result[0]['area_owner_phone']);
-							}else{
-								logger.info('手机格式错误', result[0]['area_owner_phone']);
-							}
-
-							if(/^[0-9]{11}$/.test(result[0]['parent_owner_phone'])){
-								mobiles.push(result[0]['parent_owner_phone']);
-							}else{
-								logger.info('手机格式错误', result[0]['parent_owner_phone']);
-							}
 
 							if(mobiles.length > 0){
 								logger.info('发送短信', mobiles, msgContent);
@@ -343,8 +244,8 @@ function parseData(client, socket){
 	   logger.info('omatch',omatch);
 	   let fullString = omatch;
 	   dealData(fullString.replace(/[<>]/g,""), socket);
-	   client.odata = client.odata.replace(fullString,"");
-	   parseData(client, socket);
+	   socket.odata = socket.odata.replace(fullString,"");
+	   parseData(socket);
 	}else{
 		serialPort.resume();
 		fs.writeFileSync(__dirname + "/datalog.txt", client.odata);
