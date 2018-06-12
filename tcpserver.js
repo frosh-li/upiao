@@ -18,7 +18,7 @@ const server = net.createServer(function(socket){
     logger.info('init:bytesWritten',socket.bytesWritten);
 
 	let remoteAddress = socket.remoteAddress;
-	clients[remoteAddress] = {odata: ""};
+	//clients[remoteAddress] = {odata: ""};
 	socket.odata = "";
 	logger.info('socket remote address is'.magenta, remoteAddress.green);
 	logger.info('socket local address is'.magenta, socket.localAddress.green);
@@ -28,7 +28,7 @@ const server = net.createServer(function(socket){
 	socket.write(Command.stationData);
 
 	socket.on('connect', () => {
-		clients[remoteAddress].odata = "";
+		//clients[remoteAddress].odata = "";
 	    socket.odata = ""
 	});
 
@@ -36,7 +36,7 @@ const server = net.createServer(function(socket){
 		var record_time = new Date();
 		var inputData = data.toString('utf8').replace(/\r\n/mg,"");
 		// logger.info(inputData);
-		clients[remoteAddress].odata += inputData;
+		//clients[remoteAddress].odata += inputData;
 	    socket.odata += inputData;
 		if(socket.sn_key){
 			logger.info((socket.sn_key+" receive"));
