@@ -310,24 +310,33 @@ class Service {
 
         data.forEach(item => {
           let sql = `insert into my_alerts(type, code, time, current, climit, sn_key) values("${item.type}","${item.code}","${formatData(item.time)}","${item.current}","${item.climit}", "${item.sn_key}")`;
-          console.log(sql);
           sqls.push(sql);
           let sql_history = `insert into my_alerts_history(type, code, time, current, climit, sn_key) values("${item.type}","${item.code}","${formatData(item.time)}","${item.current}","${item.climit}", "${item.sn_key}")`;
           sqls_history.push(sql_history)
-          console.log(sqls_history);
           this.sendMsg(item);
         })
 
         return new Promise((resolve, reject) => {
             // 插入历史
             if(insertHistory){
-              conn.query(sqls_history.join(";"),(err, results) => {
+              conn.beginTransaction((err) =>{
                 if(err){
-                  logger.info('批量插入历史报警失败', err.message);
-                }else{
-                  logger.info('批量插入历史报警成功');
+                    console.log(err);
+                    return;
                 }
+                  conn.query(sqls_history.join(";"),(err, results) => {
+                    if(err){
+                      logger.info('批量插入历史报警失败', err.message);
+                    }else{
+                      logger.info('批量插入历史报警成功');
+                    }
+                  })
               })
+            }
+          conn.beginTransaction((err) =>{
+            if(err){
+                console.log(err);
+                return;
             }
             conn.query(sqls.join(";"), function(err, results){
       				if(err){
@@ -336,7 +345,8 @@ class Service {
       					logger.info('批量插入历史报警成功'.green);
       				}
               return resolve("DONE");
-      			})
+            })
+          })
         })
     }
 
