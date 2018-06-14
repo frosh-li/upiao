@@ -4,9 +4,9 @@ const sendParamHard = require('../common/sendParam.js')
  * 读取mysql数据的通用服务
  */
 class Service {
-    addLog(msg) {
+    addLog(sn_key, msg) {
         return new Promise((resolve, reject) => {
-           conn.query(`insert into my_running_log(content) values('${msg}')`); 
+           conn.query(`insert into my_running_log(sid, content) values(${sn_key}, '${msg}')`); 
         })
     }
     /**

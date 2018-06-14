@@ -47,7 +47,7 @@ var dealData = function(str, socket){
 		station.deal(str.StationData, record_time);
 		if(str.StationData && str.StationData.sn_key){
 			if(!socket.sn_key){
-				Service.addLog(`${str.StationData.sn_key}连接成功`);
+				Service.addLog(str.StationData.sn_key, `${str.StationData.sn_key}连接成功`);
 			}
 			socket.sn_key = str.StationData.sn_key;
 			sockets[socket.sn_key] = socket;
