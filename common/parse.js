@@ -166,9 +166,10 @@ var dealData = function(str, socket){
 			logger.info(JSON.stringify(cautionHistoryMap, null, 4));
 			if(cmap === undefined ||  now - cmap >= clerHistory){
 				insertHistory = true;
+				logger.info(`${stationSnKey}需要插入历史`.green);
 			}
 
-			insertErrorBulk(stationSnKey, errorInsert, insertHistory, stationSnKey);
+			insertErrorBulk(errorInsert, insertHistory, stationSnKey);
 
 		}
 		// 如果有报警信息，进行报警
@@ -194,7 +195,7 @@ var dealData = function(str, socket){
  */
 function insertErrorBulk(data, insertHistory, _sn_key){
 	logger.info('报警信息'+JSON.stringify(data));
-	Service.batchInsertCaution(data, insertHistory)
+	Service.batchInsertCaution(_sn_key, data, insertHistory)
 		.then(() => {
 			logger.info('插入报警信息结束', _sn_key);
 			// 设置最后一次的插入时间 插入过历史才会去修改
