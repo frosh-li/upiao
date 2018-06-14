@@ -23,7 +23,7 @@ function start(){
 			if(com_sn){
 				logger.info((com_sn+" receive"));
 			}
-			parseData(comClients[remoteAddress],serialPort);
+			parseData(comClients[remoteAddress]);
 		});
 		serialPort.on('error', function(err){
 			comClients[remoteAddress].odata = "";

@@ -29,7 +29,7 @@ module.exports = {
 			Lifetime:str.Lifetime,
 			CurSensor:str.CurSensor
 		}
-		watchSite.onConnectSite(str.sn_key);
+		// watchSite.onConnectSite(str.sn_key);
 		conn.query('select * from tb_station_module where sn_key=?',str.sn_key, function(err, res){
 			if(err){
 				return logger.info(err);

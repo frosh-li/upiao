@@ -204,17 +204,17 @@ function insertErrorBulk(data, insertHistory, _sn_key){
 		})
 }
 
-function parseData(client, socket){
+function parseData(client){
 	// logger.info('start parse data');
 	if(/<[^>]*>/.test(client.odata)){
 		serialPort.pause();
 	   //如果有數據直接處理
-	   var omatch = client.odata.match(/^<[^>]*>/)[0];
+	   var omatch = client.odata.match(/<[^>]*>/)[0];
 	   logger.info('omatch',omatch);
 	   let fullString = omatch;
-	   dealData(fullString.replace(/[<>]/g,""), socket);
-	   socket.odata = socket.odata.replace(fullString,"");
-	   parseData(socket);
+	   dealData(fullString.replace(/[<>]/g,""), client);
+	   client.odata = client.odata.replace(fullString,"");
+	   parseData(client);
 	}else{
 		serialPort.resume();
 		fs.writeFileSync(__dirname + "/datalog.txt", client.odata);
