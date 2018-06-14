@@ -86,7 +86,7 @@ function syncParams(){
     });
 }
 
-setInterval(watchSite.clearSites,10000);
+//setInterval(watchSite.clearSites,10000);
 // setInterval(showConnections,10000);
 setInterval(syncParams,30000);
 

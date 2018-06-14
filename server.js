@@ -23,7 +23,7 @@ global.comClients = {'127.0.0.1':{'odata':''}};
 global.sockets = {};
 
 function autoConnMysql(){
-    conn = mysql.createConnection(CONFIG.db);    
+    conn = mysql.createConnection(CONFIG.db);
     conn.connect(function(err){
         if(err){
             console.error('error on connecting', err.stack);
@@ -31,7 +31,7 @@ function autoConnMysql(){
             setTimeout(autoConnMysql , 10000);
             return;
         }else{
-            console.log('数据库连接成功,connected as id ', conn.threadId);    
+            console.log('数据库连接成功,connected as id ', conn.threadId);
         }
     });
     conn.on('error', (err)=> {
@@ -47,4 +47,4 @@ function autoConnMysql(){
 autoConnMysql();
 
 require('./httpserver').start();
-require('./tcpserver').start();
+require('./comserver').start();

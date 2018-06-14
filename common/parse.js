@@ -204,31 +204,6 @@ function insertErrorBulk(data, insertHistory, _sn_key){
 		})
 }
 
-
-
-
-							if(mobiles.length > 0){
-								logger.info('发送短信', mobiles, msgContent);
-								sendmsgFunc(mobiles.join(","),msgContent);
-							}else{
-								logger.info('所有手机格式都错误');
-							}
-						}
-					})
-					// functionary_phone  functionary_sms
-					// 检查站点设置中这条记录是否需要发送短信
-
-					// sendmsgFunc()
-				}
-			})
-		}else{
-				logger.info('全局设置不需要发送短信');
-			}
-		})
-	})
-}
-
-
 function parseData(client, socket){
 	// logger.info('start parse data');
 	if(/<[^>]*>/.test(client.odata)){
