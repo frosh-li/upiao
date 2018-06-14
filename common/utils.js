@@ -29,11 +29,13 @@ function syncParams(){
 }
 
 function disConnectSocket(socket, ctype, err) {
+	/*
     for(var key in clients){
         if(socket == clients[key]){
             delete clients[key];
         }
     }
+	*/
     if(socket && socket.sn_key){
         delete sockets[socket.sn_key];
     }
@@ -41,6 +43,7 @@ function disConnectSocket(socket, ctype, err) {
     watchSite.disConnectSite(socket.sn_key);
     logger.info(`socket ${ctype}`,socket.sn_key, err);
     socket && socket.end();
+	delete socket;
 }
 
 function sendMsg(result, msgContent) {

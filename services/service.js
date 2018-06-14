@@ -4,9 +4,9 @@ const sendParamHard = require('../common/sendParam.js')
  * 读取mysql数据的通用服务
  */
 class Service {
-    addLog(msg) {
+    addLog(sn_key, msg) {
         return new Promise((resolve, reject) => {
-           conn.query(`insert into my_running_log(content) values('${msg}')`); 
+           conn.query(`insert into my_running_log(sid, content) values(${sn_key}, '${msg}')`); 
         })
     }
     /**
@@ -212,18 +212,6 @@ class Service {
             logger.info("清理实时数据", clearOldSql);
             conn.query(clearOldSql);
         });
-    	let clearSql = `update
-                      my_alerts
-                      set
-                      status=4,
-                      markup="系统自动处理",
-                      markuptime="${currentDateStr}"
-                      where
-                      time<"${currentClearDateStr}"
-                      and
-                      status=0`;
-      logger.info('定时清理站数据SQL', clearSql);
-    	conn.query(clearSql);
 
     	// 清理系统报警
     	conn.query('delete from systemalarm where station not in (select serial_number from my_site)');
@@ -304,39 +292,53 @@ class Service {
     /*
     * 批量插入所有的报警信息到历史表和实时表
     */
-    batchInsertCaution(data, insertHistory) {
+    batchInsertCaution(sn_key, data, insertHistory) {
         let sqls = [];
         let sqls_history = [];
 
         data.forEach(item => {
           let sql = `insert into my_alerts(type, code, time, current, climit, sn_key) values("${item.type}","${item.code}","${formatData(item.time)}","${item.current}","${item.climit}", "${item.sn_key}")`;
-          console.log(sql);
           sqls.push(sql);
           let sql_history = `insert into my_alerts_history(type, code, time, current, climit, sn_key) values("${item.type}","${item.code}","${formatData(item.time)}","${item.current}","${item.climit}", "${item.sn_key}")`;
           sqls_history.push(sql_history)
-          console.log(sqls_history);
           this.sendMsg(item);
         })
 
         return new Promise((resolve, reject) => {
             // 插入历史
             if(insertHistory){
-              conn.query(sqls_history.join(";"),(err, results) => {
+              conn.beginTransaction((err) =>{
                 if(err){
-                  logger.info('批量插入历史报警失败', err.message);
-                }else{
-                  logger.info('批量插入历史报警成功');
+                    console.log(err);
+                    return;
                 }
+                  conn.query(sqls_history.join(";"),(err, results) => {
+                    if(err){
+                      logger.info('批量插入历史报警失败', err.message);
+                    }else{
+                      logger.info('批量插入历史报警成功');
+                    }
+                  })
               })
             }
-            conn.query(sqls.join(";"), function(err, results){
+          conn.beginTransaction((err) =>{
+            if(err){
+                console.log(err);
+                return;
+            }
+            let sql = `
+              delete from my_alerts where floor(sn_key/10000)=${sn_key};
+            `;
+            console.log(sql, '警情条数为', sqls.length);
+            conn.query(sql + sqls.join(";"), function(err, results){
       				if(err){
-      					logger.info('批量插入历史报警失败', err.message);
+      					logger.info('批量插入实时报警失败', err.message);
       				}else{
-      					logger.info('批量插入历史报警成功'.green);
+      					logger.info('批量插入实时报警成功'.green);
       				}
               return resolve("DONE");
-      			})
+            })
+          })
         })
     }
 

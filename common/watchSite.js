@@ -8,7 +8,7 @@ function disConnectSite(sn_key){
 	let desc = "站点连接断开";
 	let tips = "检查站点或本地网络状况，电源及通信线路或联系BMS厂家";
     Service.lostSite(sn_key, desc, tips);
-    Service.addLog(`${sn_key}断开连接`);
+    Service.addLog(sn_key, `${sn_key}断开连接`);
 	// 发送掉站短信
 	conn.query(`select site_name,sid,functionary_phone,functionary_sms,area_owner_phone,area_owner_sms,parent_owner_phone,parent_owner_sms from my_site where serial_number=${sn_key.substring(0,10)+"0000"}`, function(err, result){
 		if(err){

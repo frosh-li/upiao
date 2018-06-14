@@ -40,7 +40,7 @@ var dealData = function(str, socket){
 		// 开始更新所有的battery数据
 		conn.query("update tb_battery_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 		// 更新对应站点的报警信息
-		conn.query("update my_alerts set time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
+		// conn.query("update my_alerts set time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 	}
 
 	// logger.info(str);
@@ -156,23 +156,17 @@ var dealData = function(str, socket){
 		logger.info('报警条数为',errorInsert.length);
 		if(errorInsert.length > 0){
 			let stationSnKey = Math.floor(sn_key/10000);
-			Service.clearRealCaution(stationSnKey)
-				.then(data => {
-					// 如果一小时之类已经插入过历史不再插入历史
-					let now = +new Date();
-					let cmap = cautionHistoryMap[stationSnKey];
-					let clerHistory = 1000*60*60;
-					let insertHistory = false;
-					logger.info(JSON.stringify(cautionHistoryMap, null, 4));
-					if(cmap === undefined ||  now - cmap >= clerHistory){
-						insertHistory = true;
-					}
+			// 如果一小时之类已经插入过历史不再插入历史
+			let now = +new Date();
+			let cmap = cautionHistoryMap[stationSnKey];
+			let clerHistory = 1000*60*60;
+			let insertHistory = false;
+			logger.info(JSON.stringify(cautionHistoryMap, null, 4));
+			if(cmap === undefined ||  now - cmap >= clerHistory){
+				insertHistory = true;
+			}
 
-					insertErrorBulk(errorInsert, insertHistory, stationSnKey);
-				})
-				.catch(e => {
-					logger.error('报警处理失败',stationSnKey, e);
-				})
+			insertErrorBulk(stationSnKey, errorInsert, insertHistory, stationSnKey);
 
 		}
 		// 如果有报警信息，进行报警
