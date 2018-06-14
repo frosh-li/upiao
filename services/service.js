@@ -212,18 +212,6 @@ class Service {
             logger.info("清理实时数据", clearOldSql);
             conn.query(clearOldSql);
         });
-    	let clearSql = `update
-                      my_alerts
-                      set
-                      status=4,
-                      markup="系统自动处理",
-                      markuptime="${currentDateStr}"
-                      where
-                      time<"${currentClearDateStr}"
-                      and
-                      status=0`;
-      logger.info('定时清理站数据SQL', clearSql);
-    	conn.query(clearSql);
 
     	// 清理系统报警
     	conn.query('delete from systemalarm where station not in (select serial_number from my_site)');
@@ -304,7 +292,7 @@ class Service {
     /*
     * 批量插入所有的报警信息到历史表和实时表
     */
-    batchInsertCaution(data, insertHistory) {
+    batchInsertCaution(sn_key, data, insertHistory) {
         let sqls = [];
         let sqls_history = [];
 
@@ -338,11 +326,15 @@ class Service {
                 console.log(err);
                 return;
             }
-            conn.query(sqls.join(";"), function(err, results){
+            let sql = `
+              delete from my_alerts where floor(sn_key/10000)=${sn_key};
+            `;
+            console.log(sql, '警情条数为', sqls.length);
+            conn.query(sql + sqls.join(";"), function(err, results){
       				if(err){
-      					logger.info('批量插入历史报警失败', err.message);
+      					logger.info('批量插入实时报警失败', err.message);
       				}else{
-      					logger.info('批量插入历史报警成功'.green);
+      					logger.info('批量插入实时报警成功'.green);
       				}
               return resolve("DONE");
             })
