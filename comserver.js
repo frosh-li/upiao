@@ -7,7 +7,7 @@ global.watchSite = require('./common/watchSite');
 var parseData = parse.parseData;
 
 var SerialPort = require("serialport");  //引入模块
-
+global.cautionHistoryMap = {};
 global.com_sn = "";
 const restartInterval = 1000 * 60 * 10;
 
