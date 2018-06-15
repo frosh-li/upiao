@@ -31,10 +31,11 @@ client.on('error', (error)=> {
 }
 
 var clients = process.argv[2] || 1;
+var start = process.argv[3] || 2222222222;
 for(var i = 0 ; i < clients ; i++){
     (function(i){
     
-        startClient((2222222222+i)*10000);
+        startClient((start+i)*10000);
 
     })(i)
 }

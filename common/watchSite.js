@@ -28,6 +28,7 @@ function disConnectSite(sn_key){
 
 	// 去掉站点消息
     Service.clearRealdata(sn_key);
+    Service.clearRealCaution(sn_key);
 }
 
 module.exports = {
