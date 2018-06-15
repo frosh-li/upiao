@@ -78,6 +78,13 @@ function disConnectSite(sn_key){
 			logger.info('remote from tb_battery_module done');
 		}
 	})
+	conn.query(`delete from my_alerts where floor(sn_key/10000) = ${sn_key/10000}`, function(err, data){
+		if(err){
+			logger.info('remote from my_alerts err', err);
+		}else{
+			logger.info('remote from my_alerts done');
+		}
+	})
 }
 
 function clearSites(){
