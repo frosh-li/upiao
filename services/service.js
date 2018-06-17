@@ -212,7 +212,8 @@ class Service {
             logger.info("清理实时数据", clearOldSql);
             conn.query(clearOldSql);
         });
-
+        // 清理过期报警信息
+        conn.query(`delete from my_alerts where time < "${nowClearCautionString}"`);
     	// 清理系统报警
     	conn.query('delete from systemalarm where station not in (select serial_number from my_site)');
 
