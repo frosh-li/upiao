@@ -118,4 +118,5 @@ module.exports = {
 	onConnectSite:(sn_key) => {
         Service.onConnectSite(sn_key)
     },
+	clearSites: clearSites
 }
