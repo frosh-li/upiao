@@ -38,7 +38,7 @@ module.exports = {
 				DevTCol:item.DevTCol || 0,
 			})
 		});
-		conn.query(`delete from tb_battery_module where floor(sn_key/10000)*10000 = ${Math.floor(sn_keys/10000)*10000}`,function(err, res){
+		conn.query(`delete from tb_battery_module where floor(sn_key/10000)*10000 = ${Math.floor(sn_keys[0]/10000)*10000}`,function(err, res){
 			if(err){
 				return logger.info(err);
 			}
