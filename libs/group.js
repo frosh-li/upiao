@@ -48,27 +48,11 @@ module.exports = {
 			})
 		});
 
-		conn.query(`select * from tb_group_module where sn_key in (${sn_keys.join(",")})`,function(err, res){
+		conn.query(`delete from tb_group_module where floor(sn_key/10000)*10000 = ${Math.floor(sn_keys[0]/10000)*10000}`,function(err, res){
 			if(err){
 				return logger.info(err);
 			}
-            /*
-			if(res&&res.length > 0){
-				insertBulkHistory(res, function(){
-					conn.query(`delete from tb_group_module`,function(err, res3){
-						if(err){
-							return logger.info(err);
-						}
-
-						insertBulk(data);
-					})
-				})
-
-			}else{
-				insertBulk(data);
-
-			}*/
-		    insertBulk(data);
+		  insertBulk(data);
 		})
 
 	}
@@ -111,12 +95,17 @@ function insertBulkHistory(data,cb){
 function insertBulk(data, table){
     var sql = buildMultiSql(data);
     var isql = `insert into tb_group_module_history(${sql.values}) values ${sql.vals}`;
+		var isqlreal = `insert into tb_group_module(${sql.values}) values ${sql.vals}`;
 		conn.query(isql, function(err, results){
 			if(err){
-				logger.info('insert group error', err, isql);
-			}else{
-				//logger.info('insert group done');
+				logger.info('insert group history error', err, isql);
 			}
-			//insertBulkHistory(data, cb);
 		})
+
+		conn.query(isqlreal, function(err, results){
+			if(err){
+				logger.info('insert group history realtime error', err, isql);
+			}
+		})
+
 }
