@@ -1,14 +1,3 @@
-// { sn_key: '11606123450206',
-//     gid: 2,
-//     bid: 6,
-//     Voltage: 13.95,
-//     Temperature: 32.6,
-//     Resistor: 13,
-//     DrvCurrent: 1.672,
-//     Eff_N: 300,
-//     Capacity: 90 }
-
-
 
 module.exports = {
 	deal: function(str,record_time,sid){
@@ -48,28 +37,13 @@ module.exports = {
 				DevUCol:item.DevUCol || 0,
 				DevTCol:item.DevTCol || 0,
 			})
-		});/*
-		conn.query(`select * from tb_battery_module where sn_key in (${sn_keys.join(",")})`,function(err, res){
+		});
+		conn.query(`delete from tb_battery_module where floor(sn_key/10000)*10000 = ${Math.floor(sn_keys[0]/10000)*10000}`,function(err, res){
 			if(err){
 				return logger.info(err);
 			}
-			if(res&&res.length > 0){
-				insertBulkHistory(res, function(){
-					conn.query(`delete from tb_battery_module`,function(err, res3){
-						if(err){
-							return logger.info(err);
-						}
-						insertBulk(data);
-					})
-				})
-
-			}else{
-				insertBulk(data);
-
-			}
-		})
-        */
-        insertBulk(data);
+      insertBulk(data);
+		});
 
 	}
 }
@@ -95,41 +69,21 @@ function buildMultiSql(data){
     };
 }
 
-function insertBulkHistory(data,cb){
-    var sql = buildMultiSql(data);
-		conn.query(`insert into tb_battery_module_history (select * from tb_battery_module)`, function(err, results){
-			if(err){
-				logger.info('insert battery history error', err);
-			}else{
-				// logger.info('insert battery history done');
-			}
-            cb();
-			//insertBulkHistory(data, cb);
-		})
-}
 
 function insertBulk(data, table){
     var sql = buildMultiSql(data);
     var isql = `insert into tb_battery_module_history(${sql.values}) values ${sql.vals}`;
+		var isqlreal = `insert into tb_battery_module(${sql.values}) values ${sql.vals}`;
 		conn.query(isql, function(err, results){
 			if(err){
-				logger.info('insert battery error', err);
-			}else{
-				//logger.info('insert battery done');
+				logger.info('insert battery history error', err);
 			}
-			//insertBulkHistory(data, cb);
-		})
-        /*
-	var item = data.shift();
-	if(item){
-		conn.query('insert into tb_battery_module set ?', item, function(err, results){
+		});
+
+		conn.query(isqlreal, function(err, results){
 			if(err){
-				logger.info('insert battery error', err);
-			}else{
-				logger.info('insert battery done');
+				logger.info('insert battery realtime error', err);
 			}
-			insertBulk(data);
-		})
-	}
-    */
+		});
+
 }
