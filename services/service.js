@@ -6,7 +6,7 @@ const sendParamHard = require('../common/sendParam.js')
 class Service {
     addLog(sn_key, msg) {
         return new Promise((resolve, reject) => {
-           conn.query(`insert into my_running_log(sid, content) values(${sn_key}, '${msg}')`); 
+           conn.query(`insert into my_running_log(sid, content) values(${sn_key}, '${msg}')`);
         })
     }
     /**
@@ -307,25 +307,17 @@ class Service {
         return new Promise((resolve, reject) => {
             // 插入历史
             if(insertHistory){
-              conn.beginTransaction((err) =>{
-                if(err){
-                    console.log(err);
-                    return;
-                }
-                  conn.query(sqls_history.join(";"),(err, results) => {
-                    if(err){
-                      logger.info('批量插入历史报警失败', err.message);
-                    }else{
-                      logger.info('批量插入历史报警成功');
-                    }
-                  })
-              })
+
+                conn.query(sqls_history.join(";"),(err, results) => {
+                  if(err){
+                    logger.info('批量插入历史报警失败', err.message);
+                  }else{
+                    logger.info('批量插入历史报警成功');
+                  }
+                })
+
             }
-          conn.beginTransaction((err) =>{
-            if(err){
-                console.log(err);
-                return;
-            }
+
             let sql = `
               delete from my_alerts where floor(sn_key/10000)=${sn_key};
             `;
@@ -338,7 +330,6 @@ class Service {
       				}
               return resolve("DONE");
             })
-          })
         })
     }
 
