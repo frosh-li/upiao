@@ -219,7 +219,7 @@ function parseData(socket){
 	   socket.odata = socket.odata.replace(fullString,"");
 	   parseData(socket);
 	}else{
-		if(socket.odata.length > 20000){
+		if(socket.odata.length > 1024*1024){
 			// 数据过多，并且无法解析，断开连接重新来
 			logger.info("to many error data to end");
 			socket.end();
