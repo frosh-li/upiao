@@ -6,7 +6,12 @@ const sendParamHard = require('../common/sendParam.js')
 class Service {
     addLog(sn_key, msg) {
         return new Promise((resolve, reject) => {
-           conn.query(`insert into my_running_log(sid, content) values(${sn_key}, '${msg}')`);
+           conn.query(`insert into my_running_log(sid, content) values(${sn_key}, '${msg}')`, function(err){
+                if(err){
+                    console.log(err);
+                    return;
+                }
+           });
         })
     }
     /**

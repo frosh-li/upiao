@@ -92,7 +92,7 @@ var dealData = function(str, socket){
 	}
 
 	if(str && (str.StationErr || str.GroupErr || str.BatteryErr)){
-		logger.info(str.StationErr);
+		logger.info(JSON.stringify(str));
 		let StationErr = str.StationErr;
 		let errorInsert = [];
 		let sn_key = '';
