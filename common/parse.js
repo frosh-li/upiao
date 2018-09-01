@@ -4,6 +4,7 @@ var station = require('../libs/station');
 var group = require('../libs/group');
 var battery = require('../libs/battery');
 
+const Command = require("../constants/command.js");
 const Utils = require("./utils.js");
 
 var errCode = require('../libs/errorConfig');
@@ -33,7 +34,15 @@ var dealData = function(str, socket){
 		logger.info('heart beat', JSON.stringify(str));
 		let sn_key = str.sn_key;
 		// 开始更新所有的station数据
-		conn.query("update tb_station_module set record_time=? where sn_key=?",[record_time, sn_key],commonErrorDeal);
+		conn.query("update tb_station_module set record_time=? where sn_key=?",[record_time, sn_key],function(error, results){
+			if(error){
+				return;
+			}
+			if(results.changedRows == 0) {
+				// 请求一次所有站数据
+				socket.write(Command.stationData);
+			}
+		});
 		// 开始更新所有的battery数据
 		conn.query("update tb_group_module set record_time=? where floor(sn_key/10000)=?",[record_time, Math.floor(sn_key/10000)],commonErrorDeal);
 		// 开始更新所有的battery数据
