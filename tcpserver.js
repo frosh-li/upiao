@@ -1,5 +1,6 @@
 'use strict';
 const net = require("net");
+const os = require('os');
 const CONFIG = require("./config");
 
 const parse = require("./common/parse.js");
@@ -79,6 +80,12 @@ setInterval(()=>{
  * 30秒同步一次参数
  */
 setInterval(Utils.syncParams,30000);
+
+//每2小时更新维护日期
+setInterval(()=>{
+	console.log('updateMaintain start');
+	Service.updateMaintain();
+},1000*60*60*2);
 
 module.exports = {
 	start:function(){

@@ -353,6 +353,34 @@ class Service {
         })
       })
     }
+
+    //定时任务：更新维护日期
+    updateMaintain(){
+        let sql = `SELECT b . * , s.site_name, s.sid FROM my_ups_info AS b LEFT JOIN my_site AS s ON b.sid = s.serial_number order by b.sid asc`;
+        conn.query(sql, (err, results)=>{
+            if(err){
+                console.log(err);
+                return;
+            }
+            var date = new Date();
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            if (month < 10) month = "0" + month;
+            if (day < 10) day = "0" + day;
+            var nowDate = year + "-" + month + "-" + day;
+            results.forEach((item)=>{
+                // console.log(item.ups_maintain_date , date.toLocaleDateString().replace(/\//ig,'-'));
+                if (item.ups_period_days > 0 && item.ups_maintain_date == nowDate){
+                    let ups_day = item.ups_period_days;
+                    let ups_id = item.id;
+                    sql = `update my_ups_info set ups_maintain_date = DATE_FORMAT(date_add(now(), interval ${ups_day} day),'%Y-%m-%d') where id = ${ups_id} `;
+                    console.log(sql);
+                    conn.query(sql);
+                }
+            });
+        });
+    } 
 }
 const service = new Service();
 module.exports = service;
